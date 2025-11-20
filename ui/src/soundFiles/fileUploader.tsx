@@ -5,6 +5,7 @@ import InputGroup from 'react-bootstrap/InputGroup'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Toast from 'react-bootstrap/Toast'
+import ToastContainer from 'react-bootstrap/ToastContainer'
 
 import settingsContext from '../settingsContext'
 
@@ -61,9 +62,12 @@ export default function FileUploader(props: FileUploaderProps) {
                 onClick={() => uploadFile.mutate()}
             >Upload</Button>
             {props.children}
-            <Toast show={showErrorToast} onClose={() => setShowErrorToast(false)} delay={3000} autohide>
-                <Toast.Body className='fw-bolder text-bg-danger'>{uploadFile.error?.message}</Toast.Body>
-            </Toast>
         </InputGroup>
+
+        <ToastContainer position='bottom-end'>
+            <Toast bg='danger' className='m-3' show={showErrorToast} onClose={() => setShowErrorToast(false)} delay={3000} autohide>
+                <Toast.Body className='text-white'>{uploadFile.error?.message}</Toast.Body>
+            </Toast>
+        </ToastContainer>
     </>
 }

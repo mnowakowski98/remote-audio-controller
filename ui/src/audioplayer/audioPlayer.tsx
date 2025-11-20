@@ -36,7 +36,7 @@ export default function AudioPlayer() {
 
     return <Container fluid>
         <Row className='mb-2'>
-            <Col xs={9} className='d-flex align-items-end'>
+            <Col xs={9}>
                 <FileUploader
                     children={<ClearButton hasFile={hasFile()} />}
                     queryKey={audioFileInfoKey}
@@ -50,12 +50,16 @@ export default function AudioPlayer() {
             </Col>
         </Row>
 
-        <Row className='border my-3'>
-            <Col className='text-center'>{hasFile() ? <AudioInfo /> : 'No audio'}</Col>
+        <Row className='border py-3'>
+            <Col className='text-center'>
+                <header className='text-start fw-bolder'>Playing now</header>
+                {hasFile() ? <AudioInfo /> : 'No audio'}
+            </Col>
         </Row>
 
         <Row>
             <Col>
+                <header className='fw-bolder pt-3'>Existing files</header>
                 <FilesTable
                     baseUrlOverride={new URL('../soundfiles/', baseUrl)}
                     showDeleteButtons={false}
