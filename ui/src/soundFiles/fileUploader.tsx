@@ -1,5 +1,5 @@
 import { type ChangeEvent, type ReactElement, useContext, useRef, useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 
 import InputGroup from 'react-bootstrap/InputGroup'
 import Form from 'react-bootstrap/Form'
@@ -10,14 +10,11 @@ import ToastContainer from 'react-bootstrap/ToastContainer'
 import settingsContext from '../settingsContext'
 
 interface FileUploaderProps {
-    children?: ReactElement,
-    queryKey: string,
-    onSuccess?: () => void
+    children?: ReactElement
 }
 
 export default function FileUploader(props: FileUploaderProps) {
     const uploadUrl = useContext(settingsContext).hostUrl
-    const queryClient = useQueryClient()
 
     const fileInput = useRef<HTMLInputElement | null>(null)
     const [audioFile, setAudioFile] = useState<File | null>()
@@ -35,14 +32,11 @@ export default function FileUploader(props: FileUploaderProps) {
                 const errorMessage = await response.text()
                 throw new Error(errorMessage)
             }
-            return response.json()
         },
         onError: () => setShowErrorToast(true),
-        onSuccess: (data) => {
-            queryClient.setQueryData([props.queryKey], data)
+        onSuccess: () => {
             setAudioFile(null)
             if (fileInput.current != null) fileInput.current.value = ''
-            if(props.onSuccess != undefined) props.onSuccess()
         }
     })
 

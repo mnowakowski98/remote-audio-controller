@@ -4,6 +4,8 @@ import multer from 'multer'
 import { parseBuffer, IAudioMetadata } from 'music-metadata'
 
 import { addSoundFile, fileNameExists, getAudioInfos, getFile, makeSoundFile, removeSoundFile } from '../repositories/soundFiles'
+import { sendSyncData } from '../servers/stateSync'
+import { soundFileInfoKey } from '../models/soundFile'
 
 const router = express.Router()
 const upload = multer()
@@ -47,7 +49,8 @@ router.post('/', upload.single('file'), async (req, res) => {
     }
     
     await addSoundFile(makeSoundFile(fileName, metadata), req.file.buffer)
-    res.send(getAudioInfos())
+    res.sendStatus(200)
+    sendSyncData(soundFileInfoKey, getAudioInfos())
 })
 
 router.delete('/:id', async (req, res) => {
@@ -59,7 +62,8 @@ router.delete('/:id', async (req, res) => {
     }
 
     await removeSoundFile(file)
-    res.send(getAudioInfos())
+    res.sendStatus(200)
+    sendSyncData(soundFileInfoKey, getAudioInfos())
 })
 
 export default router

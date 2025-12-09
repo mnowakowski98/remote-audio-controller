@@ -4,7 +4,6 @@ import Col from 'react-bootstrap/Col'
 
 import FilesTable from './filesTable'
 import FileUploader from './fileUploader'
-import { soundFileInfoKey } from '../models/soundFile'
 
 export default function SoundFiles() {
     return <Container fluid>
@@ -17,7 +16,7 @@ export default function SoundFiles() {
         <hr />
         <Row>
             <Col>
-                <FileUploader queryKey={soundFileInfoKey} />
+                <FileUploader />
             </Col>
         </Row>
     </Container>

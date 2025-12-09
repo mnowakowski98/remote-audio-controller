@@ -10,7 +10,10 @@ export default function useSyncedState<DataType>(typeKey: string) {
     const queryClient = useQueryClient()
 
     const url = new URL('/sync', useContext(settingsContext).hostUrl).toString()
-    const { lastJsonMessage } = useWebSocket<StateUpdate<DataType>>(url, { share: true })
+    const { lastJsonMessage } = useWebSocket<StateUpdate<DataType>>(url, {
+        share: true,
+        shouldReconnect: () => true,
+    })
 
     useEffect(() => {
         if (lastJsonMessage == undefined) return

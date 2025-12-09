@@ -15,7 +15,6 @@ import ClearButton from './clearButton'
 
 import useAudioInfo from './useAudioInfo'
 import settingsContext from '../settingsContext'
-import { audioFileInfoKey } from '../models/audioFileInfo'
 
 export default function AudioPlayer() {
     const baseUrl = useContext(settingsContext).hostUrl
@@ -34,7 +33,6 @@ export default function AudioPlayer() {
             <Col xs={9}>
                 <FileUploader
                     children={<ClearButton hasFile={hasFile()} />}
-                    queryKey={audioFileInfoKey}
                 />
             </Col>
             <Col className='d-flex align-items-end'>
