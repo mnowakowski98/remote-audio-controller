@@ -1,16 +1,13 @@
-import { useContext, useEffect } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import useWebSocket from 'react-use-websocket'
+import { useContext } from 'react'
+import { useQuery } from '@tanstack/react-query'
 
 import SettingsContext from '../settingsContext'
 import type AudioFileInfo from '../models/audioFileInfo'
-import type StateUpdate from '../models/stateUpdate'
 
 import { audioFileInfoKey } from '../models/audioFileInfo'
+import useSyncedState from '../hooks/useSyncedState'
 
 export default function useAudioInfo() {
-    const queryClient = useQueryClient()
-
     const settings = useContext(SettingsContext)
     const queryUrl = settings.hostUrl
 
@@ -19,13 +16,7 @@ export default function useAudioInfo() {
         queryFn: async () => (await fetch(queryUrl)).json()
     })
 
-    const { lastJsonMessage } = useWebSocket<StateUpdate<AudioFileInfo>>(new URL('/sync', settings.hostUrl).toString(), { share: true })
-
-    useEffect(() => {
-        if (lastJsonMessage == undefined) return
-        if (lastJsonMessage.typeKey != audioFileInfoKey) return
-        queryClient.setQueryData([audioFileInfoKey], lastJsonMessage.data)
-    }, [lastJsonMessage, queryClient])
+    useSyncedState<AudioFileInfo>(audioFileInfoKey)
 
     return query
 }

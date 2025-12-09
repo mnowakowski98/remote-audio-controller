@@ -1,5 +1,5 @@
-import { useContext, useEffect } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useContext } from 'react'
+import { useMutation, useQuery } from '@tanstack/react-query'
 
 import Form from 'react-bootstrap/Form'
 import InputGroup from 'react-bootstrap/InputGroup'
@@ -8,8 +8,7 @@ import Button from 'react-bootstrap/Button'
 import SettingsContext from '../settingsContext'
 import type AudioStatus from '../models/audioStatus'
 import { audioStatusKey } from '../models/audioStatus'
-import useWebSocket from 'react-use-websocket'
-import type StateUpdate from '../models/stateUpdate'
+import useSyncedState from '../hooks/useSyncedState'
 
 interface PlayerControlsProps {
     hasFile: boolean
@@ -17,19 +16,13 @@ interface PlayerControlsProps {
 
 export default function PlayerControls(props: PlayerControlsProps) {
     const baseUrl = useContext(SettingsContext).hostUrl
-    const queryClient = useQueryClient()
 
     const audioStatus = useQuery<AudioStatus>({
         queryKey: [audioStatusKey],
         queryFn: async () => (await fetch(new URL('./status', baseUrl))).json()
     })
 
-    const { lastJsonMessage } = useWebSocket<StateUpdate<AudioStatus>>(new URL('/sync', baseUrl).toString(), { share: true })
-    useEffect(() => {
-        if (lastJsonMessage == undefined) return
-        if (lastJsonMessage.typeKey != audioStatusKey) return
-        queryClient.setQueryData([audioStatusKey], lastJsonMessage.data)
-    })
+    useSyncedState<AudioStatus>(audioStatusKey)
 
     const setPlayingState = useMutation({
         mutationFn: async (command: 'start' | 'pause' | 'stop') => {
