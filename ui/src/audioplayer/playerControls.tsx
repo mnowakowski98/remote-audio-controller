@@ -25,21 +25,13 @@ export default function PlayerControls(props: PlayerControlsProps) {
     useSyncedState<AudioStatus>(audioStatusKey)
 
     const setPlayingState = useMutation({
-        mutationFn: async (command: 'start' | 'pause' | 'stop') => {
-            const response = await fetch(new URL('./status/playing', baseUrl), {
-                method: 'PUT', body: command
-            })
-            return response.json()
-        }
+        mutationFn: async (command: 'start' | 'pause' | 'stop') =>
+            await fetch(new URL('./status/playing', baseUrl), { method: 'PUT', body: command })
     })
 
     const setLoopState = useMutation({
-        mutationFn: async (loop: boolean) => {
-            const response = await fetch(new URL('./status/loop', baseUrl), {
-                method: 'PUT', body: loop ? 'true' : 'false'
-            })
-            return response.json()
-        }
+        mutationFn: async (loop: boolean) =>
+            await fetch(new URL('./status/loop', baseUrl), { method: 'PUT', body: loop ? 'true' : 'false' })
     })
 
     if (audioStatus.isLoading) return 'Loading'
