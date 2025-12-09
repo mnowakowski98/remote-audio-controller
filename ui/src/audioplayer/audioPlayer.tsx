@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
@@ -15,12 +15,9 @@ import ClearButton from './clearButton'
 
 import useAudioInfo from './useAudioInfo'
 import settingsContext from '../settingsContext'
-import { audioFileInfoKey } from '../models/audioFileInfo'
-import { audioStatusKey } from '../models/audioStatus'
 
 export default function AudioPlayer() {
     const baseUrl = useContext(settingsContext).hostUrl
-    const queryClient = useQueryClient()
 
     const audioInfo = useAudioInfo()
     const hasFile = () => audioInfo.isSuccess == true && audioInfo.data?.id != 'none'
@@ -28,10 +25,7 @@ export default function AudioPlayer() {
     const [selectedFile, setSelectedFile] = useState<string | null>(null)
     const setFile = useMutation({
         mutationFn: async () => (await fetch(new URL(`./${selectedFile}`, baseUrl), { method: 'POST' })).json(),
-        onSuccess: (data) => {
-            queryClient.setQueryData([audioFileInfoKey], data)
-            setSelectedFile(null)
-        }
+        onSuccess: () => setSelectedFile(null)
     })
 
     return <Container fluid>
@@ -39,10 +33,6 @@ export default function AudioPlayer() {
             <Col xs={9}>
                 <FileUploader
                     children={<ClearButton hasFile={hasFile()} />}
-                    queryKey={audioFileInfoKey}
-                    onSuccess={() => queryClient.fetchQuery({
-                        queryKey: [audioStatusKey]
-                    })}
                 />
             </Col>
             <Col className='d-flex align-items-end'>

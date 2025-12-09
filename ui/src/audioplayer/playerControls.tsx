@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 
 import Form from 'react-bootstrap/Form'
 import InputGroup from 'react-bootstrap/InputGroup'
@@ -8,6 +8,7 @@ import Button from 'react-bootstrap/Button'
 import SettingsContext from '../settingsContext'
 import type AudioStatus from '../models/audioStatus'
 import { audioStatusKey } from '../models/audioStatus'
+import useSyncedState from '../hooks/useSyncedState'
 
 interface PlayerControlsProps {
     hasFile: boolean
@@ -15,12 +16,13 @@ interface PlayerControlsProps {
 
 export default function PlayerControls(props: PlayerControlsProps) {
     const baseUrl = useContext(SettingsContext).hostUrl
-    const queryClient = useQueryClient()
 
     const audioStatus = useQuery<AudioStatus>({
         queryKey: [audioStatusKey],
         queryFn: async () => (await fetch(new URL('./status', baseUrl))).json()
     })
+
+    useSyncedState<AudioStatus>(audioStatusKey)
 
     const setPlayingState = useMutation({
         mutationFn: async (command: 'start' | 'pause' | 'stop') => {
@@ -28,8 +30,7 @@ export default function PlayerControls(props: PlayerControlsProps) {
                 method: 'PUT', body: command
             })
             return response.json()
-        },
-        onSuccess: (data) => queryClient.setQueryData(['audioStatus'], data)
+        }
     })
 
     const setLoopState = useMutation({
@@ -38,8 +39,7 @@ export default function PlayerControls(props: PlayerControlsProps) {
                 method: 'PUT', body: loop ? 'true' : 'false'
             })
             return response.json()
-        },
-        onSuccess: (data) => queryClient.setQueryData([audioStatusKey], data)
+        }
     })
 
     if (audioStatus.isLoading) return 'Loading'

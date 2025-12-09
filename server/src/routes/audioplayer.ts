@@ -15,9 +15,17 @@ import {
     unsetFile
 } from '../repositories/audioPlayer'
 import { getFile, getFileBuffer } from '../repositories/soundFiles'
+import { sendSyncData } from '../servers/stateSync'
+import { audioFileInfoKey } from '../models/audioFileInfo'
+import { audioStatusKey } from '../models/audioStatus'
 
 const router = express.Router()
 const upload = multer()
+
+const syncRouteStatus = () => {
+    sendSyncData(audioFileInfoKey, getAudioInfo())
+    sendSyncData(audioStatusKey, getAudioStatus())
+}
 
 //#region File info
 router.get('/', (_req, res) => res.send(getAudioInfo()))
@@ -44,7 +52,8 @@ router.post('/', upload.single('file'), async (req, res) => {
     }
 
     await setFile(fileName, metadata, req.file.buffer)
-    res.send(getAudioInfo())
+    res.sendStatus(200)
+    syncRouteStatus()
 })
 
 router.post('/:id', async (req, res) => {
@@ -55,12 +64,14 @@ router.post('/:id', async (req, res) => {
     }
 
     await setFile(file.fileInfo.fileName, file.metadata, await getFileBuffer(file))
-    res.send(getAudioInfo())
+    res.sendStatus(200)
+    syncRouteStatus()
 })
 
 router.delete('/', async (_req, res) => {
     await unsetFile()
     res.sendStatus(200)
+    syncRouteStatus()
 })
 //#endregion
 
@@ -88,13 +99,15 @@ router.put('/status/playing', express.text(), (req, res) => {
             return
     }
 
-    res.send(getAudioStatus())
+    res.sendStatus(200)
+    syncRouteStatus()
 })
 
 router.put('/status/loop', express.text(), (req, res) => {
     if (req.body === undefined) setLoop()
     else setLoop(req.body == 'true' ? true : false)
-    res.send(getAudioStatus())
+    res.sendStatus(200)
+    syncRouteStatus()
 })
 //#endregion
 

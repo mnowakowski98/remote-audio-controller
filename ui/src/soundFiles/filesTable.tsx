@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button'
@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button'
 import settingsContext from '../settingsContext'
 import type AudioFileInfo from '../models/audioFileInfo'
 import { soundFileInfoKey } from '../models/soundFile'
+import useSyncedState from '../hooks/useSyncedState'
 
 interface FilesTableProps {
     showDeleteButtons?: boolean,
@@ -17,7 +18,6 @@ interface FilesTableProps {
 
 export default function FilesTable(props: FilesTableProps) {
     const baseUrl = useContext(settingsContext).hostUrl
-    const queryClient = useQueryClient()
 
     const soundFiles = useQuery<AudioFileInfo[]>({
         queryKey: [soundFileInfoKey],
@@ -26,8 +26,9 @@ export default function FilesTable(props: FilesTableProps) {
 
     const removeFile = useMutation({
         mutationFn: async (id: string) => (await fetch(new URL(`./${id}`, baseUrl), { method: 'Delete' })).json(),
-        onSuccess: (data) => queryClient.setQueryData([soundFileInfoKey], data)
     })
+
+    useSyncedState<AudioFileInfo[]>(soundFileInfoKey)
 
     if (soundFiles.isLoading == true) return 'Loading'
     if (soundFiles.isError == true) return 'Goofed'
