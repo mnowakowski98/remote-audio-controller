@@ -24,7 +24,7 @@ export default function AudioPlayer() {
 
     const [selectedFile, setSelectedFile] = useState<string | null>(null)
     const setFile = useMutation({
-        mutationFn: async () => (await fetch(new URL(`./${selectedFile}`, baseUrl), { method: 'POST' })).json(),
+        mutationFn: async () => await fetch(new URL(`./${selectedFile}`, baseUrl), { method: 'POST' }),
         onSuccess: () => setSelectedFile(null)
     })
 

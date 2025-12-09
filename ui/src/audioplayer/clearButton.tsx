@@ -13,7 +13,7 @@ export default function ClearButton(props: ClearButtonProps) {
     const url = useContext(settingsContext).hostUrl
     
     const clearFile = useMutation({
-        mutationFn: async () => (await fetch(url, { method: 'DELETE' })),
+        mutationFn: async () => await fetch(url, { method: 'DELETE' }),
     })
 
     return <Button

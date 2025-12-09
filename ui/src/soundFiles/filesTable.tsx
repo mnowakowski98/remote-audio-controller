@@ -25,7 +25,7 @@ export default function FilesTable(props: FilesTableProps) {
     })
 
     const removeFile = useMutation({
-        mutationFn: async (id: string) => (await fetch(new URL(`./${id}`, baseUrl), { method: 'Delete' })).json(),
+        mutationFn: async (id: string) => await fetch(new URL(`./${id}`, baseUrl), { method: 'Delete' }),
     })
 
     useSyncedState<AudioFileInfo[]>(soundFileInfoKey)
