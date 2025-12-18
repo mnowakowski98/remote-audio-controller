@@ -6,3 +6,4 @@ export default interface AudioStatus {
 }
 
 export const audioStatusKey = 'audioStatus'
+export const audioSeekKey = 'audioSeek'

@@ -6,6 +6,7 @@ import { IAudioMetadata, parseBuffer } from 'music-metadata'
 import {
     getAudioInfo,
     getAudioStatus,
+    getSeekTime,
     hasAudioFile,
     pauseAudio,
     setFile,
@@ -17,7 +18,7 @@ import {
 import { getFile, getFileBuffer } from '../repositories/soundFiles'
 import { sendSyncData } from '../servers/stateSync'
 import { audioFileInfoKey } from '../models/audioFileInfo'
-import { audioStatusKey } from '../models/audioStatus'
+import { audioSeekKey, audioStatusKey } from '../models/audioStatus'
 
 const router = express.Router()
 const upload = multer()
@@ -25,6 +26,7 @@ const upload = multer()
 const syncRouteStatus = () => {
     sendSyncData(audioFileInfoKey, getAudioInfo())
     sendSyncData(audioStatusKey, getAudioStatus())
+    sendSyncData(audioSeekKey, getSeekTime())
 }
 
 //#region File info
@@ -108,6 +110,22 @@ router.put('/status/loop', express.text(), (req, res) => {
     else setLoop(req.body == 'true' ? true : false)
     res.sendStatus(200)
     syncRouteStatus()
+})
+
+router.get('/status/seek', (_req, res) => res.send(getSeekTime()))
+
+router.put('/status/seek', express.text(), (req, res) => {
+    let seekTo: number
+    try { seekTo = parseInt(req.body) }
+    catch {
+        res.status(400).send('Body must be a number')
+        return
+    }
+
+    
+    res.sendStatus(200)
+    syncRouteStatus()
+
 })
 //#endregion
 

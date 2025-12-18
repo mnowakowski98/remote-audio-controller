@@ -1,4 +1,4 @@
-import { exec as execFunc } from 'node:child_process'
+import { exec as _exec } from 'node:child_process'
 import { createReadStream, writeFileSync } from 'node:fs'
 import { writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -19,7 +19,7 @@ writeFileSync(originalFile, '')
 writeFileSync(playingFile, '')
 
 // Crash out if ffmpeg isn't available
-const exec = promisify(execFunc)
+const exec = promisify(_exec)
 const ffmpeg = findExec('ffmpeg')
 if (ffmpeg == null) throw('ffmpeg not found')
 
@@ -87,22 +87,43 @@ const audioEnd = (overrideLoop = false) => {
     speaker = null
 }
 
+let audioStart: number | null = null
+let timePaused = 0
+let lastPause = 0
+
+// Play time in 
+export const getSeekTime = () => audioStart ?
+    (performance.now() - audioStart) - timePaused : undefined
+
+export const seek = (seekTo: number) => {
+
+}
+
 export const startAudio = () => {
     if(hasAudioFile() == false) throw `Can not play audio when no file is set`
     if(playing() == true) return;
     if(speaker == null) speaker = new Speaker(getSpeakerSettings())
     if(audio == null) audio = createReadStream(playingFile)
+
+    if (paused()) timePaused += performance.now() - lastPause
+    else audioStart = performance.now()
+
     audio.pipe(speaker)
     audio.addListener('end', audioEnd)
 }
 
 export const pauseAudio = () => {
+    lastPause = performance.now()
     audio?.unpipe()
     speaker?.close(false)
     speaker = null
 }
 
 export const stopAudio = () => {
+    audioStart = null
+    timePaused = 0
+    lastPause = 0
+
     audio?.unpipe()
     audio?.emit('end', true)
     audio?.removeListener('end', audioEnd)
