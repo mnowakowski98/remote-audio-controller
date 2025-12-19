@@ -12,7 +12,7 @@ export default function useSyncedState<DataType>(typeKey: string,
         responseTransformer?: (response: Response) => Promise<DataType>
     },
     socketOptions?: {
-        onMessage?: (event: MessageEvent<StateUpdate<DataType>>) => void
+        onMessage?: (data: DataType) => void
     }
 ) {
     const baseUrl = useContext(settingsContext).hostUrl
@@ -32,7 +32,11 @@ export default function useSyncedState<DataType>(typeKey: string,
     const { lastJsonMessage } = useWebSocket<StateUpdate<DataType>>(syncUrl, {
         share: true,
         shouldReconnect: () => true,
-        onMessage: socketOptions?.onMessage
+        onMessage: (event) => {
+            const data = JSON.parse(event.data) as StateUpdate<DataType>
+            if (data.typeKey != typeKey) return
+            if (socketOptions?.onMessage) socketOptions.onMessage(data.data)
+        }
     })
 
     useEffect(() => {

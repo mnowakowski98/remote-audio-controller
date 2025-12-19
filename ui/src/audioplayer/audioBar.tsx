@@ -4,11 +4,11 @@ import useSyncedState from '../hooks/useSyncedState'
 
 import type AudioStatus from '../models/audioStatus'
 import { audioStatusKey } from '../models/audioStatus'
-import type StateUpdate from '../models/stateUpdate'
 
 export default function AudioBar() {
     const timeout = useRef<NodeJS.Timeout>(null)
     const seekTime = useRef<HTMLSpanElement>(null)
+    const lastSyncTime = useRef<HTMLSpanElement>(null)
 
     const secondize = (time: number) => (time / 1000).toFixed(2)
 
@@ -18,19 +18,18 @@ export default function AudioBar() {
 
     const { data, isLoading } = useSyncedState<AudioStatus>(audioStatusKey,
         { queryUrl: './status' },
-        { onMessage: (event) => {
+        { onMessage: (data) => {
             setSyncTime(performance.now())
-            // Typescript seems to think data is an object. It's not
-            const dataString = event.data as unknown as string
-            const { data } = JSON.parse(dataString) as StateUpdate<AudioStatus>
             setLastServerTime(data.seek)
         }})
 
     useEffect(() => {
         if (data == undefined || data.playing == false) return
 
-        timeout.current = setInterval(() =>
-            seekTime.current!.innerText = secondize(lastServerTime + timeSinceLastSync()))
+        timeout.current = setInterval(() => {
+            seekTime.current!.innerText = secondize(lastServerTime + timeSinceLastSync())
+            lastSyncTime.current!.innerText = secondize(timeSinceLastSync())
+        })
 
         return () => clearInterval(timeout.current!)
 
@@ -38,8 +37,8 @@ export default function AudioBar() {
     if (isLoading == true) return 0
 
     return <p>
-        Synced time: {data?.seek}<br />
-        Time since last sync: {secondize(timeSinceLastSync())}<br />
-        Seek time: <span ref={seekTime}>0</span>
+        Server time: {secondize(data?.seek ?? 0)}s<br />
+        Time since last sync: <span ref={lastSyncTime}>0.00</span>s<br />
+        Seek time: <span ref={seekTime}>0.00</span>s
     </p>
 }
