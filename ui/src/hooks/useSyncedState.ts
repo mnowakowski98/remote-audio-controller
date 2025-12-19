@@ -19,6 +19,7 @@ export default function useSyncedState<DataType>(typeKey: string,
     const queryClient = useQueryClient()
 
     const query = useQuery<DataType>({
+        enabled: false,
         queryKey: [typeKey],
         queryFn: async () => {
             if(queryOptions?.queryUrl == undefined) return null

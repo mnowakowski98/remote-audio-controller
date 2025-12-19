@@ -53,8 +53,10 @@ let timePaused = 0
 let lastPause = 0
 
 // Play time in milliseconds 
-export const getSeekTime = () => audioStart ?
-    (performance.now() - audioStart) - timePaused : 0
+export const getSeekTime = () => {
+    console.log(`\nNow: ${performance.now()}\nStart: ${audioStart}\nPause: ${lastPause}\nPaused:${timePaused}`)
+    return audioStart ? (performance.now() - audioStart) - timePaused : 0
+}
 
 export const seek = (seekTo: number) => {
 
@@ -109,13 +111,13 @@ const audioEnd = () => {
 
 export const startAudio = () => {
     if(hasAudioFile() == false) throw `Can not play audio when no file is set`
-    if(playing() == true) return;
-    if(speaker == null) speaker = new Speaker(getSpeakerSettings())
-    if(audio == null) audio = createReadStream(playingFile)
+    if(playing() == true) return
 
-    if (paused()) timePaused += performance.now() - lastPause
+    if (paused() == true) timePaused += performance.now() - lastPause
     else audioStart = performance.now()
 
+    if(speaker == null) speaker = new Speaker(getSpeakerSettings())
+    if(audio == null) audio = createReadStream(playingFile)
     audio.pipe(speaker)
     audio.addListener('end', audioEnd)
 }
