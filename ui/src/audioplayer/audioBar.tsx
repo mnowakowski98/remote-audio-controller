@@ -1,35 +1,25 @@
 import { useEffect, useRef, useState } from 'react'
 
 import useSyncedState from '../hooks/useSyncedState'
-import { audioSeekKey } from '../models/audioStatus'
 
-interface AudioBarProps {
-    isPlaying: boolean
-}
+import type AudioStatus from '../models/audioStatus'
+import { audioStatusKey } from '../models/audioStatus'
 
-export default function AudioBar(props: AudioBarProps) {
+export default function AudioBar() {
     const timeout = useRef<NodeJS.Timeout>(null)
     const syncTime = useRef(performance.now())
     const [displayTime, setDisplayTime] = useState(0)
 
-    const { data, isError, isLoading } = useSyncedState<number | undefined>(audioSeekKey, {
-        queryUrl: './status/seek',
-        responseTransformer: async (response) => {
-            const data = parseInt(await response.text())
-            if (Number.isNaN(data)) return undefined
-            syncTime.current = performance.now()
-            return data
-        }
-    })
+    const { data, isLoading } = useSyncedState<AudioStatus>(audioStatusKey, { queryUrl: './status' })
 
     useEffect(() => {
-        if(props.isPlaying == false) return
+        if (data == undefined || data.playing == false) return
 
         timeout.current = setInterval(() => {
             if (data == undefined) return
 
             const elapsedTime = performance.now() - syncTime.current
-            setDisplayTime(Math.floor((data + elapsedTime) / 1000))
+            setDisplayTime(Math.floor((data.seek + elapsedTime) / 1000))
         }, 100)
 
         return () => {
@@ -38,10 +28,9 @@ export default function AudioBar(props: AudioBarProps) {
 
     })
     if (isLoading == true) return 0
-    if(data == undefined || isError == true) return null
 
     return <p>
-        Synced time: {data}<br />
+        Synced time: {data?.seek}<br />
         Current time: {displayTime}
     </p>
 }

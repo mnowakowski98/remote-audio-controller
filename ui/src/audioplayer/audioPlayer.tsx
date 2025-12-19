@@ -50,7 +50,7 @@ export default function AudioPlayer() {
 
         <Row className='border py-3'>
             <Col className='text-center'>
-                <AudioBar isPlaying={false} />
+                <AudioBar />
             </Col>
         </Row>
 

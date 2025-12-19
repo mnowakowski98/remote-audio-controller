@@ -46,11 +46,24 @@ const getSpeakerSettings = (): Speaker.Options  => {
     }
 }
 
+let audioStart: number | null = null
+let timePaused = 0
+let lastPause = 0
+
+// Play time in milliseconds 
+export const getSeekTime = () => audioStart ?
+    (performance.now() - audioStart) - timePaused : 0
+
+export const seek = (seekTo: number) => {
+
+}
+
 export const getAudioStatus = (): AudioStatus => ({
     playing: playing(),
     paused: paused(),
     loop,
-    volume
+    volume,
+    seek: getSeekTime()
 })
 
 export const hasAudioFile = () => audioMetadata != null && uploadedFileName != null
@@ -85,18 +98,6 @@ const audioEnd = (overrideLoop = false) => {
 
     audio = null
     speaker = null
-}
-
-let audioStart: number | null = null
-let timePaused = 0
-let lastPause = 0
-
-// Play time in 
-export const getSeekTime = () => audioStart ?
-    (performance.now() - audioStart) - timePaused : undefined
-
-export const seek = (seekTo: number) => {
-
 }
 
 export const startAudio = () => {
