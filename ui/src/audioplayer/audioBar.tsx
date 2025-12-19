@@ -24,10 +24,8 @@ export default function AudioBar() {
         }})
 
     useEffect(() => {
-        if (data == undefined || data.playing == false) return
-
         timeout.current = setInterval(() => {
-            seekTime.current!.innerText = secondize(lastServerTime + timeSinceLastSync())
+            seekTime.current!.innerText = secondize(lastServerTime + (data?.playing ? timeSinceLastSync() : 0))
             lastSyncTime.current!.innerText = secondize(timeSinceLastSync())
         })
 

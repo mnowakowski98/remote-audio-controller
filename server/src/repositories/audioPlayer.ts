@@ -9,8 +9,9 @@ import Speaker, { Stream } from 'speaker'
 import { IAudioMetadata } from 'music-metadata'
 import findExec from 'find-exec'
 
-import AudioStatus from '../models/audioStatus'
+import AudioStatus, { audioStatusKey } from '../models/audioStatus'
 import AudioFileInfo from '../models/audioFileInfo'
+import { sendSyncData } from '../servers/stateSync'
 
 // Init temp files for audio
 const originalFile = join(tmpdir(), '/audioplayer-original')
@@ -88,15 +89,22 @@ const audioEnd = () => {
     audio?.unpipe()
     audio?.destroy()
     if (loop) {
+        audioStart = performance.now()
+
         speaker = new Speaker(getSpeakerSettings())
         audio = createReadStream(playingFile)
         audio.pipe(speaker)
         audio.addListener('end', audioEnd)
-        return
+    } else {
+        audioStart = null
+
+        audio = null
+        speaker = null
     }
 
-    audio = null
-    speaker = null
+    timePaused = 0
+    lastPause = 0
+    sendSyncData(audioStatusKey, getAudioStatus())
 }
 
 export const startAudio = () => {
