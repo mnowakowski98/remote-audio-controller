@@ -6,7 +6,6 @@ import { IAudioMetadata, parseBuffer } from 'music-metadata'
 import {
     getAudioInfo,
     getAudioStatus,
-    getSeekTime,
     hasAudioFile,
     pauseAudio,
     seek,

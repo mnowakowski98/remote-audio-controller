@@ -12,7 +12,6 @@ interface AudioBarProps {
 }
 
 export default function AudioBar(props: AudioBarProps) {
-    const secondize = (time: number) => (time / 1000).toFixed(2)
     const baseUrl = useContext(settingsContext).hostUrl
 
     const doUpdate = useRef(true)
@@ -45,7 +44,7 @@ export default function AudioBar(props: AudioBarProps) {
             if (doUpdate.current == false) return
             if (seekTime.current == null || audio.current == null) return
             const seekValue = lastServerTime + (data?.playing ? timeSinceLastSync() : 0)
-            seekTime.current.innerText = secondize(seekValue)
+            seekTime.current.innerText = (seekValue / 1000).toFixed(2)
             audio.current.valueAsNumber = seekValue
         })
 
@@ -56,7 +55,7 @@ export default function AudioBar(props: AudioBarProps) {
     return <div>
         <div>
             <span ref={seekTime}>0.00</span> /
-            <span> {secondize(props.maxDuration)}s</span>
+            <span> {(props.maxDuration / 1000).toFixed(2)}s</span>
         </div>
         <input className='w-100' type='range' onChange={(event) => {
             seek.mutate(event.target.valueAsNumber)

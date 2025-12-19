@@ -52,9 +52,6 @@ let audioStart: number | null = null
 let timePaused = 0
 let lastPause = 0
 
-// Play time in milliseconds 
-export const getSeekTime = () => audioStart ? (performance.now() - audioStart) - timePaused : 0
-
 export const seek = (seekTo: number) => {
     const wasPlaying = playing()
     if(wasPlaying) stopAudio()
@@ -67,7 +64,7 @@ export const getAudioStatus = (): AudioStatus => ({
     paused: paused(),
     loop,
     volume,
-    seek: getSeekTime()
+    seek: audioStart ? (performance.now() - audioStart) - timePaused : 0
 })
 
 export const hasAudioFile = () => audioMetadata != null && uploadedFileName != null
@@ -77,7 +74,7 @@ export const getAudioInfo = (): AudioFileInfo => (hasAudioFile() ? {
     fileName: uploadedFileName ?? 'None',
     title: audioMetadata?.common.title ?? 'No title',
     artist: audioMetadata?.common.artist ?? 'No artist',
-    duration: audioMetadata?.format.duration ?? 0
+    duration: (audioMetadata?.format.duration ?? 0) * 1000
 } : {
     id: 'none',
     fileName: 'No file',

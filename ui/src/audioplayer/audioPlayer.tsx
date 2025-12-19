@@ -50,7 +50,7 @@ export default function AudioPlayer() {
 
         <Row className='border py-3'>
             <Col className='text-center'>
-                <AudioBar maxDuration={(audioInfo.data?.duration ?? 0) * 1000} />
+                <AudioBar maxDuration={audioInfo.data?.duration ?? 0} />
             </Col>
         </Row>
 
