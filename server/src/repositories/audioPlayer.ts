@@ -38,7 +38,7 @@ let loop = false
 export const getLoop = () => loop
 export const setLoop = (doLoop?: boolean) => { loop = doLoop !== undefined ? doLoop : !loop }
 
-const getSpeakerSettings = (): Speaker.Options  => {
+const getSpeakerSettings = ()  => {
     if (audioMetadata == null) throw 'getSpeakerSettings requires an audio to be set'
     return {
         channels: audioMetadata.format.numberOfChannels ?? 2,
@@ -54,7 +54,7 @@ let lastPause = 0
 
 export const seek = (seekTo: number) => {
     const wasPlaying = playing()
-    if(wasPlaying) stopAudio()
+    stopAudio()
     startAudio(seekTo)
     if(wasPlaying == false) pauseAudio()
 }
@@ -108,16 +108,19 @@ export const startAudio = (startAt?: number) => {
     if(hasAudioFile() == false) throw `Can not play audio when no file is set`
     if(playing() == true) return
 
-    const bitsPerSample = audioMetadata?.format.bitsPerSample ?? 16
-    const sampleRate = audioMetadata?.format.sampleRate ?? 44100
-    const bytesPerSecond = (bitsPerSample / 8) * sampleRate
-    const startAtSeconds = (startAt ?? 0) / 1000
+    const settings = getSpeakerSettings()
 
+    console.log(`Pause (pre): ${paused()}`)
     if (paused() == true) timePaused += performance.now() - lastPause
     else audioStart = performance.now() - (startAt ?? 0)
+    console.log(`Pause (post): ${paused()}`)
 
     if(speaker == null) speaker = new Speaker(getSpeakerSettings())
-    if(audio == null) audio = createReadStream(playingFile, { start: Math.floor(startAtSeconds * bytesPerSecond) })
+    if(audio == null) {
+        const start = Math.floor((startAt ?? 0) / 1000 * ((settings.bitDepth / 8) * settings.sampleRate))
+        console.log(`Start (s): ${((startAt ?? 0) / 1000).toFixed(3)}\nBytes: ${start}\n`)
+        audio = createReadStream(playingFile, { start })
+    }
     audio.pipe(speaker)
     audio.addListener('end', audioEnd)
 }
