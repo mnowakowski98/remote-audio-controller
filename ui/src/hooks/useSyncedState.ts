@@ -18,8 +18,8 @@ export default function useSyncedState<DataType>(typeKey: string, queryOptions?:
         queryFn: async () => {
             if(queryOptions?.queryUrl == undefined) return null
             const response = await fetch(new URL(queryOptions.queryUrl, baseUrl))
-            if (queryOptions.responseTransformer) return await queryOptions.responseTransformer(response)
-            return await response.json()
+            if (queryOptions.responseTransformer) return queryOptions.responseTransformer(response)
+            return response.json()
         }
     })
 
