@@ -57,7 +57,7 @@ export default function AudioBar(props: AudioBarProps) {
             <span ref={seekTime}>0.00</span> /
             <span> {(props.maxDuration / 1000).toFixed(2)}s</span>
         </div>
-        <input className='w-100' type='range' onChange={(event) => {
+        <input disabled className='w-100' type='range' onChange={(event) => {
             seek.mutate(event.target.valueAsNumber)
         }} ref={audio} min={0} max={props.maxDuration} />
     </div>
