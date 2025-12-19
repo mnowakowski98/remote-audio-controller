@@ -6,10 +6,15 @@ import settingsContext from '../settingsContext'
 
 import type StateUpdate from '../models/stateUpdate'
 
-export default function useSyncedState<DataType>(typeKey: string, queryOptions?:{
-    queryUrl?: URL | string,
-    responseTransformer?: (response: Response) => Promise<DataType>
-}) {
+export default function useSyncedState<DataType>(typeKey: string,
+    queryOptions?: {
+        queryUrl?: URL | string,
+        responseTransformer?: (response: Response) => Promise<DataType>
+    },
+    socketOptions?: {
+        onMessage?: (event: MessageEvent<StateUpdate<DataType>>) => void
+    }
+) {
     const baseUrl = useContext(settingsContext).hostUrl
     const queryClient = useQueryClient()
 
@@ -27,6 +32,7 @@ export default function useSyncedState<DataType>(typeKey: string, queryOptions?:
     const { lastJsonMessage } = useWebSocket<StateUpdate<DataType>>(syncUrl, {
         share: true,
         shouldReconnect: () => true,
+        onMessage: socketOptions?.onMessage
     })
 
     useEffect(() => {

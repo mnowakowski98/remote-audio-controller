@@ -46,6 +46,7 @@ const getSpeakerSettings = (): Speaker.Options  => {
     }
 }
 
+// All monotonic timestamps
 let audioStart: number | null = null
 let timePaused = 0
 let lastPause = 0
@@ -82,13 +83,11 @@ export const getAudioInfo = (): AudioFileInfo => (hasAudioFile() ? {
     duration: 0
 })
 
-const audioEnd = (overrideLoop = false) => {
-    const doLoop = loop == true && overrideLoop == false
-    overrideLoop = false
-    speaker?.close(doLoop)
+const audioEnd = () => {
+    speaker?.close(loop)
     audio?.unpipe()
     audio?.destroy()
-    if (doLoop) {
+    if (loop) {
         speaker = new Speaker(getSpeakerSettings())
         audio = createReadStream(playingFile)
         audio.pipe(speaker)
