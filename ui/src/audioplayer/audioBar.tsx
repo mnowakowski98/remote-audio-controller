@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 
 import useSyncedState from '../hooks/useSyncedState'
 
 import type AudioStatus from '../models/audioStatus'
 import { audioStatusKey } from '../models/audioStatus'
+import { useMutation } from '@tanstack/react-query'
+import settingsContext from '../settingsContext'
 
 interface AudioBarProps {
     maxDuration: number
@@ -11,7 +13,9 @@ interface AudioBarProps {
 
 export default function AudioBar(props: AudioBarProps) {
     const secondize = (time: number) => (time / 1000).toFixed(2)
+    const baseUrl = useContext(settingsContext).hostUrl
 
+    const doUpdate = useRef(true)
     const seekTime = useRef<HTMLSpanElement>(null)
     const audio = useRef<HTMLInputElement>(null)
 
@@ -25,10 +29,20 @@ export default function AudioBar(props: AudioBarProps) {
             setLastSyncMessageTime(performance.now())
         }})
 
+    const seek = useMutation({
+        mutationFn: async (seekTo: number) => {
+            await fetch(new URL('./status/seek', baseUrl), {
+                method: 'PUT',
+                body: seekTo.toString()
+            })
+        }
+    })
+
     const timeout = useRef<NodeJS.Timeout>(null)
     useEffect(() => {
         const timeSinceLastSync = () => performance.now() - lastSyncMessageTime
         timeout.current = setInterval(() => {
+            if (doUpdate.current == false) return
             if (seekTime.current == null || audio.current == null) return
             const seekValue = lastServerTime + (data?.playing ? timeSinceLastSync() : 0)
             seekTime.current.innerText = secondize(seekValue)
@@ -44,6 +58,8 @@ export default function AudioBar(props: AudioBarProps) {
             <span ref={seekTime}>0.00</span> /
             <span> {secondize(props.maxDuration)}s</span>
         </div>
-        <input type='range' ref={audio} min={0} max={props.maxDuration} />
+        <input className='w-100' type='range' onChange={(event) => {
+            seek.mutate(event.target.valueAsNumber)
+        }} ref={audio} min={0} max={props.maxDuration} />
     </div>
 }

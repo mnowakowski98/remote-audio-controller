@@ -9,6 +9,7 @@ import {
     getSeekTime,
     hasAudioFile,
     pauseAudio,
+    seek,
     setFile,
     setLoop,
     startAudio,
@@ -119,10 +120,9 @@ router.put('/status/seek', express.text(), (req, res) => {
         return
     }
 
-    
+    seek(seekTo)
     res.sendStatus(200)
     syncRouteStatus()
-
 })
 //#endregion
 

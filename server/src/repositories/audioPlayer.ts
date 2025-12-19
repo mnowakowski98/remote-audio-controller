@@ -43,7 +43,7 @@ const getSpeakerSettings = (): Speaker.Options  => {
     return {
         channels: audioMetadata.format.numberOfChannels ?? 2,
         bitDepth: audioMetadata.format.bitsPerSample ?? 16,
-        sampleRate: audioMetadata.format.sampleRate ?? 44100
+        sampleRate: audioMetadata.format.sampleRate ?? 44100,
     }
 }
 
@@ -53,13 +53,13 @@ let timePaused = 0
 let lastPause = 0
 
 // Play time in milliseconds 
-export const getSeekTime = () => {
-    console.log(`\nNow: ${performance.now()}\nStart: ${audioStart}\nPause: ${lastPause}\nPaused:${timePaused}`)
-    return audioStart ? (performance.now() - audioStart) - timePaused : 0
-}
+export const getSeekTime = () => audioStart ? (performance.now() - audioStart) - timePaused : 0
 
 export const seek = (seekTo: number) => {
-
+    const wasPlaying = playing()
+    if(wasPlaying) stopAudio()
+    startAudio(seekTo)
+    if(wasPlaying == false) pauseAudio()
 }
 
 export const getAudioStatus = (): AudioStatus => ({
@@ -92,14 +92,12 @@ const audioEnd = () => {
     audio?.destroy()
     if (loop) {
         audioStart = performance.now()
-
         speaker = new Speaker(getSpeakerSettings())
         audio = createReadStream(playingFile)
         audio.pipe(speaker)
         audio.addListener('end', audioEnd)
     } else {
         audioStart = null
-
         audio = null
         speaker = null
     }
@@ -109,15 +107,20 @@ const audioEnd = () => {
     sendSyncData(audioStatusKey, getAudioStatus())
 }
 
-export const startAudio = () => {
+export const startAudio = (startAt?: number) => {
     if(hasAudioFile() == false) throw `Can not play audio when no file is set`
     if(playing() == true) return
 
+    const bitsPerSample = audioMetadata?.format.bitsPerSample ?? 16
+    const sampleRate = audioMetadata?.format.sampleRate ?? 44100
+    const bytesPerSecond = (bitsPerSample / 8) * sampleRate
+    const startAtSeconds = (startAt ?? 0) / 1000
+
     if (paused() == true) timePaused += performance.now() - lastPause
-    else audioStart = performance.now()
+    else audioStart = performance.now() - (startAt ?? 0)
 
     if(speaker == null) speaker = new Speaker(getSpeakerSettings())
-    if(audio == null) audio = createReadStream(playingFile)
+    if(audio == null) audio = createReadStream(playingFile, { start: Math.floor(startAtSeconds * bytesPerSecond) })
     audio.pipe(speaker)
     audio.addListener('end', audioEnd)
 }
