@@ -46,10 +46,4 @@ export default function AudioBar(props: AudioBarProps) {
         </div>
         <input type='range' ref={audio} min={0} max={props.maxDuration} />
     </div>
-
-    // return <p>
-    //     Server time: {secondize(lastServerTime)}s<br />
-    //     Time since last sync: <span ref={timeSinceSync}>0.00</span>s<br />
-    //     Seek time: 
-    // </p>
 }

@@ -9,7 +9,6 @@ import type StateUpdate from '../models/stateUpdate'
 export default function useSyncedState<DataType>(typeKey: string,
     queryOptions?: {
         queryUrl?: URL | string,
-        responseTransformer?: (response: Response) => Promise<DataType>
     },
     socketOptions?: {
         onMessage?: (data: DataType) => void
@@ -24,7 +23,6 @@ export default function useSyncedState<DataType>(typeKey: string,
         queryFn: async () => {
             if(queryOptions?.queryUrl == undefined) return null
             const response = await fetch(new URL(queryOptions.queryUrl, baseUrl))
-            if (queryOptions.responseTransformer) return queryOptions.responseTransformer(response)
             return response.json()
         }
     })
