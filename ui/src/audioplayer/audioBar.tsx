@@ -5,11 +5,15 @@ import useSyncedState from '../hooks/useSyncedState'
 import type AudioStatus from '../models/audioStatus'
 import { audioStatusKey } from '../models/audioStatus'
 
-export default function AudioBar() {
+interface AudioBarProps {
+    maxDuration: number
+}
+
+export default function AudioBar(props: AudioBarProps) {
     const secondize = (time: number) => (time / 1000).toFixed(2)
 
-    const timeSinceSync = useRef<HTMLSpanElement>(null)
     const seekTime = useRef<HTMLSpanElement>(null)
+    const audio = useRef<HTMLInputElement>(null)
 
     const [lastServerTime, setLastServerTime] = useState(0)
     const [lastSyncMessageTime, setLastSyncMessageTime] = useState(performance.now())
@@ -25,18 +29,27 @@ export default function AudioBar() {
     useEffect(() => {
         const timeSinceLastSync = () => performance.now() - lastSyncMessageTime
         timeout.current = setInterval(() => {
-            if (timeSinceSync.current == null || seekTime.current == null) return
-            timeSinceSync.current!.innerText = secondize(timeSinceLastSync())
-            seekTime.current!.innerText = secondize(lastServerTime + (data?.playing ? timeSinceLastSync() : 0))
+            if (seekTime.current == null || audio.current == null) return
+            const seekValue = lastServerTime + (data?.playing ? timeSinceLastSync() : 0)
+            seekTime.current.innerText = secondize(seekValue)
+            audio.current.valueAsNumber = seekValue
         })
 
         return () => clearInterval(timeout.current!)
     }, [data?.playing, lastServerTime, lastSyncMessageTime])
     if (isLoading == true) return 0
 
-    return <p>
-        Server time: {secondize(lastServerTime)}s<br />
-        Time since last sync: <span ref={timeSinceSync}>0.00</span>s<br />
-        Seek time: <span ref={seekTime}>0.00</span>s
-    </p>
+    return <div>
+        <div>
+            <span ref={seekTime}>0.00</span> /
+            <span> {secondize(props.maxDuration)}s</span>
+        </div>
+        <input type='range' ref={audio} min={0} max={props.maxDuration} />
+    </div>
+
+    // return <p>
+    //     Server time: {secondize(lastServerTime)}s<br />
+    //     Time since last sync: <span ref={timeSinceSync}>0.00</span>s<br />
+    //     Seek time: 
+    // </p>
 }
