@@ -53,7 +53,7 @@ export default function FilesTable(props: FilesTableProps) {
                         <td>{file.fileName}</td>
                         <td>{file.title}</td>
                         <td>{file.artist}</td>
-                        <td>{file.duration?.toFixed(2)}</td>
+                        <td>{(file.duration / 1000).toFixed(2)}</td>
                         {props.showDeleteButtons && <td>
                             <Button
                                 type='button'

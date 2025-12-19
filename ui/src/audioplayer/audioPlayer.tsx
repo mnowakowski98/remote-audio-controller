@@ -15,6 +15,7 @@ import ClearButton from './clearButton'
 
 import useAudioInfo from './useAudioInfo'
 import settingsContext from '../settingsContext'
+import AudioBar from './audioBar'
 
 export default function AudioPlayer() {
     const baseUrl = useContext(settingsContext).hostUrl
@@ -44,6 +45,12 @@ export default function AudioPlayer() {
             <Col className='text-center'>
                 <header className='text-start fw-bolder'>Playing now</header>
                 {hasFile() ? <AudioInfo /> : 'No audio'}
+            </Col>
+        </Row>
+
+        <Row className='border py-3'>
+            <Col className='text-end'>
+                <AudioBar maxDuration={audioInfo.data?.duration ?? 0} />
             </Col>
         </Row>
 

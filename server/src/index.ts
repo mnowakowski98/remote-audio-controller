@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 
-import audioPlayer from './routes/audioPlayer'
+import audioPlayer from './routes/audioplayer'
 import soundFiles from './routes/soundFiles'
 import stateSync from './servers/stateSync'
 

@@ -8,6 +8,7 @@ import {
     getAudioStatus,
     hasAudioFile,
     pauseAudio,
+    seek,
     setFile,
     setLoop,
     startAudio,
@@ -106,6 +107,19 @@ router.put('/status/playing', express.text(), (req, res) => {
 router.put('/status/loop', express.text(), (req, res) => {
     if (req.body === undefined) setLoop()
     else setLoop(req.body == 'true' ? true : false)
+    res.sendStatus(200)
+    syncRouteStatus()
+})
+
+router.put('/status/seek', express.text(), (req, res) => {
+    let seekTo: number
+    try { seekTo = parseInt(req.body) }
+    catch {
+        res.status(400).send('Body must be a number')
+        return
+    }
+
+    seek(seekTo)
     res.sendStatus(200)
     syncRouteStatus()
 })

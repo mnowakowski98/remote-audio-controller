@@ -1,9 +1,9 @@
 export default interface AudioFileInfo {
     id: string | 'none',
     fileName: string,
-    title: string | null,
-    artist: string | null,
-    duration: number | null
+    title: string,
+    artist: string,
+    duration: number
 }
 
 export const audioFileInfoKey = 'audioFileInfo'

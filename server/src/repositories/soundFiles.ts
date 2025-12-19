@@ -35,7 +35,7 @@ export const makeSoundFile = (fileName: string, metadata: IAudioMetadata) => ({
         fileName,
         title: metadata.common.title ?? 'No title',
         artist: metadata.common.artist ?? 'No artist',
-        duration: metadata.format.duration ?? 0
+        duration: (metadata.format.duration ?? 0) * 1000
     },
     metadata
 })
