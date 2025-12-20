@@ -1,5 +1,5 @@
 import { exec as _exec } from 'node:child_process'
-import { createReadStream, writeFileSync } from 'node:fs'
+import { accessSync, createReadStream, writeFileSync } from 'node:fs'
 import { writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -12,10 +12,18 @@ import findExec from 'find-exec'
 import AudioStatus, { audioStatusKey } from '../models/audioStatus'
 import AudioFileInfo from '../models/audioFileInfo'
 import { sendSyncData } from '../servers/stateSync'
+import { getConfig } from '../config'
+
+const { audioPlayer } = getConfig()
+
+const configDir = audioPlayer.tempFileDirectory
+const tempDir = configDir == ':tmp:' ? tmpdir() : configDir
+try { accessSync(tempDir) }
+catch { throw `FATAL: Can't access temp folder: ${tempDir}` }
 
 // Init temp files for audio
-const originalFile = join(tmpdir(), '/audioplayer-original')
-const playingFile = join(tmpdir(), '/audioplayer-playing')
+const originalFile = join(tempDir, './audioplayer-original')
+const playingFile = join(tempDir, './audioplayer-playing')
 writeFileSync(originalFile, '')
 writeFileSync(playingFile, '')
 

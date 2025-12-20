@@ -1,13 +1,16 @@
 import { randomUUID } from 'node:crypto'
 import { accessSync, existsSync, mkdirSync, readdirSync } from 'node:fs'
 import { readFile, rm, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { join, normalize } from 'node:path'
 
 import { IAudioMetadata, parseFile } from 'music-metadata'
 
 import SoundFile from '../models/soundFile'
+import { getConfig } from '../config'
 
-const soundsFolder = join(process.cwd(), '/sounds')
+const { audioPlayer } = getConfig()
+
+const soundsFolder = normalize(audioPlayer.soundsDirectory)
 if(existsSync(soundsFolder) == false) mkdirSync(soundsFolder)
 try { accessSync(soundsFolder) }
 catch { throw `Fatal: Can't access sound folder: ${soundsFolder}` }

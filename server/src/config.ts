@@ -18,11 +18,16 @@ const configPath = join(cwd(), './config.json')
 const fileExists = existsSync(configPath)
 if (fileExists == false) writeFileSync(configPath, JSON.stringify(defaultConfig, undefined, 4))
 
-let currentConfig: typeof defaultConfig
+let currentConfig: typeof defaultConfig = JSON.parse(readFileSync(configPath).toString())
+
+const validateConfig = () => {
+    // TODO: Validate config and set defaults where invalid
+}
+validateConfig()
 
 export const reloadConfig = () => {
     currentConfig = JSON.parse(readFileSync(configPath).toString())
-    // TODO: Validate config and set defaults where invalid
+    validateConfig()
 }
 
 export const getConfig = () => structuredClone(currentConfig)
