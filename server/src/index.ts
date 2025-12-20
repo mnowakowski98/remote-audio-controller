@@ -1,13 +1,21 @@
 import express from 'express'
 import cors from 'cors'
 
+import { getConfig, reloadConfig } from './config'
+
 import audioPlayer from './routes/audioplayer'
 import soundFiles from './routes/soundFiles'
 import stateSync from './servers/stateSync'
 
-const port = 3000
+reloadConfig()
+
+const { httpServer } = getConfig()
+
+const port = httpServer.port
 const app = express()
-app.use(cors({ origin: '*' }))
+
+if (httpServer.corsOrigin != undefined)
+    app.use(cors({ origin: httpServer.corsOrigin }))
 
 app.use('/audioplayer', audioPlayer)
 app.use('/soundfiles', soundFiles)
