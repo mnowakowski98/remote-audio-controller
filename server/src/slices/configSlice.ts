@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppThunk, RootState } from '../store'
 
-import { readFile, writeFile } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
+import { readFile, watch, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { cwd } from 'node:process'
 
@@ -19,7 +20,7 @@ const defaultConfig = {
 type configType = typeof defaultConfig
 
 const httpSlice = createSlice({
-    name: 'httpConfig',
+    name: 'httpServerConfig',
     initialState: defaultConfig.httpServer,
     reducers: {
         setPort: (state, action: PayloadAction<number>) => {
@@ -64,17 +65,21 @@ export const setAudioPlayerConfig = (config: typeof defaultConfig.audioPlayer): 
     }
 }
 
-const configPath = (join(cwd(), './config.json'))
-export const writeDefaultConfigFile = async () => {
-    await writeFile(configPath, JSON.stringify(defaultConfig))
+export const getConfig = (state: RootState) => {
+    const { httpServer, audioPlayer } = state
+    return { httpServer, audioPlayer }
 }
 
-export const writeCurrentConfigFile = async () => {
-
+const configPath = (join(cwd(), './config.json'))
+export const writeDefaultConfigFile = (): AppThunk => {
+    return async () => {
+        await writeFile(configPath, JSON.stringify(defaultConfig, undefined, 4))
+    }
 }
 
 export const loadConfigFile = (): AppThunk => {
     return async (dispatch) => {
+        if (existsSync(configPath) == false) dispatch(writeDefaultConfigFile())
         const dataString = (await readFile(configPath)).toString()
         const data = JSON.parse(dataString) as configType
         dispatch(setHttpConfig(data.httpServer))
@@ -82,7 +87,17 @@ export const loadConfigFile = (): AppThunk => {
     }
 }
 
-export const getConfig = (state: RootState) => {
-    const { httpConfig, audioPlayerConfig } = state
-    return { httpConfig, audioPlayerConfig }
+export const watchConfig = (): AppThunk => {
+    return async (dispatch) => {
+        const watcher = watch(configPath)
+        for await (const _event of watcher) {
+            dispatch(loadConfigFile())
+        }
+    }
+}
+
+export const writeCurrentConfigFile = (): AppThunk => {
+    return async (_dispatch, getState) => {
+        await writeFile(configPath, JSON.stringify(getConfig(getState())))
+    }
 }

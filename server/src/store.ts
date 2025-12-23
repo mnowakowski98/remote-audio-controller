@@ -4,8 +4,8 @@ import { audioPlayerReducer, httpReducer } from './slices/configSlice'
 
 export const store = configureStore({
     reducer: {
-        httpConfig: httpReducer,
-        audioPlayerConfig: audioPlayerReducer
+        httpServer: httpReducer,
+        audioPlayer: audioPlayerReducer
     }
 })
 

@@ -7,9 +7,9 @@ export const addRequestListener = (listener: RequestListener<typeof IncomingMess
     httpServer.on('request', listener)
 }
 
-export const startServer = (port: number) => httpServer.listen(port, () => console.log(`Listening on port: ${port}`))
-
-export const stopServer = () => {
+export const startServer = (port: number) => {
     httpServer.close()
     httpServer.closeAllConnections()
+
+    httpServer.listen(port, () => console.log(`Listening on port: ${port}`))
 }
