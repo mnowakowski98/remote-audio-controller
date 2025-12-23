@@ -12,11 +12,9 @@ import findExec from 'find-exec'
 import AudioStatus, { audioStatusKey } from '../models/audioStatus'
 import AudioFileInfo from '../models/audioFileInfo'
 import { sendSyncData } from '../servers/stateSync'
-import { getConfig } from '../config'
 
-const { audioPlayer } = getConfig()
 
-const configDir = audioPlayer.tempFileDirectory
+const configDir = ':tmp:'
 const tempDir = configDir == ':tmp:' ? tmpdir() : configDir
 try { accessSync(tempDir) }
 catch { throw `FATAL: Can't access temp folder: ${tempDir}` }

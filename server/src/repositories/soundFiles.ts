@@ -6,11 +6,8 @@ import { join, normalize } from 'node:path'
 import { IAudioMetadata, parseFile } from 'music-metadata'
 
 import SoundFile from '../models/soundFile'
-import { getConfig } from '../config'
 
-const { audioPlayer } = getConfig()
-
-const soundsFolder = normalize(audioPlayer.soundsDirectory)
+const soundsFolder = normalize('./sounds')
 if(existsSync(soundsFolder) == false) mkdirSync(soundsFolder)
 try { accessSync(soundsFolder) }
 catch { throw `Fatal: Can't access sound folder: ${soundsFolder}` }
