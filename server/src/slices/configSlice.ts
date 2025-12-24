@@ -65,9 +65,19 @@ export const setAudioPlayerConfig = (config: typeof defaultConfig.audioPlayer): 
     }
 }
 
+export const setConfig = (config: configType): AppThunk => {
+    return (dispatch) => {
+        dispatch(setHttpConfig(config.httpServer))
+        dispatch(setAudioPlayerConfig(config.audioPlayer))
+    }
+}
+
 export const getConfig = (state: RootState) => {
-    const { httpServer, audioPlayer } = state
-    return { httpServer, audioPlayer }
+    const { httpServerConfig, audioPlayerConfig } = state
+    return {
+        httpServer: httpServerConfig,
+        audioPlayer: audioPlayerConfig
+    }
 }
 
 const configPath = (join(cwd(), './config.json'))
@@ -82,8 +92,13 @@ export const loadConfigFile = (): AppThunk => {
         if (existsSync(configPath) == false) dispatch(writeDefaultConfigFile())
         const dataString = (await readFile(configPath)).toString()
         const data = JSON.parse(dataString) as configType
-        dispatch(setHttpConfig(data.httpServer))
-        dispatch(setAudioPlayerConfig(data.audioPlayer))
+        const workingCopy = structuredClone(defaultConfig)
+
+        Object.assign(workingCopy.httpServer, data.httpServer)
+        Object.assign(workingCopy.audioPlayer, data.audioPlayer)
+
+        dispatch(setHttpConfig(workingCopy.httpServer))
+        dispatch(setAudioPlayerConfig(workingCopy.audioPlayer))
     }
 }
 

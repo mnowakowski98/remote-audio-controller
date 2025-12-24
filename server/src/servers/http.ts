@@ -7,9 +7,15 @@ export const addRequestListener = (listener: RequestListener<typeof IncomingMess
     httpServer.on('request', listener)
 }
 
+let _isRunning = false
+export const isRunning = () => _isRunning
+
 export const startServer = (port: number) => {
-    httpServer.close()
-    httpServer.closeAllConnections()
+    if(_isRunning == true) {
+        httpServer.close()
+        httpServer.closeAllConnections()
+    }
 
     httpServer.listen(port, () => console.log(`Listening on port: ${port}`))
+    _isRunning = true
 }
