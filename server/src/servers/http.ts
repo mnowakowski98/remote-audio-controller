@@ -2,10 +2,8 @@ import { createServer, IncomingMessage, RequestListener, ServerResponse } from '
 
 const httpServer = createServer()
 
-export const addRequestListener = (listener: RequestListener<typeof IncomingMessage, typeof ServerResponse> | undefined) => {
-    if(listener == undefined) return
+export const addRequestListener = (listener: RequestListener<typeof IncomingMessage, typeof ServerResponse>) =>
     httpServer.on('request', listener)
-}
 
 let _isRunning = false
 export const isRunning = () => _isRunning
@@ -14,6 +12,7 @@ export const startServer = (port: number) => {
     if(_isRunning == true) {
         httpServer.close()
         httpServer.closeAllConnections()
+        httpServer.removeAllListeners()
     }
 
     httpServer.listen(port, () => console.log(`Listening on port: ${port}`))

@@ -17,13 +17,13 @@ const defaultConfig = {
     },
 }
 
-type configType = typeof defaultConfig
+export type ConfigType = typeof defaultConfig
 
 const slice = createSlice({
     name: 'config',
     initialState: defaultConfig,
     reducers: {
-        setConfig: (state, action: PayloadAction<configType>) => {
+        setConfig: (state, action: PayloadAction<ConfigType>) => {
             state.audioPlayer = action.payload.audioPlayer
             state.httpServer = action.payload.httpServer
         }
@@ -48,7 +48,7 @@ const loadConfigFile = (): AppThunk => {
     return async (dispatch) => {
         if (existsSync(configPath) == false) dispatch(writeDefaultConfigFile())
         const dataString = (await readFile(configPath)).toString()
-        const data = JSON.parse(dataString) as configType
+        const data = JSON.parse(dataString) as ConfigType
         const workingCopy = structuredClone(defaultConfig)
 
         Object.assign(workingCopy.httpServer, data.httpServer)
