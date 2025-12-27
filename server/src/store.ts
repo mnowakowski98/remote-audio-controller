@@ -1,11 +1,10 @@
 import type { Action, ThunkAction } from '@reduxjs/toolkit'
 import { configureStore } from '@reduxjs/toolkit'
-import { audioPlayerReducer, httpReducer } from './slices/configSlice'
+import { configReducer } from './slices/configSlice'
 
 export const store = configureStore({
     reducer: {
-        httpServerConfig: httpReducer,
-        audioPlayerConfig: audioPlayerReducer
+        config: configReducer
     }
 })
 

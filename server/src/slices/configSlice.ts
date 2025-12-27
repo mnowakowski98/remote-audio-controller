@@ -19,75 +19,32 @@ const defaultConfig = {
 
 type configType = typeof defaultConfig
 
-const httpSlice = createSlice({
-    name: 'httpServerConfig',
-    initialState: defaultConfig.httpServer,
+const slice = createSlice({
+    name: 'config',
+    initialState: defaultConfig,
     reducers: {
-        setPort: (state, action: PayloadAction<number>) => {
-            state.port = action.payload
-        },
-        setCors: (state, action: PayloadAction<string | undefined>) => {
-            state.corsOrigin = action.payload
+        setConfig: (state, action: PayloadAction<configType>) => {
+            state.audioPlayer = action.payload.audioPlayer
+            state.httpServer = action.payload.httpServer
         }
     }
 })
 
-export const httpReducer = httpSlice.reducer
-export const { setPort, setCors } = httpSlice.actions
+export const configReducer = slice.reducer
+export const { setConfig } = slice.actions
 
-export const setHttpConfig = (config: typeof defaultConfig.httpServer): AppThunk => {
-    return (dispatch) => {
-        dispatch(setPort(config.port))
-        dispatch(setCors(config.corsOrigin))
-    }
-}
-
-const audioPlayerSlice = createSlice({
-    name: 'audioPlayerConfig',
-    initialState: defaultConfig.audioPlayer,
-    reducers: {
-        setTempPath: (state, action: PayloadAction<string>) => {
-            state.tempFileDirectory = action.payload
-        },
-        setSoundsPath: (state, action: PayloadAction<string>) => {
-            state.soundsDirectory = action.payload
-        }
-    }
-})
-
-export const audioPlayerReducer = audioPlayerSlice.reducer
-export const { setTempPath, setSoundsPath } = audioPlayerSlice.actions
-
-export const setAudioPlayerConfig = (config: typeof defaultConfig.audioPlayer): AppThunk => {
-    return (dispatch) => {
-        dispatch(setTempPath(config.tempFileDirectory))
-        dispatch(setSoundsPath(config.soundsDirectory))
-    }
-}
-
-export const setConfig = (config: configType): AppThunk => {
-    return (dispatch) => {
-        dispatch(setHttpConfig(config.httpServer))
-        dispatch(setAudioPlayerConfig(config.audioPlayer))
-    }
-}
-
-export const getConfig = (state: RootState) => {
-    const { httpServerConfig, audioPlayerConfig } = state
-    return {
-        httpServer: httpServerConfig,
-        audioPlayer: audioPlayerConfig
-    }
-}
+export const getConfig = (state: RootState) => state.config
 
 const configPath = (join(cwd(), './config.json'))
-export const writeDefaultConfigFile = (): AppThunk => {
+const writeDefaultConfigFile = (): AppThunk => {
     return async () => {
         await writeFile(configPath, JSON.stringify(defaultConfig, undefined, 4))
     }
 }
 
-export const loadConfigFile = (): AppThunk => {
+let configHasLoaded = false
+
+const loadConfigFile = (): AppThunk => {
     return async (dispatch) => {
         if (existsSync(configPath) == false) dispatch(writeDefaultConfigFile())
         const dataString = (await readFile(configPath)).toString()
@@ -97,17 +54,17 @@ export const loadConfigFile = (): AppThunk => {
         Object.assign(workingCopy.httpServer, data.httpServer)
         Object.assign(workingCopy.audioPlayer, data.audioPlayer)
 
-        dispatch(setHttpConfig(workingCopy.httpServer))
-        dispatch(setAudioPlayerConfig(workingCopy.audioPlayer))
+        dispatch(setConfig(workingCopy))
+        configHasLoaded = true
     }
 }
 
 export const watchConfig = (): AppThunk => {
     return async (dispatch) => {
+        if (configHasLoaded == false) dispatch(loadConfigFile())
         const watcher = watch(configPath)
-        for await (const _event of watcher) {
+        for await (const _ of watcher)
             dispatch(loadConfigFile())
-        }
     }
 }
 

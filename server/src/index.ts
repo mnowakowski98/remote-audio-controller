@@ -5,11 +5,11 @@ import audioPlayer from './routes/audioplayer'
 import soundFiles from './routes/soundFiles'
 import config from './routes/config'
 
-import { addRequestListener, isRunning, startServer } from './servers/http'
+import { addRequestListener, startServer } from './servers/http'
 import { connectionListener } from './servers/stateSync'
 
 import { store } from './store'
-import { loadConfigFile, watchConfig } from './slices/configSlice'
+import { watchConfig } from './slices/configSlice'
 import LocalContext from './_models/localContex'
 
 const app = express()
@@ -20,18 +20,11 @@ const context: LocalContext = {
 }
 app.locals.context = context
 
-let latestState = store.getState()
 store.subscribe(() => {
     const state = store.getState()
-
-    const port = state.httpServerConfig.port
-    if (port != latestState.httpServerConfig.port || isRunning() == false)
-        startServer(port)
-
-    latestState = state
+    startServer(state.config.httpServer.port)
 })
 
-store.dispatch(loadConfigFile())
 store.dispatch(watchConfig())
 
 app.use((req, _res, next) => {
