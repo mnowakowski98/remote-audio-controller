@@ -1,5 +1,4 @@
 import { createServer, IncomingMessage, RequestListener, ServerResponse } from 'node:http'
-import { Socket } from 'node:net'
 
 const httpServer = createServer()
 

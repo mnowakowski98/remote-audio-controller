@@ -1,10 +1,12 @@
 import type { Action, ThunkAction } from '@reduxjs/toolkit'
 import { configureStore } from '@reduxjs/toolkit'
 import { configReducer } from './slices/configSlice'
+import { httpReducer } from './slices/httpSlice'
 
 export const store = configureStore({
     reducer: {
-        config: configReducer
+        config: configReducer,
+        http: httpReducer
     }
 })
 
