@@ -9,6 +9,7 @@ import type StateUpdate from '../models/stateUpdate'
 export default function useSyncedState<DataType>(typeKey: string,
     queryOptions?: {
         queryUrl?: URL | string,
+        enabled?: boolean
     },
     socketOptions?: {
         onMessage?: (data: DataType) => void
@@ -18,7 +19,7 @@ export default function useSyncedState<DataType>(typeKey: string,
     const queryClient = useQueryClient()
 
     const query = useQuery<DataType>({
-        enabled: false,
+        enabled: queryOptions?.enabled,
         queryKey: [typeKey],
         queryFn: async () => {
             if(queryOptions?.queryUrl == undefined) return null
@@ -30,10 +31,7 @@ export default function useSyncedState<DataType>(typeKey: string,
     const syncUrl = new URL('/sync', baseUrl).toString()
     const { lastJsonMessage } = useWebSocket<StateUpdate<DataType>>(syncUrl, {
         share: true,
-        shouldReconnect: (event) => {
-            console.log(`${event.code} - ${event.target}`)
-            return false
-        },
+        shouldReconnect: (event) => event.code == 1006,
         onMessage: (event) => {
             const data = JSON.parse(event.data) as StateUpdate<DataType>
             if (data.typeKey != typeKey) return

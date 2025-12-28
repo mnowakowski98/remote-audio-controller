@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 
 import Form from 'react-bootstrap/Form'
 import InputGroup from 'react-bootstrap/InputGroup'
@@ -17,12 +17,7 @@ interface PlayerControlsProps {
 export default function PlayerControls(props: PlayerControlsProps) {
     const baseUrl = useContext(SettingsContext).hostUrl
 
-    const audioStatus = useQuery<AudioStatus>({
-        queryKey: [audioStatusKey],
-        queryFn: async () => (await fetch(new URL('./status', baseUrl))).json()
-    })
-
-    useSyncedState<AudioStatus>(audioStatusKey)
+    const audioStatus = useSyncedState<AudioStatus>(audioStatusKey, { queryUrl: './status' })
 
     const setPlayingState = useMutation({
         mutationFn: async (command: 'start' | 'pause' | 'stop') =>
@@ -35,7 +30,7 @@ export default function PlayerControls(props: PlayerControlsProps) {
     })
 
     if (audioStatus.isLoading) return 'Loading'
-    if (audioStatus.isError || audioStatus.data == null) return 'Goofed'
+    if (audioStatus.isError || audioStatus.data == null) return audioStatus.error?.message ?? 'Goofed'
     
     return <InputGroup className='justify-content-end'>
         <InputGroup.Text className={`text-light ${audioStatus.data.loop ? 'bg-success' : 'bg-secondary'}`}>
@@ -47,7 +42,12 @@ export default function PlayerControls(props: PlayerControlsProps) {
             onClick={() => setPlayingState.mutate('start')}>
             Start
         </Button>
-        <Button type='button' disabled={audioStatus.data.playing == false} onClick={() => setPlayingState.mutate('pause')}>Pause</Button>
+        <Button
+            type='button'
+            disabled={audioStatus.data.playing == false}
+            onClick={() => setPlayingState.mutate('pause')}>
+            Pause
+        </Button>
         <Button
             type='button'
             disabled={audioStatus.data.playing == false && audioStatus.data.paused == false}
