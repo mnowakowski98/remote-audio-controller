@@ -3,13 +3,11 @@ import { configureStore } from '@reduxjs/toolkit'
 
 import { configReducer } from './slices/configSlice'
 import { httpReducer } from './slices/httpSlice'
-import { filePlayerReducer } from './slices/filePlayer'
 
 export const store = configureStore({
     reducer: {
         config: configReducer,
         http: httpReducer,
-        filePlayerReducer
     }
 })
 
