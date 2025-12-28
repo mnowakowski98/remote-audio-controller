@@ -23,17 +23,18 @@ const slice = createSlice({
     name: 'config',
     initialState: defaultConfig,
     reducers: {
-        setConfig: (state, action: PayloadAction<ConfigType>) => {
-            state.audioPlayer = action.payload.audioPlayer
-            state.httpServer = action.payload.httpServer
-        }
+        setConfig: (state, action: PayloadAction<ConfigType>) => state = action.payload
+    },
+    selectors: {
+        selectHttpConfig: (state) => state.httpServer,
+        selectFilePlayerConfig: (state) => state.audioPlayer,
+        selectConfig: (state) => state
     }
 })
 
 export const configReducer = slice.reducer
 const { setConfig } = slice.actions
-
-export const getConfig = (state: RootState) => state.config
+export const { selectHttpConfig, selectFilePlayerConfig, selectConfig } = slice.selectors
 
 const configPath = (join(cwd(), './config.json'))
 let configHasLoaded = false

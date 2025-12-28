@@ -2,7 +2,7 @@ import express, { Express, NextFunction, Request, Response } from 'express'
 import cors from 'cors'
 
 import { AppStore } from '../store'
-import { getConfig } from '../slices/configSlice'
+import { selectConfig } from '../slices/configSlice'
 
 import audioPlayer from '../routes/audioplayer'
 import soundFiles from '../routes/soundFiles'
@@ -27,7 +27,7 @@ export const createApp = (store: AppStore, options: {
 }) => {
     app = express()
 
-    const config = getConfig(store.getState())
+    const config = selectConfig(store.getState())
     if (config.httpServer.corsOrigin != undefined)
         app.use(cors({ origin: '*' }))
 

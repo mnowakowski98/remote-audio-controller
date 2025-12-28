@@ -9,6 +9,9 @@ const slice = createSlice({
         setPort: (state, action: PayloadAction<number>) => {
             state.currentPort = action.payload
         }
+    },
+    selectors: {
+        selectHttpInfo: (state) => state
     }
 })
 
