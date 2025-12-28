@@ -28,11 +28,22 @@ interface PlayerSettings {
     playingFile: string
 }
 
+interface PlayerControls {
+    loop: boolean
+}
+
+interface SeekTimings {
+    audioStart: number,
+    lastPause: number,
+    timePaused: number
+}
+
 interface FilePlayerState {
     audioPlaying: boolean,
     audioPaused: boolean,
     playerSettings: PlayerSettings,
-    playingFile: PlayingFile | null
+    playingFile: PlayingFile | null,
+    seekTimings: SeekTimings
 }
 
 const slice = createSlice({
@@ -45,7 +56,12 @@ const slice = createSlice({
             originalFile: '',
             playingFile: '',
         },
-        playingFile: null
+        playingFile: null,
+        seekTimings: {
+            audioStart: 0,
+            lastPause: 0,
+            timePaused: 0
+        }
     } as FilePlayerState,
     reducers: {
         start: (state) => {
@@ -76,7 +92,10 @@ const slice = createSlice({
             else return 'stopped'
         },
         selectPlayingFile: (state) => state.playingFile,
-        selectPlayerSettings: (state) => state.playerSettings
+        selectPlayerSettings: (state) => state.playerSettings,
+        selectSeekTime: (state) => {
+            return 0
+        }
     }
 })
 
@@ -90,7 +109,7 @@ const {
     setSpeaker,
     setAudio
 } = slice.actions
-const { selectPlayingFile, selectPlayingState, selectPlayerSettings } = slice.selectors
+export const { selectPlayingFile, selectPlayingState, selectPlayerSettings, selectSeekTime } = slice.selectors
 
 export const setInitialState = (): AppThunk => {
     return async (dispatch, getState) => {
@@ -112,6 +131,10 @@ export const setInitialState = (): AppThunk => {
     }
 }
 
+const audioEnd = () => {
+
+}
+
 export const startPlaying = (): AppThunk => {
     return (dispatch, getState) => {
         const playingState = selectPlayingState(getState())
@@ -128,10 +151,11 @@ export const startPlaying = (): AppThunk => {
         })
 
         let audio = playingFile.audio ?? createReadStream(playingSettings.playingFile)
+        audio.addListener('close', audioEnd)
         audio.pipe(speaker)
 
         dispatch(setSpeaker(speaker))
-        dispatch(setAudio)
+        dispatch(setAudio(audio))
         dispatch(start())
     }
 }
