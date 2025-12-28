@@ -22,7 +22,7 @@ export default function AudioBar(props: AudioBarProps) {
     const [lastSyncMessageTime, setLastSyncMessageTime] = useState(performance.now())
 
     const { data, isLoading } = useSyncedState<AudioStatus>(audioStatusKey,
-        { queryUrl: './status' },
+        { queryUrl: './status', enabled: false },
         { onMessage: (data) => {
             setLastServerTime(data.seek)
             setLastSyncMessageTime(performance.now())

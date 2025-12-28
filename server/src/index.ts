@@ -1,18 +1,26 @@
-import express from 'express'
-import cors from 'cors'
+import { addRequestListener, addUpgradeListener, startServer as startHttpServer } from './servers/http'
+import { connectionListener } from './servers/stateSync'
 
-import audioPlayer from './routes/audioplayer'
-import soundFiles from './routes/soundFiles'
-import stateSync from './servers/stateSync'
+import { store } from './store'
+import { watchConfig } from './slices/configSlice'
+import { createApp } from './servers/express'
+import { setPort } from './slices/httpSlice'
 
-const port = 3000
-const app = express()
-app.use(cors({ origin: '*' }))
+const startServer = () => {
+    const state = store.getState()
 
-app.use('/audioplayer', audioPlayer)
-app.use('/soundfiles', soundFiles)
-app.use('/sync', stateSync)
+    const app = createApp(store, {
+        controlCallbacks: {
+            reload: startServer
+        }
+    })
 
-app.get('/', (_req, res) => res.send('remote-audio-controller-server'))
+    startHttpServer(state.config.httpServer.port)
+    addRequestListener(app)
+    addUpgradeListener(connectionListener)
 
-app.listen(port, () => console.log(`Listening on ${port}`))
+    store.dispatch(setPort(state.config.httpServer.port))
+}
+
+store.dispatch(watchConfig())
+startServer()

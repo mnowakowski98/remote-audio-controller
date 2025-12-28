@@ -13,6 +13,7 @@
   "author": "Matt Nowakowski",
   "license": "ISC",
   "dependencies": {
+    "@reduxjs/toolkit": "^2.11.2",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "find-exec": "^1.0.3",

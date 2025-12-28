@@ -26,6 +26,7 @@ export default function Settings(props: SettingsProps) {
     return <Container>
         <Row>
             <Col>
+                <h3>Client configuration</h3>
                 <Form.Text>Host URL</Form.Text>
                 <InputGroup>
                     <Form.Control
@@ -34,6 +35,13 @@ export default function Settings(props: SettingsProps) {
                         onChange={(event: React.ChangeEvent<HTMLInputElement>) => setHostUrl(event.target.value)}
                     />
                     <Button onClick={() => props.onUpdate(getSettings())}>Set</Button>
+                </InputGroup>
+
+                <hr />
+                <h3>Server configuration</h3>
+                <Form.Text>Port</Form.Text>
+                <InputGroup>
+                    <Form.Control type='number' />
                 </InputGroup>
             </Col>
         </Row>
