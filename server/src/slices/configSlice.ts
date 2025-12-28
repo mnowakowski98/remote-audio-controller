@@ -13,7 +13,8 @@ const defaultConfig = Object.freeze({
     },
     audioPlayer: {
         tempFileDirectory: ':tmp:',
-        soundsDirectory: './sounds'
+        soundsDirectory: './sounds',
+        ffmpegPath: undefined as string | undefined
     },
 })
 
