@@ -4,19 +4,22 @@ import { AppThunk } from '../store'
 import { selectFilePlayerConfig } from './configSlice'
 
 import { exec as _exec } from 'node:child_process'
-import { accessSync } from 'node:fs'
+import { accessSync, createReadStream } from 'node:fs'
 import { writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, normalize } from 'node:path'
 import { promisify } from 'node:util'
 
 import findExec from 'find-exec'
+
 import { IAudioMetadata } from 'music-metadata'
+import Speaker, { Stream } from 'speaker'
 
 interface PlayingFile {
     name: string,
     metadata: IAudioMetadata,
-    audio: ReadableStream | null
+    audio: Stream.Readable | null,
+    speaker: Speaker | null
 }
 
 interface PlayerSettings {
@@ -62,6 +65,8 @@ const slice = createSlice({
         },
         setPlayerSettings: (state, action: PayloadAction<PlayerSettings>) => {state.playerSettings = action.payload},
         setFileInfo: (state, action: PayloadAction<PlayingFile | null>) => {state.playingFile = action.payload},
+        setSpeaker: (state, action: PayloadAction<Speaker | null>) => {state.playingFile!.speaker = action.payload},
+        setAudio: (state, action: PayloadAction<Stream.Readable | null>) => {state.playingFile!.audio = action.payload}
     },
     selectors: {
         selectPlayingState: (state): 'playing' | 'paused' | 'stopped' => {
@@ -76,7 +81,15 @@ const slice = createSlice({
 })
 
 export const filePlayerReducer = slice.reducer
-const { start, pause, stop, setPlayerSettings, setFileInfo } = slice.actions
+const {
+    start,
+    pause,
+    stop,
+    setPlayerSettings,
+    setFileInfo,
+    setSpeaker,
+    setAudio
+} = slice.actions
 const { selectPlayingFile, selectPlayingState, selectPlayerSettings } = slice.selectors
 
 export const setInitialState = (): AppThunk => {
@@ -101,22 +114,61 @@ export const setInitialState = (): AppThunk => {
 
 export const startPlaying = (): AppThunk => {
     return (dispatch, getState) => {
-        if (selectPlayingState(getState()) == 'playing') return
-        if (selectPlayingFile(getState()) == null) return
+        const playingState = selectPlayingState(getState())
+        const playingFile = selectPlayingFile(getState())
+        const playingSettings = selectPlayerSettings(getState())
 
+        if (playingState == 'playing') return
+        if (playingFile == null) return
+
+        const speaker = new Speaker({
+            channels: playingFile.metadata.format.numberOfChannels ?? 2,
+            bitDepth: playingFile.metadata.format.bitsPerSample ?? 16,
+            sampleRate: playingFile.metadata.format.sampleRate ?? 44100
+        })
+
+        let audio = playingFile.audio ?? createReadStream(playingSettings.playingFile)
+        audio.pipe(speaker)
+
+        dispatch(setSpeaker(speaker))
+        dispatch(setAudio)
         dispatch(start())
     }
 }
 
 export const pausePlaying = (): AppThunk => {
     return (dispatch, getState) => {
-        
+        const playingState = selectPlayingState(getState())
+        const playingFile = selectPlayingFile(getState())
+
+        if (playingState == 'paused') return
+        if (playingFile == null) return
+
+        if (playingFile.audio == null) throw 'Audio does not exist to pause'
+        if (playingFile.speaker == null) throw 'Speaker does not exist to close'
+        playingFile.audio.unpipe()
+        playingFile.speaker.close(true)
+
+        dispatch(setSpeaker(null))
+        dispatch(pause())
     }
 }
 
 export const stopPlaying = (): AppThunk => {
     return (dispatch, getState) => {
+        const playingState = selectPlayingState(getState())
+        const playingFile = selectPlayingFile(getState())
 
+        if (playingState == 'stopped') return
+        if (playingFile == null) return
+
+        if (playingFile.audio == null) throw 'Audio does not exist to pause'
+        playingFile.audio.unpipe()
+        if (playingFile.speaker != null) playingFile.speaker.close(true)
+
+        dispatch(setAudio(null))
+        dispatch(setSpeaker(null))
+        dispatch(stop())
     }
 }
 
@@ -133,7 +185,8 @@ export const setFileData = (fileName: string, metadata: IAudioMetadata, fileData
         dispatch(setFileInfo({
             name: fileName,
             metadata: metadata,
-            audio: null
+            audio: null,
+            speaker: null
         }))
 
         if (wasPlaying == true) dispatch(startPlaying())
@@ -147,7 +200,7 @@ export const clearFileData = (): AppThunk => {
         const playerSettings = selectPlayerSettings(getState())
         await writeFile(playerSettings.originalFile, '')
         await writeFile(playerSettings.playingFile, '')
-        
+
         dispatch(setFileInfo(null))
     }
 }
