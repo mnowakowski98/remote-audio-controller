@@ -30,7 +30,10 @@ export default function useSyncedState<DataType>(typeKey: string,
     const syncUrl = new URL('/sync', baseUrl).toString()
     const { lastJsonMessage } = useWebSocket<StateUpdate<DataType>>(syncUrl, {
         share: true,
-        shouldReconnect: () => true,
+        shouldReconnect: (event) => {
+            console.log(`${event.code} - ${event.target}`)
+            return false
+        },
         onMessage: (event) => {
             const data = JSON.parse(event.data) as StateUpdate<DataType>
             if (data.typeKey != typeKey) return
