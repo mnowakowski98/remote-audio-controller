@@ -1,3 +1,5 @@
+// TODO: Turn this into a redux slice
+
 import { randomUUID } from 'node:crypto'
 import { accessSync, existsSync, mkdirSync, readdirSync } from 'node:fs'
 import { readFile, rm, writeFile } from 'node:fs/promises'
