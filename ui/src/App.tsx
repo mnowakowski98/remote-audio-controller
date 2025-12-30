@@ -40,7 +40,7 @@ export default function App() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link className='text-light' href="/player">Audio Player</Nav.Link>
+            <Nav.Link className='text-light' href="/fileplayer">File Player</Nav.Link>
             <Nav.Link className='text-light' href="/soundfiles">Sound Files</Nav.Link>
             <Nav.Link className='text-light' href="/settings">Settings</Nav.Link>
           </Nav>
@@ -53,7 +53,7 @@ export default function App() {
       {settingsComponent}
     </>}
     {ready && <Routes>
-      <Route path='player' element={<FilePlayerContext />} />
+      <Route path='fileplayer' element={<FilePlayerContext />} />
       <Route path='soundfiles' element={<SoundFilesContext />} />
       <Route path='settings' element={settingsComponent} />
     </Routes>}
