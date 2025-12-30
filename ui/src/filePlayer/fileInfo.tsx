@@ -1,13 +1,12 @@
 import Table from 'react-bootstrap/Table'
 
-import useFileInfo from './useFileInfo'
+import useFilePlayerState from './useFilePlayerState'
 
 export default function FileInfo() {
-    const fileInfo = useFileInfo()
-    const playingFileMetadata = fileInfo.data?.playingFile?.metadata
+    const playerState = useFilePlayerState()
 
-    if (fileInfo.isLoading) return 'Loading'
-    if (fileInfo.isError) return fileInfo.error.message
+    if (playerState.isLoading) return 'Loading'
+    if (playerState.isError) return playerState.error.message
 
     return <Table className='text-start'>
         <thead className='fw-bold'>
@@ -18,8 +17,8 @@ export default function FileInfo() {
         </thead>
         <tbody>
             <tr>
-                <td>{playingFileMetadata?.common.title ?? '(No title)'}</td>
-                <td>{playingFileMetadata?.common.artist ?? '(No artist)'}</td>
+                <td>{playerState.data?.playingFile?.title ?? '(No title)'}</td>
+                <td>{playerState.data?.playingFile?.artist ?? '(No artist)'}</td>
             </tr>
         </tbody>
     </Table>

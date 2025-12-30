@@ -4,11 +4,6 @@ import multer from 'multer'
 import { IAudioMetadata, parseBuffer } from 'music-metadata'
 
 import { getContext } from '../servers/express'
-import { sendSyncData } from '../servers/stateSync'
-import { AppStore } from '../store'
-
-import AudioStatus, { audioStatusKey } from '../models/audioStatus'
-import AudioFileInfo, { audioFileInfoKey } from '../models/audioFileInfo'
 import { getFile, getFileBuffer } from '../repositories/soundFiles'
 
 import {
@@ -17,6 +12,7 @@ import {
     selectPlayingFile,
     selectPlayingState,
     selectSeekTime,
+    selectUIState,
     setFileData,
     startPlaying,
     stopPlaying
@@ -28,7 +24,7 @@ const upload = multer()
 //#region File info
 router.get('/', (req, res) => {
     const store = getContext(req).store
-    const audioFileInfo = store.getState().filePlayer
+    const audioFileInfo = selectUIState(store.getState())
     res.send(audioFileInfo)
 })
 
@@ -77,12 +73,6 @@ router.delete('/', async (req, res) => {
 //#endregion
 
 //#region Audio status
-router.get('/status', (req, res) => {
-    const store = getContext(req).store
-    const audioStatus = store.getState().filePlayer
-    res.send(audioStatus)
-})
-
 router.put('/status/playing', express.text(), (req, res) => {
     const store = getContext(req).store
     if(selectPlayingFile(store.getState()) == null) {

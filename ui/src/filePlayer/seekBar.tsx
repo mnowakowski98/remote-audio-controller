@@ -2,10 +2,9 @@ import { useContext, useEffect, useRef, useState } from 'react'
 
 import useSyncedState from '../hooks/useSyncedState'
 
-import type AudioStatus from '../models/audioStatus'
 import { useMutation } from '@tanstack/react-query'
 import settingsContext from '../settingsContext'
-import { filePlayerKey } from '../models/filePlayer'
+import { filePlayerKey, type FilePlayerState } from '../models/filePlayer'
 
 interface SeekBarProps {
     maxDuration: number
@@ -21,10 +20,10 @@ export default function SeekBar(props: SeekBarProps) {
     const [lastServerTime, setLastServerTime] = useState(0)
     const [lastSyncMessageTime, setLastSyncMessageTime] = useState(performance.now())
 
-    const { data, isLoading } = useSyncedState<AudioStatus>(filePlayerKey,
+    const { data, isLoading } = useSyncedState<FilePlayerState>(filePlayerKey,
         { queryUrl: './status', enabled: false },
         { onMessage: (data) => {
-            setLastServerTime(data.seek)
+            setLastServerTime(data.seekPosition)
             setLastSyncMessageTime(performance.now())
         }})
 
@@ -43,13 +42,13 @@ export default function SeekBar(props: SeekBarProps) {
         timeout.current = setInterval(() => {
             if (doUpdate.current == false) return
             if (seekTime.current == null || audio.current == null) return
-            const seekValue = lastServerTime + (data?.playing ? timeSinceLastSync() : 0)
+            const seekValue = lastServerTime + (data?.playingState == 'playing' ? timeSinceLastSync() : 0)
             seekTime.current.innerText = (seekValue / 1000).toFixed(2)
             audio.current.valueAsNumber = seekValue
         })
 
         return () => clearInterval(timeout.current!)
-    }, [data?.playing, lastServerTime, lastSyncMessageTime])
+    }, [data?.playingState, lastServerTime, lastSyncMessageTime])
     if (isLoading == true) return 0
 
     return <div>

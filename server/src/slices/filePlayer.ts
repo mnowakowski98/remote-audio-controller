@@ -15,6 +15,7 @@ import findExec from 'find-exec'
 import { IAudioMetadata } from 'music-metadata'
 import Speaker, { Stream } from 'speaker'
 
+//#region State Types
 interface PlayingFile {
     name: string,
     metadata: IAudioMetadata,
@@ -46,6 +47,7 @@ interface FilePlayerState {
     seekTimings: SeekTimings,
     controls: PlayerControls
 }
+//#endregion
 
 const slice = createSlice({
     name: filePlayerKey,
@@ -126,11 +128,11 @@ export const selectUIState = (_state: RootState): FilePlayerUIState => {
         playingState: selectPlayingState(_state),
         loop: state.controls.loop,
         seekPosition: 0,
-        playingFile: {
+        playingFile: state.playingFile != null ? {
             title: state.playingFile?.metadata.common.title ?? '(No title)',
             artist: state.playingFile?.metadata.common.artist ?? '(No artist)',
             durationMs: (state.playingFile?.metadata.format.duration ?? 0) * 1000
-        }
+        } : null
     }
 }
 

@@ -13,15 +13,15 @@ import FileUploader from '../soundFiles/fileUploader'
 import FilesTable from '../soundFiles/filesTable'
 import ClearButton from './clearButton'
 
-import useFileInfo from './useFileInfo'
+import useFilePlayerState from './useFilePlayerState'
 import settingsContext from '../settingsContext'
 import SeekBar from './seekBar'
 
 export default function FilePlayer() {
     const baseUrl = useContext(settingsContext).hostUrl
 
-    const audioInfo = useFileInfo()
-    const hasFile = () => audioInfo.isSuccess == true && audioInfo.data?.playingFile != null
+    const playerState = useFilePlayerState()
+    const hasFile = () => playerState.isSuccess == true && playerState.data?.playingFile != null
 
     const [selectedFile, setSelectedFile] = useState<string | null>(null)
     const setFile = useMutation({
@@ -50,7 +50,7 @@ export default function FilePlayer() {
 
         <Row className='border py-3'>
             <Col className='text-end'>
-                <SeekBar maxDuration={audioInfo.data?.playingFile?.durationMs ?? 0} />
+                <SeekBar maxDuration={playerState.data?.playingFile?.durationMs ?? 0} />
             </Col>
         </Row>
 
