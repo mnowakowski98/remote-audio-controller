@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { AppThunk, RootState } from '../store'
+import { AppThunk } from '../store'
 
 import { existsSync } from 'node:fs'
 import { readFile, watch, writeFile } from 'node:fs/promises'

@@ -6,15 +6,22 @@ import { httpReducer } from './slices/httpSlice'
 import { filePlayerReducer } from './slices/filePlayer'
 import { sendSyncData } from './servers/stateSync'
 
+import { selectUIState as selectFilePlayerUIState } from './slices/filePlayer'
+import { filePlayerKey } from './models/filePlayer'
+
+const uiStateSelectors = [
+  { typeKey: filePlayerKey, select: selectFilePlayerUIState }
+]
+
 const dataSync: Middleware = ({ getState }) => {
   return next => _action => {
     const action = _action as Action
     const returnVal = next(action)
     const newState = getState() as RootState
     const typeKey = action.type.slice(0, action.type.indexOf('/'))
-    const stateEntry = Object.entries(newState).find((entry) => entry[0] == typeKey)
-    if (stateEntry == undefined) return returnVal
-    sendSyncData(typeKey, stateEntry[1])
+    const uiState = uiStateSelectors.find((selector) => selector.typeKey == typeKey)?.select(newState)
+    if (uiState == undefined) return returnVal
+    sendSyncData(typeKey, uiState)
     return returnVal
   }
 }

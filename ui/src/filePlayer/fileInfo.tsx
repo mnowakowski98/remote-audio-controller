@@ -2,8 +2,9 @@ import Table from 'react-bootstrap/Table'
 
 import useFileInfo from './useFileInfo'
 
-export default function AudioInfo() {
+export default function FileInfo() {
     const fileInfo = useFileInfo()
+    const playingFileMetadata = fileInfo.data?.playingFile?.metadata
 
     if (fileInfo.isLoading) return 'Loading'
     if (fileInfo.isError) return fileInfo.error.message
@@ -17,8 +18,8 @@ export default function AudioInfo() {
         </thead>
         <tbody>
             <tr>
-                <td>{fileInfo.data?.title ?? '(No title)'}</td>
-                <td>{fileInfo.data?.artist ?? '(No artist)'}</td>
+                <td>{playingFileMetadata?.common.title ?? '(No title)'}</td>
+                <td>{playingFileMetadata?.common.artist ?? '(No artist)'}</td>
             </tr>
         </tbody>
     </Table>

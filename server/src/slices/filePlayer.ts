@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { AppThunk } from '../store'
+import { AppThunk, RootState } from '../store'
 
 import { selectFilePlayerConfig } from './configSlice'
-import FilePlayerState, { PlayerSettings, PlayingFile } from '../models/filePlayer'
+import { filePlayerKey, FilePlayerState as FilePlayerUIState, PlayingState } from '../models/filePlayer'
 
 import { exec as _exec } from 'node:child_process'
 import { accessSync, createReadStream } from 'node:fs'
@@ -15,8 +15,40 @@ import findExec from 'find-exec'
 import { IAudioMetadata } from 'music-metadata'
 import Speaker, { Stream } from 'speaker'
 
+interface PlayingFile {
+    name: string,
+    metadata: IAudioMetadata,
+    audio: Stream.Readable | null,
+    speaker: Speaker | null
+}
+
+interface PlayerSettings {
+    ffmpeg: string,
+    originalFile: string,
+    playingFile: string
+}
+
+interface PlayerControls {
+    loop: boolean
+}
+
+interface SeekTimings {
+    audioStart: number,
+    lastPause: number,
+    timePaused: number
+}
+
+interface FilePlayerState {
+    audioPlaying: boolean,
+    audioPaused: boolean,
+    playerSettings: PlayerSettings,
+    playingFile: PlayingFile | null,
+    seekTimings: SeekTimings,
+    controls: PlayerControls
+}
+
 const slice = createSlice({
-    name: 'filePlayer',
+    name: filePlayerKey,
     initialState: {
         audioPlaying: false,
         audioPaused: false,
@@ -30,6 +62,9 @@ const slice = createSlice({
             audioStart: 0,
             lastPause: 0,
             timePaused: 0
+        },
+        controls: {
+            loop: false
         }
     } as FilePlayerState,
     reducers: {
@@ -48,13 +83,13 @@ const slice = createSlice({
             state.audioPlaying = false
             state.audioPaused = false
         },
-        setPlayerSettings: (state, action: PayloadAction<PlayerSettings>) => {state.playerSettings = action.payload},
-        setFileInfo: (state, action: PayloadAction<PlayingFile | null>) => {state.playingFile = action.payload},
-        setSpeaker: (state, action: PayloadAction<Speaker | null>) => {state.playingFile!.speaker = action.payload},
-        setAudio: (state, action: PayloadAction<Stream.Readable | null>) => {state.playingFile!.audio = action.payload}
+        setPlayerSettings: (state, action: PayloadAction<PlayerSettings>) => { state.playerSettings = action.payload },
+        setFileInfo: (state, action: PayloadAction<PlayingFile | null>) => { state.playingFile = action.payload },
+        setSpeaker: (state, action: PayloadAction<Speaker | null>) => { state.playingFile!.speaker = action.payload },
+        setAudio: (state, action: PayloadAction<Stream.Readable | null>) => { state.playingFile!.audio = action.payload }
     },
     selectors: {
-        selectPlayingState: (state): 'playing' | 'paused' | 'stopped' => {
+        selectPlayingState: (state): PlayingState => {
             if (state.audioPlaying == true && state.audioPaused == false) return 'playing'
             else if (state.audioPlaying == true && state.audioPaused == true) return 'paused'
             else if (state.audioPlaying == false && state.audioPaused == true) throw 'File player state corrupted'
@@ -84,6 +119,20 @@ export const {
     selectPlayerSettings,
     selectSeekTime
 } = slice.selectors
+
+export const selectUIState = (_state: RootState): FilePlayerUIState => {
+    const state = _state.filePlayer
+    return {
+        playingState: selectPlayingState(_state),
+        loop: state.controls.loop,
+        seekPosition: 0,
+        playingFile: {
+            title: state.playingFile?.metadata.common.title ?? '(No title)',
+            artist: state.playingFile?.metadata.common.artist ?? '(No artist)',
+            durationMs: (state.playingFile?.metadata.format.duration ?? 0) * 1000
+        }
+    }
+}
 
 export const setInitialState = (): AppThunk => {
     return async (dispatch, getState) => {
@@ -162,6 +211,7 @@ export const stopPlaying = (): AppThunk => {
 
         if (playingFile.audio == null) throw 'Audio does not exist to pause'
         playingFile.audio.unpipe()
+        playingFile.audio.removeAllListeners()
         if (playingFile.speaker != null) playingFile.speaker.close(true)
 
         dispatch(setAudio(null))

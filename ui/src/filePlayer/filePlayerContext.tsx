@@ -4,7 +4,7 @@ import FilePlayer from './filePlayer';
 import SettingsContext from '../settingsContext';
 
 
-export default function AudioPlayerContext() {
+export default function FilePlayerContext() {
     const settings = useContext(SettingsContext)
     const hostUrl = new URL('./fileplayer/', settings.hostUrl)
 

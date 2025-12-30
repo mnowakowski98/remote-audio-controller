@@ -25,43 +25,10 @@ import {
 const router = express.Router()
 const upload = multer()
 
-const getAudioInfo = (store: AppStore) => {
-    const playingFile = selectPlayingFile(store.getState())
-    if (playingFile == null) {
-        return {
-            id: 'none',
-            fileName: 'No file',
-            title: 'No file',
-            artist: 'No file',
-            duration: 0
-        }
-    }
-
-    return {
-        id: 'playing',
-        fileName: playingFile.name,
-        title: playingFile.metadata.common.title ?? 'No title',
-        artist: playingFile.metadata.common.artist ?? 'No artist',
-        duration: (playingFile.metadata.format.duration ?? 0) * 1000
-    }
-}
-
-const getAudioStatus = (store: AppStore) => {
-    const playingStatus = selectPlayingState(store.getState())
-
-    return {
-        playing: playingStatus == 'playing' || playingStatus == 'paused',
-        paused: playingStatus == 'paused',
-        seek: selectSeekTime(store.getState()),
-        loop: false,
-        volume: 0
-    }
-}
-
 //#region File info
 router.get('/', (req, res) => {
     const store = getContext(req).store
-    const audioFileInfo = getAudioInfo(store)
+    const audioFileInfo = store.getState().filePlayer
     res.send(audioFileInfo)
 })
 
@@ -112,7 +79,7 @@ router.delete('/', async (req, res) => {
 //#region Audio status
 router.get('/status', (req, res) => {
     const store = getContext(req).store
-    const audioStatus = getAudioStatus(store)
+    const audioStatus = store.getState().filePlayer
     res.send(audioStatus)
 })
 

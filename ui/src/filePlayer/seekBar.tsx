@@ -3,15 +3,15 @@ import { useContext, useEffect, useRef, useState } from 'react'
 import useSyncedState from '../hooks/useSyncedState'
 
 import type AudioStatus from '../models/audioStatus'
-import { audioStatusKey } from '../models/audioStatus'
 import { useMutation } from '@tanstack/react-query'
 import settingsContext from '../settingsContext'
+import { filePlayerKey } from '../models/filePlayer'
 
-interface AudioBarProps {
+interface SeekBarProps {
     maxDuration: number
 }
 
-export default function AudioBar(props: AudioBarProps) {
+export default function SeekBar(props: SeekBarProps) {
     const baseUrl = useContext(settingsContext).hostUrl
 
     const doUpdate = useRef(true)
@@ -21,7 +21,7 @@ export default function AudioBar(props: AudioBarProps) {
     const [lastServerTime, setLastServerTime] = useState(0)
     const [lastSyncMessageTime, setLastSyncMessageTime] = useState(performance.now())
 
-    const { data, isLoading } = useSyncedState<AudioStatus>(audioStatusKey,
+    const { data, isLoading } = useSyncedState<AudioStatus>(filePlayerKey,
         { queryUrl: './status', enabled: false },
         { onMessage: (data) => {
             setLastServerTime(data.seek)

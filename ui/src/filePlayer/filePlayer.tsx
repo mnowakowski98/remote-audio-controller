@@ -17,11 +17,11 @@ import useFileInfo from './useFileInfo'
 import settingsContext from '../settingsContext'
 import SeekBar from './seekBar'
 
-export default function AudioPlayer() {
+export default function FilePlayer() {
     const baseUrl = useContext(settingsContext).hostUrl
 
     const audioInfo = useFileInfo()
-    const hasFile = () => audioInfo.isSuccess == true && audioInfo.data?.id != 'none'
+    const hasFile = () => audioInfo.isSuccess == true && audioInfo.data?.playingFile != null
 
     const [selectedFile, setSelectedFile] = useState<string | null>(null)
     const setFile = useMutation({
@@ -50,7 +50,7 @@ export default function AudioPlayer() {
 
         <Row className='border py-3'>
             <Col className='text-end'>
-                <SeekBar maxDuration={audioInfo.data?.duration ?? 0} />
+                <SeekBar maxDuration={audioInfo.data?.playingFile?.durationMs ?? 0} />
             </Col>
         </Row>
 

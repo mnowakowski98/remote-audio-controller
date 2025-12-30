@@ -6,9 +6,9 @@ import InputGroup from 'react-bootstrap/InputGroup'
 import Button from 'react-bootstrap/Button'
 
 import SettingsContext from '../settingsContext'
-import type AudioStatus from '../models/audioStatus'
-import { audioStatusKey } from '../models/audioStatus'
 import useSyncedState from '../hooks/useSyncedState'
+import { filePlayerKey } from '../models/filePlayer'
+import { type FilePlayerState } from '../models/filePlayer'
 
 interface PlayerControlsProps {
     hasFile: boolean
@@ -17,7 +17,7 @@ interface PlayerControlsProps {
 export default function PlayerControls(props: PlayerControlsProps) {
     const baseUrl = useContext(SettingsContext).hostUrl
 
-    const audioStatus = useSyncedState<AudioStatus>(audioStatusKey, { queryUrl: './status' })
+    const audioStatus = useSyncedState<FilePlayerState>(filePlayerKey, { queryUrl: './status' })
 
     const setPlayingState = useMutation({
         mutationFn: async (command: 'start' | 'pause' | 'stop') =>
@@ -38,19 +38,19 @@ export default function PlayerControls(props: PlayerControlsProps) {
         </InputGroup.Text>
         <Button
             type='button'
-            disabled={audioStatus.data.playing == true || props.hasFile == false}
+            disabled={audioStatus.data.playingState == 'playing' || props.hasFile == false}
             onClick={() => setPlayingState.mutate('start')}>
             Start
         </Button>
         <Button
             type='button'
-            disabled={audioStatus.data.playing == false}
+            disabled={audioStatus.data.playingState == 'paused' || audioStatus.data.playingState == 'stopped' || props.hasFile == false}
             onClick={() => setPlayingState.mutate('pause')}>
             Pause
         </Button>
         <Button
             type='button'
-            disabled={audioStatus.data.playing == false && audioStatus.data.paused == false}
+            disabled={audioStatus.data.playingState == 'stopped' || props.hasFile == false}
             onClick={() => setPlayingState.mutate('stop')}>
             Stop
         </Button>

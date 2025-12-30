@@ -1,16 +1,12 @@
 import { useContext } from 'react'
 
 import SettingsContext from '../settingsContext'
-import type AudioFileInfo from '../models/audioFileInfo'
 
-import { audioFileInfoKey } from '../models/audioFileInfo'
+import { filePlayerKey } from '../models/filePlayer'
 import useSyncedState from '../hooks/useSyncedState'
+import { type FilePlayerState } from '../models/filePlayer'
 
-export default function useAudioInfo() {
-    const settings = useContext(SettingsContext)
-    const queryUrl = settings.hostUrl
-
-    const query = useSyncedState<AudioFileInfo>(audioFileInfoKey, {queryUrl})
-
-    return query
+export default function useFileInfo() {
+    const queryUrl = useContext(SettingsContext).hostUrl
+    return useSyncedState<FilePlayerState>(filePlayerKey, {queryUrl})
 }
