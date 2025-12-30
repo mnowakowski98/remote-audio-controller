@@ -9,11 +9,10 @@ import { getFile, getFileBuffer } from '../repositories/soundFiles'
 import {
     clearFileData,
     pausePlaying,
-    selectPlayingFile,
-    selectPlayingState,
-    selectSeekTime,
+    seek,
     selectUIState,
     setFileData,
+    setLoop,
     startPlaying,
     stopPlaying
 } from '../slices/filePlayer'
@@ -75,10 +74,6 @@ router.delete('/', async (req, res) => {
 //#region Audio status
 router.put('/status/playing', express.text(), (req, res) => {
     const store = getContext(req).store
-    if(selectPlayingFile(store.getState()) == null) {
-        res.status(400).send('No file selected')
-        return
-    }
 
     switch(req.body) {
         case 'start':
@@ -98,23 +93,27 @@ router.put('/status/playing', express.text(), (req, res) => {
     res.sendStatus(200)
 })
 
-// router.put('/status/loop', express.text(), (req, res) => {
-//     if (req.body === undefined) setLoop()
-//     else setLoop(req.body == 'true' ? true : false)
-//     res.sendStatus(200)
-// })
+router.put('/status/loop', express.text(), (req, res) => {
+    const store = getContext(req).store
+    let loop: boolean | null = null
+    if (req.body == 'true') loop = true
+    if (req.body == 'false') loop = false
+    store.dispatch(setLoop(loop))
+    res.sendStatus(200)
+})
 
-// router.put('/status/seek', express.text(), (req, res) => {
-//     let seekTo: number
-//     try { seekTo = parseInt(req.body) }
-//     catch {
-//         res.status(400).send('Body must be a number')
-//         return
-//     }
+router.put('/status/seek', express.text(), (req, res) => {
+    let seekTo: number
+    try { seekTo = parseInt(req.body) }
+    catch {
+        res.status(400).send('Body must be a number')
+        return
+    }
 
-//     seek(seekTo)
-//     res.sendStatus(200)
-// })
+    const store = getContext(req).store
+    store.dispatch(seek(seekTo))
+    res.sendStatus(200)
+})
 //#endregion
 
 export default router

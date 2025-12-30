@@ -34,7 +34,7 @@ interface PlayerControls {
 }
 
 interface SeekTimings {
-    audioStart: number,
+    audioStart: number | null,
     lastPause: number,
     timePaused: number
 }
@@ -61,7 +61,7 @@ const slice = createSlice({
         },
         playingFile: null,
         seekTimings: {
-            audioStart: 0,
+            audioStart: null,
             lastPause: 0,
             timePaused: 0
         },
@@ -70,25 +70,38 @@ const slice = createSlice({
         }
     } as FilePlayerState,
     reducers: {
-        start: (state) => {
+        start: (state, action: PayloadAction<number | undefined>) => {
             if (state.audioPlaying == true && state.audioPaused == false) return
+                
+            if (state.audioPaused == true) state.seekTimings.timePaused += performance.now() - state.seekTimings.lastPause
+            else state.seekTimings.audioStart = performance.now() - (action.payload ?? 0)
+        
             state.audioPlaying = true
             state.audioPaused = false
-
         },
         pause: (state) => {
             if (state.audioPlaying == false || state.audioPaused == true) return
             state.audioPaused = true
+            state.seekTimings.lastPause = performance.now()
         },
         stop: (state) => {
             if (state.audioPlaying == false && state.audioPaused == false) return
             state.audioPlaying = false
             state.audioPaused = false
+
+            state.seekTimings.audioStart = null
+            state.seekTimings.lastPause = 0
+            state.seekTimings.timePaused = 0
         },
         setPlayerSettings: (state, action: PayloadAction<PlayerSettings>) => { state.playerSettings = action.payload },
         setFileInfo: (state, action: PayloadAction<PlayingFile | null>) => { state.playingFile = action.payload },
         setSpeaker: (state, action: PayloadAction<Speaker | null>) => { state.playingFile!.speaker = action.payload },
-        setAudio: (state, action: PayloadAction<Stream.Readable | null>) => { state.playingFile!.audio = action.payload }
+        setAudio: (state, action: PayloadAction<Stream.Readable | null>) => { state.playingFile!.audio = action.payload },
+        setLoop: (state, action: PayloadAction<boolean | null>) => {
+            const currentLoop = state.controls.loop
+            if (action.payload == undefined) state.controls.loop = !currentLoop
+            else state.controls.loop = action.payload
+        }
     },
     selectors: {
         selectPlayingState: (state): PlayingState => {
@@ -99,13 +112,12 @@ const slice = createSlice({
         },
         selectPlayingFile: (state) => state.playingFile,
         selectPlayerSettings: (state) => state.playerSettings,
-        selectSeekTime: (state) => {
-            return 0
-        }
+        selectSeekTime: (state) =>
+            state.seekTimings.audioStart != null ? (performance.now() - state.seekTimings.audioStart) - state.seekTimings.timePaused : 0
     }
 })
-
 export const filePlayerReducer = slice.reducer
+
 const {
     start,
     pause,
@@ -115,7 +127,9 @@ const {
     setSpeaker,
     setAudio
 } = slice.actions
-export const {
+export const { setLoop } = slice.actions
+
+const {
     selectPlayingFile,
     selectPlayingState,
     selectPlayerSettings,
@@ -127,7 +141,7 @@ export const selectUIState = (_state: RootState): FilePlayerUIState => {
     return {
         playingState: selectPlayingState(_state),
         loop: state.controls.loop,
-        seekPosition: 0,
+        seekPosition: selectSeekTime(_state),
         playingFile: state.playingFile != null ? {
             title: state.playingFile?.metadata.common.title ?? '(No title)',
             artist: state.playingFile?.metadata.common.artist ?? '(No artist)',
@@ -156,37 +170,31 @@ export const setInitialState = (): AppThunk => {
     }
 }
 
-const audioEnd = () => {
-
-}
-
-export const startPlaying = (): AppThunk => {
+export const stopPlaying = (): AppThunk => {
     return (dispatch, getState) => {
+        if (selectPlayingFile(getState()) == null) return
+
         const playingState = selectPlayingState(getState())
         const playingFile = selectPlayingFile(getState())
-        const playingSettings = selectPlayerSettings(getState())
 
-        if (playingState == 'playing') return
+        if (playingState == 'stopped') return
         if (playingFile == null) return
 
-        const speaker = new Speaker({
-            channels: playingFile.metadata.format.numberOfChannels ?? 2,
-            bitDepth: playingFile.metadata.format.bitsPerSample ?? 16,
-            sampleRate: playingFile.metadata.format.sampleRate ?? 44100
-        })
+        if (playingFile.audio == null) throw 'Audio does not exist to pause'
+        playingFile.audio.unpipe()
+        playingFile.audio.removeAllListeners()
+        if (playingFile.speaker != null) playingFile.speaker.close(true)
 
-        let audio = playingFile.audio ?? createReadStream(playingSettings.playingFile)
-        audio.addListener('close', audioEnd)
-        audio.pipe(speaker)
-
-        dispatch(setSpeaker(speaker))
-        dispatch(setAudio(audio))
-        dispatch(start())
+        dispatch(setAudio(null))
+        dispatch(setSpeaker(null))
+        dispatch(stop())
     }
 }
 
 export const pausePlaying = (): AppThunk => {
     return (dispatch, getState) => {
+        if (selectPlayingFile(getState()) == null) return
+
         const playingState = selectPlayingState(getState())
         const playingFile = selectPlayingFile(getState())
 
@@ -203,22 +211,46 @@ export const pausePlaying = (): AppThunk => {
     }
 }
 
-export const stopPlaying = (): AppThunk => {
+export const startPlaying = (startAt?: number): AppThunk => {
     return (dispatch, getState) => {
+        if (selectPlayingFile(getState()) == null) return
+        
         const playingState = selectPlayingState(getState())
         const playingFile = selectPlayingFile(getState())
+        const playingSettings = selectPlayerSettings(getState())
 
-        if (playingState == 'stopped') return
+        if (playingState == 'playing') return
         if (playingFile == null) return
 
-        if (playingFile.audio == null) throw 'Audio does not exist to pause'
-        playingFile.audio.unpipe()
-        playingFile.audio.removeAllListeners()
-        if (playingFile.speaker != null) playingFile.speaker.close(true)
+        const speaker = new Speaker({
+            channels: playingFile.metadata.format.numberOfChannels ?? 2,
+            bitDepth: playingFile.metadata.format.bitsPerSample ?? 16,
+            sampleRate: playingFile.metadata.format.sampleRate ?? 44100
+        })
 
-        dispatch(setAudio(null))
-        dispatch(setSpeaker(null))
-        dispatch(stop())
+        const state = getState().filePlayer
+        const startingByte = Math.floor((startAt ?? 0) / 1000
+                * (((state.playingFile?.metadata.format.bitsPerSample ?? 16) / 8)
+                * (state.playingFile?.metadata.format.sampleRate ?? 44100)))
+
+        const audio = playingFile.audio ?? createReadStream(playingSettings.playingFile, { start: startingByte })
+        audio.addListener('end', () => {
+            dispatch(stopPlaying())
+            if (getState().filePlayer.controls.loop == true) dispatch(startPlaying())
+        })
+
+
+        audio.pipe(speaker)
+        dispatch(start())
+        dispatch(setSpeaker(speaker))
+        dispatch(setAudio(audio))
+    }
+}
+
+export const seek = (seekTo: number): AppThunk => {
+    return (dispatch, getState) => {
+        dispatch(stopPlaying())
+        dispatch(startPlaying(seekTo))
     }
 }
 
