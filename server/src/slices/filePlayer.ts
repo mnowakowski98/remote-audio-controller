@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppThunk } from '../store'
 
 import { selectFilePlayerConfig } from './configSlice'
+import FilePlayerState, { PlayerSettings, PlayingFile } from '../models/filePlayer'
 
 import { exec as _exec } from 'node:child_process'
 import { accessSync, createReadStream } from 'node:fs'
@@ -11,40 +12,8 @@ import { join, normalize } from 'node:path'
 import { promisify } from 'node:util'
 
 import findExec from 'find-exec'
-
 import { IAudioMetadata } from 'music-metadata'
 import Speaker, { Stream } from 'speaker'
-
-interface PlayingFile {
-    name: string,
-    metadata: IAudioMetadata,
-    audio: Stream.Readable | null,
-    speaker: Speaker | null
-}
-
-interface PlayerSettings {
-    ffmpeg: string,
-    originalFile: string,
-    playingFile: string
-}
-
-interface PlayerControls {
-    loop: boolean
-}
-
-interface SeekTimings {
-    audioStart: number,
-    lastPause: number,
-    timePaused: number
-}
-
-interface FilePlayerState {
-    audioPlaying: boolean,
-    audioPaused: boolean,
-    playerSettings: PlayerSettings,
-    playingFile: PlayingFile | null,
-    seekTimings: SeekTimings
-}
 
 const slice = createSlice({
     name: 'filePlayer',
@@ -109,7 +78,12 @@ const {
     setSpeaker,
     setAudio
 } = slice.actions
-export const { selectPlayingFile, selectPlayingState, selectPlayerSettings, selectSeekTime } = slice.selectors
+export const {
+    selectPlayingFile,
+    selectPlayingState,
+    selectPlayerSettings,
+    selectSeekTime
+} = slice.selectors
 
 export const setInitialState = (): AppThunk => {
     return async (dispatch, getState) => {
@@ -196,7 +170,7 @@ export const stopPlaying = (): AppThunk => {
     }
 }
 
-export const setFileData = (fileName: string, metadata: IAudioMetadata, fileData: Buffer): AppThunk => {
+export const setFileData = async (fileName: string, metadata: IAudioMetadata, fileData: Buffer): Promise<AppThunk> => {
     return async (dispatch, getState) => {
         const wasPlaying = selectPlayingState(getState()) == 'playing'
         dispatch(stopPlaying())

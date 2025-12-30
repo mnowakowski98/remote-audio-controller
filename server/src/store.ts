@@ -1,16 +1,31 @@
-import type { Action, ThunkAction } from '@reduxjs/toolkit'
+import type { Action, Middleware, ThunkAction } from '@reduxjs/toolkit'
 import { configureStore } from '@reduxjs/toolkit'
 
 import { configReducer } from './slices/configSlice'
 import { httpReducer } from './slices/httpSlice'
 import { filePlayerReducer } from './slices/filePlayer'
+import { sendSyncData } from './servers/stateSync'
+
+const dataSync: Middleware = ({ getState }) => {
+  return next => _action => {
+    const action = _action as Action
+    const returnVal = next(action)
+    const newState = getState() as RootState
+    const typeKey = action.type.slice(0, action.type.indexOf('/'))
+    const stateEntry = Object.entries(newState).find((entry) => entry[0] == typeKey)
+    if (stateEntry == undefined) return returnVal
+    sendSyncData(typeKey, stateEntry[1])
+    return returnVal
+  }
+}
 
 export const store = configureStore({
     reducer: {
         config: configReducer,
         http: httpReducer,
         filePlayer: filePlayerReducer
-    }
+    },
+    middleware: (gdm) => gdm().concat(dataSync)
 })
 
 // Infer the type of `store`
