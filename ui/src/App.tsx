@@ -8,7 +8,7 @@ import Navbar from 'react-bootstrap/Navbar';
 
 import Settings from './settings/settings'
 import SettingsContext, { type Settings as SettingsType } from './settingsContext'
-import AudioPlayerContext from './audioPlayer/audioPlayerContext';
+import FilePlayerContext from './filePlayer/filePlayerContext';
 import SoundFilesContext from './soundFiles/soundFilesContext';
 
 export default function App() {
@@ -53,7 +53,7 @@ export default function App() {
       {settingsComponent}
     </>}
     {ready && <Routes>
-      <Route path='player' element={<AudioPlayerContext />} />
+      <Route path='player' element={<FilePlayerContext />} />
       <Route path='soundfiles' element={<SoundFilesContext />} />
       <Route path='settings' element={settingsComponent} />
     </Routes>}
