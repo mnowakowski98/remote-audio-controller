@@ -4,9 +4,9 @@ import cors from 'cors'
 import { AppStore } from '../store'
 import { selectConfig } from '../slices/configSlice'
 
-import audioPlayer from '../routes/audioplayer'
+import filePlayer from '../routes/filePlayer'
 import soundFiles from '../routes/soundFiles'
-import configRoute from '../routes/config'
+import config from '../routes/config'
 
 let app: Express | null = null
 
@@ -27,8 +27,8 @@ export const createApp = (store: AppStore, options: {
 }) => {
     app = express()
 
-    const config = selectConfig(store.getState())
-    if (config.httpServer.corsOrigin != undefined)
+    const serverSettings = selectConfig(store.getState())
+    if (serverSettings.httpServer.corsOrigin != undefined)
         app.use(cors({ origin: '*' }))
 
     const context: LocalContext = {
@@ -39,9 +39,9 @@ export const createApp = (store: AppStore, options: {
 
     if (options.middleware != undefined) app.use(options.middleware)
 
-    app.use('/audioplayer', audioPlayer)
+    app.use('/fileplayer', filePlayer)
     app.use('/soundfiles', soundFiles)
-    app.use('/config', configRoute)
+    app.use('/config', config)
 
     app.get('/', (_req, res) => res.send('remote-audio-controller-server'))
 

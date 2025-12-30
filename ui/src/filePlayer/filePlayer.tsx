@@ -7,21 +7,21 @@ import Col from 'react-bootstrap/Col'
 
 import Button from 'react-bootstrap/Button'
 
-import AudioInfo from './audioInfo'
+import FileInfo from './fileInfo'
 import PlayerControls from './playerControls'
 import FileUploader from '../soundFiles/fileUploader'
 import FilesTable from '../soundFiles/filesTable'
 import ClearButton from './clearButton'
 
-import useAudioInfo from './useAudioInfo'
+import useFilePlayerState from './useFilePlayerState'
 import settingsContext from '../settingsContext'
-import AudioBar from './audioBar'
+import SeekBar from './seekBar'
 
-export default function AudioPlayer() {
+export default function FilePlayer() {
     const baseUrl = useContext(settingsContext).hostUrl
 
-    const audioInfo = useAudioInfo()
-    const hasFile = () => audioInfo.isSuccess == true && audioInfo.data?.id != 'none'
+    const playerState = useFilePlayerState()
+    const hasFile = () => playerState.isSuccess == true && playerState.data?.playingFile != null
 
     const [selectedFile, setSelectedFile] = useState<string | null>(null)
     const setFile = useMutation({
@@ -44,13 +44,13 @@ export default function AudioPlayer() {
         <Row className='border py-3'>
             <Col className='text-center'>
                 <header className='text-start fw-bolder'>Playing now</header>
-                {hasFile() ? <AudioInfo /> : 'No audio'}
+                {hasFile() ? <FileInfo /> : 'No audio'}
             </Col>
         </Row>
 
         <Row className='border py-3'>
             <Col className='text-end'>
-                <AudioBar maxDuration={audioInfo.data?.duration ?? 0} />
+                <SeekBar maxDuration={playerState.data?.playingFile?.durationMs ?? 0} />
             </Col>
         </Row>
 

@@ -3,37 +3,31 @@ import multer from 'multer'
 
 import { IAudioMetadata, parseBuffer } from 'music-metadata'
 
-import {
-    getAudioInfo,
-    getAudioStatus,
-    hasAudioFile,
-    pauseAudio,
-    seek,
-    setFile,
-    setLoop,
-    startAudio,
-    stopAudio,
-    unsetFile
-} from '../repositories/audioPlayer'
+import { getContext } from '../servers/express'
 import { getFile, getFileBuffer } from '../repositories/soundFiles'
-import { sendSyncData } from '../servers/stateSync'
-import { audioFileInfoKey } from '../models/audioFileInfo'
-import { audioStatusKey } from '../models/audioStatus'
+
+import {
+    clearFileData,
+    pausePlaying,
+    seek,
+    selectUIState,
+    setFileData,
+    setLoop,
+    startPlaying,
+    stopPlaying
+} from '../slices/filePlayer'
 
 const router = express.Router()
 const upload = multer()
 
-const syncRouteStatus = () => {
-    sendSyncData(audioFileInfoKey, getAudioInfo())
-    sendSyncData(audioStatusKey, getAudioStatus())
-}
-
 //#region File info
-router.get('/', (_req, res) => res.send(getAudioInfo()))
+router.get('/', (req, res) => {
+    const store = getContext(req).store
+    const audioFileInfo = selectUIState(store.getState())
+    res.send(audioFileInfo)
+})
 
 router.post('/', upload.single('file'), async (req, res) => {
-    stopAudio()
-
     let metadata: IAudioMetadata | null = null
     if (req.file == null) {
         res.status(400).send('Missing file')
@@ -52,9 +46,9 @@ router.post('/', upload.single('file'), async (req, res) => {
         return
     }
 
-    await setFile(fileName, metadata, req.file.buffer)
+    const store = getContext(req).store
+    store.dispatch(await setFileData(fileName, metadata, req.file.buffer))
     res.sendStatus(200)
-    syncRouteStatus()
 })
 
 router.post('/:id', async (req, res) => {
@@ -64,36 +58,32 @@ router.post('/:id', async (req, res) => {
         return
     }
 
-    await setFile(file.fileInfo.fileName, file.metadata, await getFileBuffer(file))
+    const store = getContext(req).store
+    store.dispatch(await setFileData(file.fileInfo.fileName, file.metadata, await getFileBuffer(file)))
+
     res.sendStatus(200)
-    syncRouteStatus()
 })
 
-router.delete('/', async (_req, res) => {
-    await unsetFile()
+router.delete('/', async (req, res) => {
+    const store = getContext(req).store
+    store.dispatch(clearFileData())
     res.sendStatus(200)
-    syncRouteStatus()
 })
 //#endregion
 
 //#region Audio status
-router.get('/status', (_req, res) => res.send(getAudioStatus()))
-
 router.put('/status/playing', express.text(), (req, res) => {
-    if(hasAudioFile() == false) {
-        res.status(400).send('No file selected')
-        return
-    }
+    const store = getContext(req).store
 
     switch(req.body) {
         case 'start':
-            startAudio()
+            store.dispatch(startPlaying())
             break
         case 'stop':
-            stopAudio()
+            store.dispatch(stopPlaying())
             break
         case 'pause':
-            pauseAudio()
+            store.dispatch(pausePlaying())
             break
         default:
             res.status(400).send('Value must be "start" "stop" or "pause"')
@@ -101,14 +91,15 @@ router.put('/status/playing', express.text(), (req, res) => {
     }
 
     res.sendStatus(200)
-    syncRouteStatus()
 })
 
 router.put('/status/loop', express.text(), (req, res) => {
-    if (req.body === undefined) setLoop()
-    else setLoop(req.body == 'true' ? true : false)
+    const store = getContext(req).store
+    let loop: boolean | null = null
+    if (req.body == 'true') loop = true
+    if (req.body == 'false') loop = false
+    store.dispatch(setLoop(loop))
     res.sendStatus(200)
-    syncRouteStatus()
 })
 
 router.put('/status/seek', express.text(), (req, res) => {
@@ -119,9 +110,9 @@ router.put('/status/seek', express.text(), (req, res) => {
         return
     }
 
-    seek(seekTo)
+    const store = getContext(req).store
+    store.dispatch(seek(seekTo))
     res.sendStatus(200)
-    syncRouteStatus()
 })
 //#endregion
 
