@@ -11,38 +11,46 @@ const defaultConfig = Object.freeze({
         corsOrigin: undefined as string | undefined,
         port: 80,
     },
-    audioPlayer: {
+    filePlayer: {
         tempFileDirectory: ':tmp:',
-        soundsDirectory: './sounds',
         ffmpegPath: undefined as string | undefined
     },
+    soundFiles: {
+        soundFilesDirectory: './sounds'
+    }
 })
 
-export type ConfigType = typeof defaultConfig
+export type Config = typeof defaultConfig
 
 const slice = createSlice({
     name: 'config',
     initialState: defaultConfig,
     reducers: {
-        setConfig: (state, action: PayloadAction<ConfigType>) => state = action.payload
+        setConfig: (state, action: PayloadAction<Config>) => state = action.payload
     },
     selectors: {
         selectHttpConfig: (state) => state.httpServer,
-        selectFilePlayerConfig: (state) => state.audioPlayer,
+        selectFilePlayerConfig: (state) => state.filePlayer,
+        selectSoundFilesConfig: (state) => state.soundFiles,
         selectConfig: (state) => state
     }
 })
 
 export const configReducer = slice.reducer
 const { setConfig } = slice.actions
-export const { selectHttpConfig, selectFilePlayerConfig, selectConfig } = slice.selectors
+export const {
+    selectHttpConfig,
+    selectFilePlayerConfig,
+    selectSoundFilesConfig,
+    selectConfig
+} = slice.selectors
 
 const configPath = (join(cwd(), './config.json'))
 let configHasLoaded = false
 
 const loadConfigFile = (): AppThunk => {
     return async (dispatch) => {
-        let data: ConfigType
+        let data: Config
         if (existsSync(configPath) == true) {
             const dataString = (await readFile(configPath)).toString()
             data = JSON.parse(dataString)
@@ -50,14 +58,14 @@ const loadConfigFile = (): AppThunk => {
 
         const workingCopy = structuredClone(defaultConfig)
         Object.assign(workingCopy.httpServer, data.httpServer)
-        Object.assign(workingCopy.audioPlayer, data.audioPlayer)
+        Object.assign(workingCopy.filePlayer, data.filePlayer)
 
         dispatch(setConfig(workingCopy))
         configHasLoaded = true
     }
 }
 
-export const writeConfigFile = async (config: ConfigType) =>
+export const writeConfigFile = async (config: Config) =>
     await writeFile(configPath, JSON.stringify(config, undefined, 4))
 
 export const watchConfig = (): AppThunk => {

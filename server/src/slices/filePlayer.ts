@@ -143,8 +143,11 @@ export const selectUIState = (_state: RootState): FilePlayerUIState => {
         loop: state.controls.loop,
         seekPosition: selectSeekTime(_state),
         playingFile: state.playingFile != null ? {
+            id: 'playing',
+            name: state.playingFile.name,
             title: state.playingFile?.metadata.common.title ?? '(No title)',
             artist: state.playingFile?.metadata.common.artist ?? '(No artist)',
+            album: state.playingFile?.metadata.common.album ?? '(No album)',
             durationMs: (state.playingFile?.metadata.format.duration ?? 0) * 1000
         } : null
     }

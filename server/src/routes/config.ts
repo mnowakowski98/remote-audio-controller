@@ -13,12 +13,17 @@ router.get('/', (req, res) => {
 router.put('/', express.text(), async (req, res) => {
     const reload = req.query.reload
 
-    const store = getContext(req).store
+    const context = getContext(req)
+    const store = context.store
     const config = JSON.parse(req.body)
     await writeConfigFile(config)
-    res.send(selectConfig(store.getState()))
 
-    if (reload == 'true') getContext(req).serverControls.reload()
+    if (reload == 'true') {
+        res.status(301).send({
+            port: selectConfig(store.getState()).httpServer.port
+        })
+        context.serverControls.reload.all()
+    } else res.sendStatus(200)
 })
 
 export default router

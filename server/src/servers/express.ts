@@ -10,20 +10,25 @@ import config from '../routes/config'
 
 let app: Express | null = null
 
+type ServerControls = {
+    reload: {
+        all: () => void
+        http: () => void
+        filePlayer: () => void
+        soundFiles: () => void
+    }
+}
+
 export type LocalContext = {
     store: AppStore,
-    serverControls: {
-        reload: () => void
-    }
+    serverControls: ServerControls
 }
 
 export const getContext = (req: Request): LocalContext => req.app.locals.context
 
 export const createApp = (store: AppStore, options: {
     middleware?: ((req: Request, res: Response, next: NextFunction) => void)[],
-    controlCallbacks: {
-        reload: () => void
-    }
+    controlCallbacks: ServerControls
 }) => {
     app = express()
 
@@ -45,9 +50,26 @@ export const createApp = (store: AppStore, options: {
 
     app.get('/', (_req, res) => res.send('remote-audio-controller-server'))
 
-    app.post('/reload', (_req, res) => {
+    app.post('/reload/:service', (req, res) => {
+        const service = req.params.service
+        const callbacks = options.controlCallbacks.reload
+
+        const toCall = Object.entries(callbacks).find(entry => entry[0] == service)
+        if (toCall == undefined) {
+            res.sendStatus(404)
+            return
+        }
+
+        const sendNewPortResponse = service == 'http' || service == 'all'
+        if (sendNewPortResponse) {
+            res.status(301).send({
+                port: serverSettings.httpServer.port
+            })
+            toCall[1]()
+            return
+        }
+        toCall[1]()
         res.sendStatus(200)
-        options.controlCallbacks.reload()
     })
 
     return app

@@ -4,7 +4,6 @@ import multer from 'multer'
 import { IAudioMetadata, parseBuffer } from 'music-metadata'
 
 import { getContext } from '../servers/express'
-import { getFile, getFileBuffer } from '../repositories/soundFiles'
 
 import {
     clearFileData,
@@ -51,18 +50,18 @@ router.post('/', upload.single('file'), async (req, res) => {
     res.sendStatus(200)
 })
 
-router.post('/:id', async (req, res) => {
-    const file = getFile(req.params.id)
-    if (file == undefined) {
-        res.sendStatus(404)
-        return
-    }
+// router.post('/:id', async (req, res) => {
+//     const file = getFile(req.params.id)
+//     if (file == undefined) {
+//         res.sendStatus(404)
+//         return
+//     }
 
-    const store = getContext(req).store
-    store.dispatch(await setFileData(file.fileInfo.fileName, file.metadata, await getFileBuffer(file)))
+//     const store = getContext(req).store
+//     store.dispatch(await setFileData(file.fileInfo.fileName, file.metadata, await getFileBuffer(file)))
 
-    res.sendStatus(200)
-})
+//     res.sendStatus(200)
+// })
 
 router.delete('/', async (req, res) => {
     const store = getContext(req).store
