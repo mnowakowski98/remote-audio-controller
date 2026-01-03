@@ -183,10 +183,9 @@ export const stopPlaying = (): AppThunk => {
         if (playingState == 'stopped') return
         if (playingFile == null) return
 
-        if (playingFile.audio == null) throw 'Audio does not exist to pause'
-        playingFile.audio.unpipe()
-        playingFile.audio.removeAllListeners()
-        if (playingFile.speaker != null) playingFile.speaker.close(true)
+        playingFile.audio?.unpipe()
+        playingFile.audio?.removeAllListeners()
+        playingFile.speaker?.close(true)
 
         dispatch(setAudio(null))
         dispatch(setSpeaker(null))
@@ -251,7 +250,7 @@ export const startPlaying = (startAt?: number): AppThunk => {
 }
 
 export const seek = (seekTo: number): AppThunk => {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         dispatch(stopPlaying())
         dispatch(startPlaying(seekTo))
     }
