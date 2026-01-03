@@ -6,11 +6,14 @@ import { httpReducer } from './slices/httpSlice'
 import { filePlayerReducer } from './slices/filePlayer'
 import { sendSyncData } from './servers/stateSync'
 
+import { selectUIState as selectSoundFilesUIState, soundFilesReducer } from './slices/soundFiles'
+import { soundFileKey } from './models/soundFiles'
 import { selectUIState as selectFilePlayerUIState } from './slices/filePlayer'
 import { filePlayerKey } from './models/filePlayer'
 
-const uiStateSelectors = [
-  { typeKey: filePlayerKey, select: selectFilePlayerUIState }
+const uiStateSelectors: { typeKey: string, select: (state: RootState) => unknown }[] = [
+  { typeKey: filePlayerKey, select: selectFilePlayerUIState },
+  { typeKey: soundFileKey, select: selectSoundFilesUIState }
 ]
 
 const dataSync: Middleware = ({ getState }) => {
@@ -30,7 +33,8 @@ export const store = configureStore({
     reducer: {
         config: configReducer,
         http: httpReducer,
-        filePlayer: filePlayerReducer
+        filePlayer: filePlayerReducer,
+        soundFiles: soundFilesReducer
     },
     middleware: (gdm) => gdm({
       serializableCheck: {

@@ -1,12 +1,11 @@
 import { useContext } from 'react'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button'
 
+import { soundFileKey, type SoundFile } from '../models/soundFiles'
 import settingsContext from '../settingsContext'
-import type AudioFileInfo from '../models/audioFileInfo'
-import { soundFileInfoKey } from '../models/soundFile'
 import useSyncedState from '../hooks/useSyncedState'
 
 interface FilesTableProps {
@@ -19,16 +18,11 @@ interface FilesTableProps {
 export default function FilesTable(props: FilesTableProps) {
     const baseUrl = useContext(settingsContext).hostUrl
 
-    const soundFiles = useQuery<AudioFileInfo[]>({
-        queryKey: [soundFileInfoKey],
-        queryFn: async () => (await fetch(props.baseUrlOverride ?? baseUrl)).json()
-    })
+    const soundFiles = useSyncedState<SoundFile[]>(soundFileKey, { queryUrl: props.baseUrlOverride ?? baseUrl })
 
     const removeFile = useMutation({
         mutationFn: async (id: string) => await fetch(new URL(`./${id}`, baseUrl), { method: 'Delete' }),
     })
-
-    useSyncedState<AudioFileInfo[]>(soundFileInfoKey)
 
     if (soundFiles.isLoading == true) return 'Loading'
     if (soundFiles.isError == true) return 'Goofed'
@@ -50,10 +44,10 @@ export default function FilesTable(props: FilesTableProps) {
                             if (props.onSelect != undefined) props.onSelect(file.id)
                         }}
                         className={props.selectedFileId == file.id ? 'table-primary' : undefined}>
-                        <td>{file.fileName}</td>
+                        <td>{file.name}</td>
                         <td>{file.title}</td>
                         <td>{file.artist}</td>
-                        <td>{(file.duration / 1000).toFixed(2)}</td>
+                        <td>{(file.durationMs / 1000).toFixed(2)}</td>
                         {props.showDeleteButtons && <td>
                             <Button
                                 type='button'

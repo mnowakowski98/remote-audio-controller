@@ -3,27 +3,20 @@ import multer from 'multer'
 
 import { parseBuffer, IAudioMetadata } from 'music-metadata'
 
-import { addSoundFile, fileNameExists, getAudioInfos, getFile, makeSoundFile, removeSoundFile } from '../repositories/soundFiles'
-import { sendSyncData } from '../servers/stateSync'
-import { soundFileInfoKey } from '../models/soundFile'
+import { getContext } from '../servers/express'
+import { deleteSoundFile, selectFileById, selectFileByName, selectUIState, writeSoundFile } from '../slices/soundFiles'
 
 const router = express.Router()
 const upload = multer()
 
-router.get('/', async (_req, res) => res.send(getAudioInfos()))
-
-router.get('/:id', (req, res) => {
-    const id = req.params.id
-    const file = getAudioInfos().find(file => file.id == id)
-    if (file == undefined) {
-        res.sendStatus(400)
-        return
-    }
-
-    res.send(file)
+router.get('/', async (req, res) => {
+    const store = getContext(req).store
+    res.send(selectUIState(store.getState()))
 })
 
 router.post('/', upload.single('file'), async (req, res) => {
+    const store = getContext(req).store
+
     if (req.file == null) {
         res.statusCode = 400
         res.send('file can not be null')
@@ -36,7 +29,7 @@ router.post('/', upload.single('file'), async (req, res) => {
         return
     }
 
-    if(fileNameExists(fileName)) {
+    if(selectFileByName(store.getState(), fileName)) {
         res.status(400).send('File name already exists')
         return
     }
@@ -48,22 +41,22 @@ router.post('/', upload.single('file'), async (req, res) => {
         return
     }
     
-    await addSoundFile(makeSoundFile(fileName, metadata), req.file.buffer)
+    await store.dispatch(writeSoundFile(fileName, metadata, req.file.buffer))
     res.sendStatus(200)
-    sendSyncData(soundFileInfoKey, getAudioInfos())
 })
 
 router.delete('/:id', async (req, res) => {
     const id = req.params.id
-    const file = getFile(id)
+    const store = getContext(req).store
+
+    const file = selectFileById(store.getState(), id)
     if (file == undefined) {
-        res.sendStatus(400)
+        res.sendStatus(404)
         return
     }
 
-    await removeSoundFile(file)
+    await store.dispatch(deleteSoundFile(id))
     res.sendStatus(200)
-    sendSyncData(soundFileInfoKey, getAudioInfos())
 })
 
 export default router

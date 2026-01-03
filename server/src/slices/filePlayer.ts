@@ -143,8 +143,11 @@ export const selectUIState = (_state: RootState): FilePlayerUIState => {
         loop: state.controls.loop,
         seekPosition: selectSeekTime(_state),
         playingFile: state.playingFile != null ? {
+            id: 'playing',
+            name: state.playingFile.name,
             title: state.playingFile?.metadata.common.title ?? '(No title)',
             artist: state.playingFile?.metadata.common.artist ?? '(No artist)',
+            album: state.playingFile?.metadata.common.album ?? '(No album)',
             durationMs: (state.playingFile?.metadata.format.duration ?? 0) * 1000
         } : null
     }
@@ -180,10 +183,9 @@ export const stopPlaying = (): AppThunk => {
         if (playingState == 'stopped') return
         if (playingFile == null) return
 
-        if (playingFile.audio == null) throw 'Audio does not exist to pause'
-        playingFile.audio.unpipe()
-        playingFile.audio.removeAllListeners()
-        if (playingFile.speaker != null) playingFile.speaker.close(true)
+        playingFile.audio?.unpipe()
+        playingFile.audio?.removeAllListeners()
+        playingFile.speaker?.close(true)
 
         dispatch(setAudio(null))
         dispatch(setSpeaker(null))
@@ -248,13 +250,13 @@ export const startPlaying = (startAt?: number): AppThunk => {
 }
 
 export const seek = (seekTo: number): AppThunk => {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         dispatch(stopPlaying())
         dispatch(startPlaying(seekTo))
     }
 }
 
-export const setFileData = async (fileName: string, metadata: IAudioMetadata, fileData: Buffer): Promise<AppThunk> => {
+export const setFileData = (fileName: string, metadata: IAudioMetadata, fileData: Buffer): AppThunk => {
     return async (dispatch, getState) => {
         const wasPlaying = selectPlayingState(getState()) == 'playing'
         dispatch(stopPlaying())
