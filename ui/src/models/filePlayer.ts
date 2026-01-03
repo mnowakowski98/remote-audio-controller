@@ -1,4 +1,4 @@
-import { SoundFile } from "./soundFiles"
+import { SoundFile } from './soundFiles'
 
 export const filePlayerKey = 'filePlayer'
 export type PlayingState = 'playing' | 'paused' | 'stopped'

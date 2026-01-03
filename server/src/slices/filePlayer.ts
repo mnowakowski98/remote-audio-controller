@@ -257,7 +257,7 @@ export const seek = (seekTo: number): AppThunk => {
     }
 }
 
-export const setFileData = async (fileName: string, metadata: IAudioMetadata, fileData: Buffer): Promise<AppThunk> => {
+export const setFileData = (fileName: string, metadata: IAudioMetadata, fileData: Buffer): AppThunk => {
     return async (dispatch, getState) => {
         const wasPlaying = selectPlayingState(getState()) == 'playing'
         dispatch(stopPlaying())

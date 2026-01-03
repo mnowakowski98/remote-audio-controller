@@ -15,6 +15,7 @@ import {
     startPlaying,
     stopPlaying
 } from '../slices/filePlayer'
+import { selectFileBuffer, selectFileById, selectFileMetadata } from '../slices/soundFiles'
 
 const router = express.Router()
 const upload = multer()
@@ -50,18 +51,20 @@ router.post('/', upload.single('file'), async (req, res) => {
     res.sendStatus(200)
 })
 
-// router.post('/:id', async (req, res) => {
-//     const file = getFile(req.params.id)
-//     if (file == undefined) {
-//         res.sendStatus(404)
-//         return
-//     }
+router.post('/:id', async (req, res) => {
+    const store = getContext(req).store
+    const file = selectFileById(store.getState(), req.params.id)
+    if (file == undefined) {
+        res.sendStatus(404)
+        return
+    }
 
-//     const store = getContext(req).store
-//     store.dispatch(await setFileData(file.fileInfo.fileName, file.metadata, await getFileBuffer(file)))
-
-//     res.sendStatus(200)
-// })
+    const metadata = await selectFileMetadata(store.getState(), file)
+    const data = await selectFileBuffer(store.getState(), file)
+    
+    store.dispatch(setFileData(file.name, metadata, data))
+    res.sendStatus(200)
+})
 
 router.delete('/', async (req, res) => {
     const store = getContext(req).store
