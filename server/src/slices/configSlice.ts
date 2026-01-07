@@ -12,8 +12,9 @@ const defaultConfig = Object.freeze({
         port: 80,
     },
     filePlayer: {
-        tempFileDirectory: ':tmp:',
-        ffmpegPath: undefined as string | undefined
+        currentFilePath: ':tmp:',
+        mpg123Path: undefined as string | undefined,
+        mpg123Pipe: undefined as string | undefined
     },
     soundFiles: {
         soundFilesDirectory: './sounds'
@@ -48,13 +49,16 @@ export const {
 const configPath = (join(cwd(), './config.json'))
 let configHasLoaded = false
 
-const loadConfigFile = (): AppThunk => {
+export const loadConfigFile = (): AppThunk => {
     return async (dispatch) => {
         let data: Config
         if (existsSync(configPath) == true) {
             const dataString = (await readFile(configPath)).toString()
             data = JSON.parse(dataString)
-        } else data = defaultConfig
+        } else {
+            await writeConfigFile(defaultConfig)
+            data = defaultConfig
+        }
 
         const workingCopy = structuredClone(defaultConfig)
         Object.assign(workingCopy.httpServer, data.httpServer)
@@ -67,14 +71,3 @@ const loadConfigFile = (): AppThunk => {
 
 export const writeConfigFile = async (config: Config) =>
     await writeFile(configPath, JSON.stringify(config, undefined, 4))
-
-export const watchConfig = (): AppThunk => {
-    return async (dispatch) => {
-        if (existsSync(configPath) == false) await writeConfigFile(defaultConfig)
-        if (configHasLoaded == false) dispatch(loadConfigFile())
-        
-        const watcher = watch(configPath)
-        for await (const event of watcher)
-            dispatch(loadConfigFile())
-    }
-}

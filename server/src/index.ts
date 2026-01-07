@@ -2,18 +2,30 @@ import { addRequestListener, addUpgradeListener, startServer as startHttpServer 
 import { connectionListener } from './servers/stateSync'
 
 import { store } from './store'
-import { watchConfig } from './slices/configSlice'
+import { loadConfigFile, selectFilePlayerConfig } from './slices/configSlice'
 import { createApp } from './servers/express'
 import { setPort } from './slices/httpSlice'
-import { setInitialState } from './slices/filePlayer'
 import { loadFiles } from './slices/soundFiles'
 
-const initFilePlayer = () => store.dispatch(setInitialState())
+import { spawn as _spawn } from 'node:child_process'
+import { join } from 'node:path'
+
+import findExec from 'find-exec'
+import { startMpg123 } from './servers/mpg123'
+import { tmpdir } from 'node:os'
+
+const initFilePlayer = () => {
+    const config = selectFilePlayerConfig(store.getState())
+    const mpg123 = findExec(config.mpg123Path ?? 'mpg123')
+    if (mpg123 == null) throw 'FATAL: mpg123 is not accessible'
+
+    startMpg123(mpg123, config.mpg123Pipe ?? join(tmpdir(), 'remote-audio-player-mpg123pipe'))
+}
+
 const initSoundFiles = () => store.dispatch(loadFiles())
 
 const startServer = () => {
     const state = store.getState()
-
     const app = createApp(store, {
         controlCallbacks: {
             reload: {
@@ -31,11 +43,10 @@ const startServer = () => {
     addUpgradeListener(connectionListener)
 }
 
-const start = () => {
+const start = async () => {
+    await store.dispatch(loadConfigFile())
     startServer()
-    initFilePlayer()
     initSoundFiles()
+    initFilePlayer()
 }
-
-store.dispatch(watchConfig())
 start()

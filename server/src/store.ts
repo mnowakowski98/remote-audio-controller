@@ -36,12 +36,7 @@ export const store = configureStore({
         filePlayer: filePlayerReducer,
         soundFiles: soundFilesReducer
     },
-    middleware: (gdm) => gdm({
-      serializableCheck: {
-        ignoredActionPaths: ['payload'],
-        ignoredPaths: ['filePlayer.playingFile.audio', 'filePlayer.playingFile.speaker']
-      }
-    }).concat(dataSync)
+    middleware: (gdm) => gdm().concat(dataSync)
 })
 
 // Infer the type of `store`
