@@ -20,7 +20,7 @@ import {
 import { selectFileById, selectFileMetadata, selectFilePath } from '../slices/soundFiles'
 import { selectFilePlayerConfig } from '../slices/configSlice'
 import { getContext } from '../servers/express'
-import { loadAudio, pauseAudio, stopAudio } from '../servers/mpg123'
+import { loadAudio, pauseAudio, seek, stopAudio } from '../servers/mpg123'
 
 
 const router = express.Router()
@@ -105,9 +105,10 @@ router.put('/status/playing', express.text(), (req, res) => {
         return
     }
 
+    const playingState = selectPlayingState(state)
     switch(req.body) {
         case 'start':
-            if (selectPlayingState(state) == 'playing') break
+            if (playingState == 'playing') break
             pauseAudio()
             store.dispatch(start())
             break
@@ -116,8 +117,8 @@ router.put('/status/playing', express.text(), (req, res) => {
             store.dispatch(pause())
             break
         case 'stop':
-            stopAudio()
-            loadAudio()
+            if (playingState == 'playing') pauseAudio()
+            seek(0)
             store.dispatch(stop())
             break
         default:
