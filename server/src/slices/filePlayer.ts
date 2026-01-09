@@ -11,6 +11,7 @@ import { IAudioMetadata } from 'music-metadata'
 
 //#region State Types
 interface PlayingFile {
+    path: string,
     name: string,
     metadata: IAudioMetadata,
 }
@@ -78,12 +79,9 @@ const slice = createSlice({
         seek: (state, action: PayloadAction<number>) => {
             state.seekTimings.initialPositionMs = action.payload
             state.seekTimings.timePaused = 0
-            if (state.audioPlaying == true) state.seekTimings.audioStart = performance.now()
+            state.seekTimings.audioStart = performance.now()
             if (state.audioPaused == true) state.seekTimings.lastPause = performance.now()
-            if (state.audioPlaying == true) return
-
-            state.seekTimings.audioStart = null
-            state.seekTimings.lastPause = 0
+            if (state.audioPlaying == false) state.seekTimings.lastPause = 0
         },
         setFileInfo: (state, action: PayloadAction<PlayingFile | null>) => {
             state.playingFile = action.payload
@@ -169,9 +167,12 @@ export const pause = (): AppThunk => {
 
 export const stop = (): AppThunk => {
     return async (dispatch, getState) => {
-        const playingState = selectPlayingState(getState())
-        if (playingState == 'stopped' || playingState == 'unloaded') return
+        const state = getState()
+        const playingState = selectPlayingState(state)
+        const playingFile = selectPlayingFile(state)
+        if (playingState == 'stopped' || playingFile == null) return
         await sendCommand('stop')
+        await sendCommand(`loadpaused ${playingFile.path}`)
         dispatch(slice.actions.stop())
     }
 }
@@ -183,7 +184,7 @@ export const seek = (seekToMs: number): AppThunk => {
     }
 }
 
-export const setFileInfo = (file: { path: string, playingFile: PlayingFile } | null): AppThunk => {
+export const setFileInfo = (file: PlayingFile | null): AppThunk => {
     return async (dispatch, getState) => {
         if (file == null) {
             sendCommand('stop')
@@ -193,7 +194,7 @@ export const setFileInfo = (file: { path: string, playingFile: PlayingFile } | n
 
         const wasPlaying = selectPlayingState(getState()) == 'playing'
         await sendCommand(`loadpaused ${file.path}`)
-        dispatch(slice.actions.setFileInfo(file.playingFile))
+        dispatch(slice.actions.setFileInfo(file))
         if (wasPlaying == true) sendCommand('pause')
     }
 }

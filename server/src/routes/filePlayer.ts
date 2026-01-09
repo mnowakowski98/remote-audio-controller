@@ -60,7 +60,7 @@ router.post('/', upload.single('file'), async (req, res) => {
         ? join(tmpdir(), 'remote-audio-player-currentfile')
         : currentFilePath)
     await writeFile(currentFile, req.file.buffer)
-    await store.dispatch(setFileInfo({ path: currentFile, playingFile: { name: fileName, metadata }}))
+    await store.dispatch(setFileInfo({ path: currentFile, name: fileName, metadata }))
     if (wasPlaying) store.dispatch(start())
 
     res.sendStatus(200)
@@ -78,8 +78,8 @@ router.post('/:id', async (req, res) => {
     const wasPlaying = selectPlayingState(state) == 'playing'
     const metadata = await selectFileMetadata(state, file)
     const path = selectFilePath(state, file)
-    await store.dispatch(setFileInfo({ path, playingFile: { name: file.name, metadata }}))
-    if (wasPlaying) store.dispatch(start())
+    await store.dispatch(setFileInfo({ path, name: file.name, metadata }))
+    if (wasPlaying) await store.dispatch(start())
 
     res.sendStatus(200)
 })
@@ -141,7 +141,7 @@ router.put('/status/seek', express.text(), async (req, res) => {
         res.status(400).send('Body must be a number')
         return
     }
-    
+
     await store.dispatch(seek(seekTo))
     res.sendStatus(200)
 })
