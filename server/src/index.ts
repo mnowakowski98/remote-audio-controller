@@ -11,7 +11,7 @@ import { spawn as _spawn } from 'node:child_process'
 import { join } from 'node:path'
 
 import findExec from 'find-exec'
-import { startMpg123 } from './servers/mpg123'
+import { startMpg123 } from './slices/filePlayer'
 import { tmpdir } from 'node:os'
 
 const initFilePlayer = () => {

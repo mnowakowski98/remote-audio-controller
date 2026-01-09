@@ -20,9 +20,6 @@ import {
 import { selectFileById, selectFileMetadata, selectFilePath } from '../slices/soundFiles'
 import { selectFilePlayerConfig } from '../slices/configSlice'
 import { getContext } from '../servers/express'
-import { setAudioEventListeners, removeAudioEventListeners, loadAudio, pauseAudio, seek, stopAudio } from '../servers/mpg123'
-
-const mpg123ListenerKey = 'file-player-routes'
 
 const router = express.Router()
 const upload = multer()
@@ -62,9 +59,8 @@ router.post('/', upload.single('file'), async (req, res) => {
         ? join(tmpdir(), 'remote-audio-player-currentfile')
         : currentFilePath)
     await writeFile(currentFile, req.file.buffer)
-    loadAudio(currentFile)
-    store.dispatch(setFileInfo({ name: fileName, metadata }))
-    if (wasPlaying) pauseAudio()
+    store.dispatch(setFileInfo({ path: currentFile, playingFile: { name: fileName, metadata }}))
+    if (wasPlaying) store.dispatch(start())
 
     res.sendStatus(200)
 })
@@ -80,15 +76,13 @@ router.post('/:id', async (req, res) => {
 
     const wasPlaying = selectPlayingState(state) == 'playing'
     const metadata = await selectFileMetadata(state, file)
-    loadAudio(selectFilePath(state, file))
-    store.dispatch(setFileInfo({ name: file.name, metadata }))
-    if (wasPlaying) pauseAudio()
+    store.dispatch(setFileInfo({ path: selectFilePath(state, file), playingFile: { name: file.name, metadata }}))
+    if (wasPlaying) store.dispatch(start())
 
     res.sendStatus(200)
 })
 
 router.delete('/', async (req, res) => {
-    stopAudio()
     const store = getContext(req).store
     store.dispatch(setFileInfo(null))
     res.sendStatus(200)
@@ -107,17 +101,12 @@ router.put('/status/playing', express.text(), (req, res) => {
     const playingState = selectPlayingState(state)
     switch(req.body) {
         case 'start':
-            if (playingState == 'playing') break
-            pauseAudio()
             store.dispatch(start())
             break
         case 'pause':
-            pauseAudio()
             store.dispatch(pause())
             break
         case 'stop':
-            if (playingState == 'playing') pauseAudio()
-            seek(0)
             store.dispatch(stop())
             break
         default:
