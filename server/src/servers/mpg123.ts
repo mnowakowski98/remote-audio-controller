@@ -10,6 +10,18 @@ const mpg123OutputPipe = () => mpg123Pipe?.concat('-output')
 
 let lastAudioPath: string | null = null
 
+type Mpg123Listeners = {
+    listenerKey: string
+    onAudioEnd?: () => void
+    onAudioPause?: () => void
+    onAudioUnpause?: () => void
+}
+
+const eventListeners = new Map<string, Mpg123Listeners>()
+
+export const setAudioEventListeners = (key: string, listeners: Mpg123Listeners) => eventListeners.set(key, listeners)
+export const removeAudioEventListeners = (key: string) => eventListeners.delete(key)
+
 const sendCommand = (command: string) => writeFile(mpg123Pipe!, command.concat('\r\n'))
 
 export const loadAudio = (filePath?: string) => {
@@ -18,6 +30,7 @@ export const loadAudio = (filePath?: string) => {
     lastAudioPath = path
     sendCommand(`loadpaused ${path}`)
 }
+
 export const pauseAudio = () => sendCommand('pause')
 export const stopAudio = () => sendCommand('stop')
 
@@ -26,6 +39,7 @@ export const seek = (positionMs: number) => {
     sendCommand(`seek ${samplePosition}`)
 }
 
+// Called by process.exit listener, can't use async code
 const stopMpg123 = () => {
     if (mpg123Pipe != undefined && existsSync(mpg123Pipe) == true) rmSync(mpg123Pipe)
     const outpipe = mpg123OutputPipe()
@@ -36,6 +50,7 @@ const stopMpg123 = () => {
     mpg123Process == undefined
 }
 
+// TODO: Add callbacks for external state updates
 export const startMpg123 = (execPath: string, pipe: string) => {
     stopMpg123()
     if (mpg123Pipe == undefined) {
@@ -53,10 +68,43 @@ export const startMpg123 = (execPath: string, pipe: string) => {
                 })
 
                 const outputStream = createReadStream('', { fd })
-                outputStream.on('data', data => console.log(data.toString()))
+                outputStream.on('data', data => {
+                    const dataString = data.toString()
+                    console.log(dataString)
+
+                    const lineTypeChar = dataString.at(1)
+                    switch (lineTypeChar) {
+                        case 'R': // Version info, maybe nothing to do
+                            break
+                        case 'F': // TODO: Handle propagating frame information (for audio progress)
+
+                            break
+                        case 'P': // Playing/paused states
+                            const value = dataString.at(3)
+                            switch (value) {
+                                case '0': // Playing or end of file (closed, follows 3)
+                                    for (const listeners of eventListeners.values()) listeners.onAudioUnpause?.()
+                                    break
+                                case '1': // Paused - manual or end of file (keep-open, follows 3)
+                                    for (const listeners of eventListeners.values()) listeners.onAudioPause?.()
+                                    break
+                                case '2': // Tried to play open file at end. Followed by: 3 then 1
+                                    break;
+                                case '3': // End of file, stopped playing. Followed by: 0 or 1
+                                    for (const listeners of eventListeners.values()) listeners.onAudioEnd?.()
+                                    break
+                            }
+                            break
+
+                        case 'I': // Just ID3v2 info, should already be known via music-metadata
+                            break
+                        case 'K': // Outputs when a seek happens, should only occur via rest api (but not impossible to inject via pipe)
+                            break
+                    }
+                })
             })
         })
     }
 }
 
-process.addListener('exit', stopMpg123)
+process.addListener('exit', stopMpg123) // child process should exit with parent, pipes still need to be removed tho

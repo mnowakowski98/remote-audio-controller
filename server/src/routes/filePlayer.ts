@@ -20,8 +20,9 @@ import {
 import { selectFileById, selectFileMetadata, selectFilePath } from '../slices/soundFiles'
 import { selectFilePlayerConfig } from '../slices/configSlice'
 import { getContext } from '../servers/express'
-import { loadAudio, pauseAudio, seek, stopAudio } from '../servers/mpg123'
+import { setAudioEventListeners, removeAudioEventListeners, loadAudio, pauseAudio, seek, stopAudio } from '../servers/mpg123'
 
+const mpg123ListenerKey = 'file-player-routes'
 
 const router = express.Router()
 const upload = multer()
@@ -71,7 +72,6 @@ router.post('/', upload.single('file'), async (req, res) => {
 router.post('/:id', async (req, res) => {
     const store = getContext(req).store
     const state = store.getState()
-    
     const file = selectFileById(state, req.params.id)
     if (file == undefined) {
         res.sendStatus(404)
@@ -79,7 +79,6 @@ router.post('/:id', async (req, res) => {
     }
 
     const wasPlaying = selectPlayingState(state) == 'playing'
-
     const metadata = await selectFileMetadata(state, file)
     loadAudio(selectFilePath(state, file))
     store.dispatch(setFileInfo({ name: file.name, metadata }))

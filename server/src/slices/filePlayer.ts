@@ -68,6 +68,10 @@ const slice = createSlice({
             state.seekTimings.lastPause = 0
             state.seekTimings.timePaused = 0
         },
+        reset: (state, action: PayloadAction<boolean>) => {
+            // TODO: Reset playing state to initial
+            // Start playing again if action payload is true
+        },
         setFileInfo: (state, action: PayloadAction<PlayingFile | null>) => {
             state.playingFile = action.payload
             state.audioPaused = false
