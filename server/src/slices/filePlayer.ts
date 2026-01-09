@@ -21,6 +21,7 @@ interface PlayerControls {
 
 interface SeekTimings {
     audioStart: number | null,
+    initialPositionMs: number
     lastPause: number,
     timePaused: number
 }
@@ -42,6 +43,7 @@ const slice = createSlice({
         playingFile: null,
         seekTimings: {
             audioStart: null,
+            initialPositionMs: 0,
             lastPause: 0,
             timePaused: 0
         },
@@ -73,9 +75,10 @@ const slice = createSlice({
             state.seekTimings.lastPause = 0
             state.seekTimings.timePaused = 0
         },
-        reset: (state, action: PayloadAction<boolean>) => {
-            // TODO: Reset playing state to initial
-            // Start playing again if action payload is true
+        seek: (state, action: PayloadAction<number>) => {
+            state.seekTimings.initialPositionMs = action.payload
+            if (state.audioPlaying == true && state.audioPaused == false)
+                state.seekTimings.audioStart = performance.now()
         },
         setFileInfo: (state, action: PayloadAction<PlayingFile | null>) => {
             state.playingFile = action.payload
@@ -86,6 +89,12 @@ const slice = createSlice({
             const currentLoop = state.controls.loop
             if (action.payload == undefined) state.controls.loop = !currentLoop
             else state.controls.loop = action.payload
+        },
+        loop: (state) => {
+            state.seekTimings.audioStart = performance.now()
+            state.seekTimings.initialPositionMs = 0
+            state.seekTimings.lastPause = 0
+            state.seekTimings.timePaused = 0
         }
     },
     selectors: {
@@ -98,7 +107,9 @@ const slice = createSlice({
         },
         selectPlayingFile: (state) => state.playingFile,
         selectSeekTime: (state) =>
-            state.seekTimings.audioStart != null ? (performance.now() - state.seekTimings.audioStart) - state.seekTimings.timePaused : 0
+            state.seekTimings.audioStart != null ?
+                ((performance.now() - state.seekTimings.audioStart) - state.seekTimings.timePaused) + state.seekTimings.initialPositionMs
+                : 0
     }
 })
 
@@ -192,56 +203,62 @@ const stopMpg123 = () => {
     mpg123Process == undefined
 }
 
-export const startMpg123 = (execPath: string, pipe: string) => {
-    stopMpg123()
-    if (mpg123Pipe == undefined) {
-        mpg123Pipe = normalize(pipe)
+export const startMpg123 = (execPath: string, pipe: string): AppThunk => {
+    return (dispatch, getState) => {
+        stopMpg123()
+        if (mpg123Pipe == undefined) {
+            mpg123Pipe = normalize(pipe)
 
-        const pipeSpawn = spawn('mkfifo', [mpg123Pipe])
-        pipeSpawn.on('exit', () => {
-            const outputPipe = mpg123OutputPipe()!
-            const outputPipeSpawn = spawn('mkfifo', [outputPipe])
-            outputPipeSpawn.on('exit', async () => {
-                const outputPipeDescriptor = await open(outputPipe, 'r+')
-                console.log(`\nStarting mpg123\npipe: ${pipe}\noutput-pipe: ${outputPipe}`)
-                mpg123Process = spawn(`${execPath}`, ['-R', '--fifo', pipe, '--no-control', '--keep-open', '-q'], {
-                    stdio: ['pipe', outputPipeDescriptor.createWriteStream(), 'pipe']
-                })
+            const pipeSpawn = spawn('mkfifo', [mpg123Pipe])
+            pipeSpawn.on('exit', () => {
+                const outputPipe = mpg123OutputPipe()!
+                const outputPipeSpawn = spawn('mkfifo', [outputPipe])
+                outputPipeSpawn.on('exit', async () => {
+                    const outputPipeDescriptor = await open(outputPipe, 'r+')
+                    console.log(`\nStarting mpg123\npipe: ${pipe}\noutput-pipe: ${outputPipe}`)
+                    mpg123Process = spawn(`${execPath}`, ['-R', '--fifo', pipe, '--no-control', '--keep-open', '-q'], {
+                        stdio: ['pipe', outputPipeDescriptor.createWriteStream(), 'pipe']
+                    })
 
-                const outputStream = createReadStream('', { fd: outputPipeDescriptor })
-                outputStream.on('data', data => {
-                    const dataString = data.toString()
-                    console.log(dataString)
+                    const outputStream = createReadStream('', { fd: outputPipeDescriptor })
+                    outputStream.on('data', data => {
+                        const dataString = data.toString()
+                        console.log(dataString)
 
-                    const lineTypeChar = dataString.at(1)
-                    switch (lineTypeChar) {
-                        case 'R': // Version info, maybe nothing to do
-                            break
-                        case 'F': // TODO: Handle propagating frame information (for audio progress)
-                            break
-                        case 'P': // Playing/paused states
-                            const value = dataString.at(3)
-                            switch (value) {
-                                case '0': // Playing or end of file (closed, follows 3)
-                                    break
-                                case '1': // Paused - file loaded, manual or end of file (keep-open, follows 3)
-                                    break
-                                case '2': // Tried to play open file at end. Followed by: 3 then 1
-                                    break;
-                                case '3': // End of file, stopped playing. Followed by: 0 or 1
-                                    break
-                            }
-                            break
-                        case 'I': // Just ID3v2 info, should already be known via music-metadata
-                            break
-                        case 'K': // Outputs when a seek happens, should only occur via rest api (but not impossible to inject via pipe)
-                            break
-                        case 'E': // Error output
-                            break
-                    }
+                        const lineTypeChar = dataString.at(1)
+                        switch (lineTypeChar) {
+                            case 'R': // Version info, maybe nothing to do
+                                break
+                            case 'F': // TODO: Handle propagating frame information (for audio progress)
+                                break
+                            case 'P': // Playing/paused states
+                                const value = dataString.at(3)
+                                switch (value) {
+                                    case '0': // Playing or end of file (closed, follows 3)
+                                        break
+                                    case '1': // Paused - file loaded, manual or end of file (keep-open, follows 3)
+                                        break
+                                    case '2': // Tried to play open file at end. Followed by: 3 then 1
+                                        break;
+                                    case '3': // End of file, stopped playing. Followed by: 0 or 1
+                                        if (getState().filePlayer.controls.loop == false) break
+                                        sendCommand('seek 0')
+                                        sendCommand('pause')
+                                        dispatch(slice.actions.loop())
+                                        break
+                                }
+                                break
+                            case 'I': // Just ID3v2 info, should already be known via music-metadata
+                                break
+                            case 'K': // Outputs when a seek happens, should only occur via rest api (but not impossible to inject via pipe)
+                                break
+                            case 'E': // Error output
+                                break
+                        }
+                    })
                 })
             })
-        })
+        }
     }
 }
 

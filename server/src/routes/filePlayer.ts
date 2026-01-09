@@ -76,7 +76,8 @@ router.post('/:id', async (req, res) => {
 
     const wasPlaying = selectPlayingState(state) == 'playing'
     const metadata = await selectFileMetadata(state, file)
-    store.dispatch(setFileInfo({ path: selectFilePath(state, file), playingFile: { name: file.name, metadata }}))
+    const path = selectFilePath(state, file)
+    store.dispatch(setFileInfo({ path, playingFile: { name: file.name, metadata }}))
     if (wasPlaying) store.dispatch(start())
 
     res.sendStatus(200)

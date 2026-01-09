@@ -19,7 +19,7 @@ const initFilePlayer = () => {
     const mpg123 = findExec(config.mpg123Path ?? 'mpg123')
     if (mpg123 == null) throw 'FATAL: mpg123 is not accessible'
 
-    startMpg123(mpg123, config.mpg123Pipe ?? join(tmpdir(), 'remote-audio-player-mpg123pipe'))
+    store.dispatch(startMpg123(mpg123, config.mpg123Pipe ?? join(tmpdir(), 'remote-audio-player-mpg123pipe')))
 }
 
 const initSoundFiles = () => store.dispatch(loadFiles())
