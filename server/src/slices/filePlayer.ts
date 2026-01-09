@@ -77,8 +77,13 @@ const slice = createSlice({
         },
         seek: (state, action: PayloadAction<number>) => {
             state.seekTimings.initialPositionMs = action.payload
-            if (state.audioPlaying == true && state.audioPaused == false)
-                state.seekTimings.audioStart = performance.now()
+            state.seekTimings.timePaused = 0
+            if (state.audioPlaying == true) state.seekTimings.audioStart = performance.now()
+            if (state.audioPaused == true) state.seekTimings.lastPause = performance.now()
+            if (state.audioPlaying == true) return
+
+            state.seekTimings.audioStart = null
+            state.seekTimings.lastPause = 0
         },
         setFileInfo: (state, action: PayloadAction<PlayingFile | null>) => {
             state.playingFile = action.payload
@@ -154,31 +159,32 @@ export const start = (): AppThunk => {
 }
 
 export const pause = (): AppThunk => {
-    return (dispatch, getState) => {
+    return async (dispatch, getState) => {
         const playingState = selectPlayingState(getState())
         if (playingState == 'paused' || playingState == 'unloaded') return
-        sendCommand('pause')
+        await sendCommand('pause')
         dispatch(slice.actions.pause())
     }
 }
 
 export const stop = (): AppThunk => {
-    return (dispatch, getState) => {
+    return async (dispatch, getState) => {
         const playingState = selectPlayingState(getState())
         if (playingState == 'stopped' || playingState == 'unloaded') return
-        sendCommand('stop')
+        await sendCommand('stop')
         dispatch(slice.actions.stop())
     }
 }
 
-export const seek = (seekTo: number): AppThunk => {
-    return (dispatch, getState) => {
-        // TODO: Implement
+export const seek = (seekToMs: number): AppThunk => {
+    return async (dispatch) => {
+        await sendCommand(`jump ${seekToMs / 1000}s`)
+        dispatch(slice.actions.seek(seekToMs))
     }
 }
 
 export const setFileInfo = (file: { path: string, playingFile: PlayingFile } | null): AppThunk => {
-    return (dispatch, getState) => {
+    return async (dispatch, getState) => {
         if (file == null) {
             sendCommand('stop')
             dispatch(slice.actions.setFileInfo(null))
@@ -186,7 +192,7 @@ export const setFileInfo = (file: { path: string, playingFile: PlayingFile } | n
         }
 
         const wasPlaying = selectPlayingState(getState()) == 'playing'
-        sendCommand(`loadpaused ${file.path}`)
+        await sendCommand(`loadpaused ${file.path}`)
         dispatch(slice.actions.setFileInfo(file.playingFile))
         if (wasPlaying == true) sendCommand('pause')
     }
@@ -221,7 +227,7 @@ export const startMpg123 = (execPath: string, pipe: string): AppThunk => {
                     })
 
                     const outputStream = createReadStream('', { fd: outputPipeDescriptor })
-                    outputStream.on('data', data => {
+                    outputStream.on('data', async data => {
                         const dataString = data.toString()
                         console.log(dataString)
 
@@ -241,16 +247,19 @@ export const startMpg123 = (execPath: string, pipe: string): AppThunk => {
                                     case '2': // Tried to play open file at end. Followed by: 3 then 1
                                         break;
                                     case '3': // End of file, stopped playing. Followed by: 0 or 1
-                                        if (getState().filePlayer.controls.loop == false) break
                                         sendCommand('seek 0')
-                                        sendCommand('pause')
-                                        dispatch(slice.actions.loop())
+                                        if (getState().filePlayer.controls.loop == true) {
+                                            await sendCommand('pause')
+                                            dispatch(slice.actions.loop())
+                                        } else dispatch(slice.actions.stop())
                                         break
                                 }
                                 break
                             case 'I': // Just ID3v2 info, should already be known via music-metadata
                                 break
-                            case 'K': // Outputs when a seek happens, should only occur via rest api (but not impossible to inject via pipe)
+                            case 'K': // Outputs when a seek happens (value is mpeg frame), should only occur via rest api (but not impossible to inject via pipe)
+                                break
+                            case 'J': // Outputs when a jump happens, same note as K. Value seems to be same as seek
                                 break
                             case 'E': // Error output
                                 break

@@ -15,7 +15,8 @@ import {
     start,
     stop,
     pause,
-    selectPlayingFile
+    selectPlayingFile,
+    seek
 } from '../slices/filePlayer'
 import { selectFileById, selectFileMetadata, selectFilePath } from '../slices/soundFiles'
 import { selectFilePlayerConfig } from '../slices/configSlice'
@@ -59,7 +60,7 @@ router.post('/', upload.single('file'), async (req, res) => {
         ? join(tmpdir(), 'remote-audio-player-currentfile')
         : currentFilePath)
     await writeFile(currentFile, req.file.buffer)
-    store.dispatch(setFileInfo({ path: currentFile, playingFile: { name: fileName, metadata }}))
+    await store.dispatch(setFileInfo({ path: currentFile, playingFile: { name: fileName, metadata }}))
     if (wasPlaying) store.dispatch(start())
 
     res.sendStatus(200)
@@ -77,7 +78,7 @@ router.post('/:id', async (req, res) => {
     const wasPlaying = selectPlayingState(state) == 'playing'
     const metadata = await selectFileMetadata(state, file)
     const path = selectFilePath(state, file)
-    store.dispatch(setFileInfo({ path, playingFile: { name: file.name, metadata }}))
+    await store.dispatch(setFileInfo({ path, playingFile: { name: file.name, metadata }}))
     if (wasPlaying) store.dispatch(start())
 
     res.sendStatus(200)
@@ -85,13 +86,13 @@ router.post('/:id', async (req, res) => {
 
 router.delete('/', async (req, res) => {
     const store = getContext(req).store
-    store.dispatch(setFileInfo(null))
+    await store.dispatch(setFileInfo(null))
     res.sendStatus(200)
 })
 //#endregion
 
 //#region Audio status
-router.put('/status/playing', express.text(), (req, res) => {
+router.put('/status/playing', express.text(), async (req, res) => {
     const store = getContext(req).store
     const state = store.getState()
     if (selectPlayingFile(state) == null) {
@@ -99,16 +100,15 @@ router.put('/status/playing', express.text(), (req, res) => {
         return
     }
 
-    const playingState = selectPlayingState(state)
     switch(req.body) {
         case 'start':
-            store.dispatch(start())
+            await store.dispatch(start())
             break
         case 'pause':
-            store.dispatch(pause())
+            await store.dispatch(pause())
             break
         case 'stop':
-            store.dispatch(stop())
+            await store.dispatch(stop())
             break
         default:
             res.status(400).send('Value must be "start" "stop" or "pause"')
@@ -128,17 +128,22 @@ router.put('/status/loop', express.text(), (req, res) => {
 })
 
 
-router.put('/status/seek', express.text(), (req, res) => {
+router.put('/status/seek', express.text(), async (req, res) => {
+    const store = getContext(req).store
+    if (selectPlayingState(store.getState()) == 'unloaded') {
+        res.status(400).send('No file loaded to seek')
+        return
+    }
+
     let seekTo: number
     try { seekTo = parseInt(req.body) }
     catch {
         res.status(400).send('Body must be a number')
         return
     }
-
-    // const store = getContext(req).store
-    // store.dispatch(seek(seekTo))
-    res.sendStatus(500)
+    
+    await store.dispatch(seek(seekTo))
+    res.sendStatus(200)
 })
 //#endregion
 
