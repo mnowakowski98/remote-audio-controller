@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "./build.sh",
     "package": "tar -cvf remote-audio-controller-ui package.json dist/* && gzip -S .tgz remote-audio-controller-ui",
     "lint": "eslint .",
     "preview": "vite preview"
