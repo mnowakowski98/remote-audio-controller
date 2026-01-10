@@ -19,7 +19,6 @@
     "find-exec": "^1.0.3",
     "multer": "^2.0.2",
     "music-metadata": "^11.9.0",
-    "speaker": "^0.5.5",
     "ws": "^8.18.3"
   },
   "devDependencies": {

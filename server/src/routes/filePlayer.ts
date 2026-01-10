@@ -1,21 +1,26 @@
 import express from 'express'
 import multer from 'multer'
 
+import { writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join, normalize } from 'node:path'
+
 import { IAudioMetadata, parseBuffer } from 'music-metadata'
 
-import { getContext } from '../servers/express'
-
 import {
-    clearFileData,
-    pausePlaying,
-    seek,
+    selectPlayingState,
     selectUIState,
-    setFileData,
+    setFileInfo,
     setLoop,
-    startPlaying,
-    stopPlaying
+    start,
+    stop,
+    pause,
+    selectPlayingFile,
+    seek
 } from '../slices/filePlayer'
-import { selectFileBuffer, selectFileById, selectFileMetadata } from '../slices/soundFiles'
+import { selectFileById, selectFileMetadata, selectFilePath } from '../slices/soundFiles'
+import { selectFilePlayerConfig } from '../slices/configSlice'
+import { getContext } from '../servers/express'
 
 const router = express.Router()
 const upload = multer()
@@ -47,45 +52,63 @@ router.post('/', upload.single('file'), async (req, res) => {
     }
 
     const store = getContext(req).store
-    store.dispatch(await setFileData(fileName, metadata, req.file.buffer))
+    const state = store.getState()
+    const wasPlaying = selectPlayingState(state) == 'playing'
+    const currentFilePath = selectFilePlayerConfig(state).currentFilePath
+
+    const currentFile = normalize(currentFilePath == ':tmp:'
+        ? join(tmpdir(), 'remote-audio-player-currentfile')
+        : currentFilePath)
+    await writeFile(currentFile, req.file.buffer)
+    await store.dispatch(setFileInfo({ path: currentFile, name: fileName, metadata }))
+    if (wasPlaying) store.dispatch(start())
+
     res.sendStatus(200)
 })
 
 router.post('/:id', async (req, res) => {
     const store = getContext(req).store
-    const file = selectFileById(store.getState(), req.params.id)
+    const state = store.getState()
+    const file = selectFileById(state, req.params.id)
     if (file == undefined) {
         res.sendStatus(404)
         return
     }
 
-    const metadata = await selectFileMetadata(store.getState(), file)
-    const data = await selectFileBuffer(store.getState(), file)
-    
-    store.dispatch(setFileData(file.name, metadata, data))
+    const wasPlaying = selectPlayingState(state) == 'playing'
+    const metadata = await selectFileMetadata(state, file)
+    const path = selectFilePath(state, file)
+    await store.dispatch(setFileInfo({ path, name: file.name, metadata }))
+    if (wasPlaying) await store.dispatch(start())
+
     res.sendStatus(200)
 })
 
 router.delete('/', async (req, res) => {
     const store = getContext(req).store
-    store.dispatch(clearFileData())
+    await store.dispatch(setFileInfo(null))
     res.sendStatus(200)
 })
 //#endregion
 
 //#region Audio status
-router.put('/status/playing', express.text(), (req, res) => {
+router.put('/status/playing', express.text(), async (req, res) => {
     const store = getContext(req).store
+    const state = store.getState()
+    if (selectPlayingFile(state) == null) {
+        res.status(400).send(`Can't set playing state when file is not loaded`)
+        return
+    }
 
     switch(req.body) {
         case 'start':
-            store.dispatch(startPlaying())
-            break
-        case 'stop':
-            store.dispatch(stopPlaying())
+            await store.dispatch(start())
             break
         case 'pause':
-            store.dispatch(pausePlaying())
+            await store.dispatch(pause())
+            break
+        case 'stop':
+            await store.dispatch(stop())
             break
         default:
             res.status(400).send('Value must be "start" "stop" or "pause"')
@@ -104,7 +127,14 @@ router.put('/status/loop', express.text(), (req, res) => {
     res.sendStatus(200)
 })
 
-router.put('/status/seek', express.text(), (req, res) => {
+
+router.put('/status/seek', express.text(), async (req, res) => {
+    const store = getContext(req).store
+    if (selectPlayingState(store.getState()) == 'unloaded') {
+        res.status(400).send('No file loaded to seek')
+        return
+    }
+
     let seekTo: number
     try { seekTo = parseInt(req.body) }
     catch {
@@ -112,8 +142,7 @@ router.put('/status/seek', express.text(), (req, res) => {
         return
     }
 
-    const store = getContext(req).store
-    store.dispatch(seek(seekTo))
+    await store.dispatch(seek(seekTo))
     res.sendStatus(200)
 })
 //#endregion

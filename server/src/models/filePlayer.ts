@@ -1,7 +1,7 @@
-import { SoundFile } from './soundFiles'
+import { type SoundFile } from './soundFiles'
 
 export const filePlayerKey = 'filePlayer'
-export type PlayingState = 'playing' | 'paused' | 'stopped'
+export type PlayingState = 'playing' | 'paused' | 'stopped' | 'unloaded'
 
 export interface FilePlayerState {
     playingState: PlayingState,

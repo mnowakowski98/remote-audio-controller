@@ -52,16 +52,23 @@ const slice = createSlice({
         selectFileBuffer: async (state, file: SoundFile) => {
             const filePath = join(state.soundFilesDirectory, file.name)
             return readFile(filePath)
-        }
+        },
+        selectFilePath: (state, file: SoundFile) => join(state.soundFilesDirectory, file.name)
     }
 })
 export const soundFilesReducer = slice.reducer
 const { setFilesDirectory, addFile, addFiles, removeFile } = slice.actions
-export const { selectFileById, selectFileByName, selectFileMetadata, selectFileBuffer } = slice.selectors
+export const {
+    selectFileById,
+    selectFileByName,
+    selectFileMetadata,
+    selectFileBuffer,
+    selectFilePath
+} = slice.selectors
 
 export const selectUIState = (state: RootState) => state.soundFiles.soundFiles
 
-const getSoundFile = (name: string, metadata: IAudioMetadata) => ({
+export const getSoundFile = (name: string, metadata: IAudioMetadata) => ({
     id: randomUUID(),
     name,
     title: metadata.common.title ?? '(No title)',
