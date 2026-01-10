@@ -73,6 +73,7 @@ const slice = createSlice({
             state.audioPaused = false
 
             state.seekTimings.audioStart = null
+            state.seekTimings.initialPositionMs = 0
             state.seekTimings.lastPause = 0
             state.seekTimings.timePaused = 0
         },
