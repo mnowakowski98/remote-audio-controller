@@ -1,0 +1,39 @@
+body {
+    margin: 0;
+}
+
+@property --backgroundcolor-primary {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: blue;
+}
+
+@property --backgroundcolor-secondary {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: grey;
+}
+
+@property --backgroundcolor-affirm {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: green;
+}
+
+@property --backgroundcolor-warning {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #eba610;
+}
+
+@property --backgroundcolor-error {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: red;
+}
+
+@property --textcolor-primary {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: white;
+}

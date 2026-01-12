@@ -1,3 +1,16 @@
 .navbar {
-    padding: 1em 0
+    background-color: var(--backgroundcolor-primary);
+    color: var(--textcolor-primary);
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    padding: 1em;
+}
+
+.navbar a {
+    text-decoration: none;
+}
+
+.navbar a:visited {
+    color: var(--textcolor-primary);
 }
