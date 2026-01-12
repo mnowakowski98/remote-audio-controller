@@ -6,9 +6,10 @@
     "module": "nodenext",
     "target": "esnext",
     "types": ["node"],
+    "lib": ["ESNext"],
 
     // Other Outputs
-    "sourceMap": false,
+    "sourceMap": true,
     "declaration": false,
     "declarationMap": false,
 
@@ -18,12 +19,11 @@
 
     // Recommended Options
     "strict": true,
-    "jsx": "react-jsx",
     "verbatimModuleSyntax": false,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-    "esModuleInterop": true    
+    "esModuleInterop": true
   }
 }

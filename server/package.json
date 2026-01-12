@@ -3,12 +3,12 @@
   "version": "0.3.0",
   "description": "A server that plays audio on the server",
   "private": true,
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
     "dev": "npx nodemon -e ts src/index.ts",
-    "build": "npx tsc && rm -r ../ui/src/models/ && cp -r ./src/models/ ../ui/src/models/",
-    "package": "tar -cvf remote-audio-controller-server package.json package-lock.json dist/* && gzip -S .tgz remote-audio-controller-server",
-    "start": "node dist/index.js"
+    "build": "npx webpack -c webpack.config.js",
+    "build-exec": "./build.sh",
+    "start": "node dist/server.js"
   },
   "author": "Matt Nowakowski",
   "license": "ISC",
@@ -18,7 +18,7 @@
     "express": "^5.1.0",
     "find-exec": "^1.0.3",
     "multer": "^2.0.2",
-    "music-metadata": "^11.9.0",
+    "music-metadata": "^11.10.5",
     "ws": "^8.18.3"
   },
   "devDependencies": {
@@ -29,7 +29,10 @@
     "@types/node": "^24.6.0",
     "@types/ws": "^8.18.1",
     "nodemon": "^3.1.10",
+    "ts-loader": "^9.5.4",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "webpack": "^5.104.1",
+    "webpack-cli": "^6.0.1"
   }
 }
