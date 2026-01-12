@@ -1,7 +1,8 @@
-all: server/dist/* ui/dist/*
+all: server/dist/remote-audio-controller-server ui/dist/*
 	rm -r -f dist/
 	mkdir dist/
 	cp server/dist/remote-audio-controller-server dist/remote-audio-controller-server
+	cp server/dist/server.js dist/
 	cp server/dist/server.js.LICENSE.txt dist/server-license.txt
 	mkdir dist/public/
 	cp -r ui/dist/ dist/public/
@@ -14,12 +15,15 @@ ui-archive: ui/dist/*
 ui/dist/*: ui/src/*
 	cd ui && npm run build
 
-server-archive: server/dist/*
+server-archive: server/dist/server.js
 	cd server && npm run build
 	cd server/dist && tar -cvf remote-audio-controller-server server.js* && gzip -S .tgz remote-audio-controller-server
 
-server/dist/*: server/src/*
+server/dist/remote-audio-controller-server: server/dist/server.js
 	cd server && npm run build-exec
+
+server/dist/server.js: server/src/*
+	cd server && npm run build
 
 clean:
 	rm -r -f dist/

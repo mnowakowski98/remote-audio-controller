@@ -1,4 +1,4 @@
-npx webpack -c webpack.config.js
+# Currently only builds executable on/for mac
 node --experimental-sea-config sea-config.json
 cp $(command -v node) dist/remote-audio-controller-server
 codesign --remove-signature dist/remote-audio-controller-server

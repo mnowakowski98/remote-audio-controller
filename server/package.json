@@ -3,7 +3,7 @@
   "version": "0.3.0",
   "description": "A server that plays audio on the server",
   "private": true,
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
     "dev": "npx nodemon -e ts src/index.ts",
     "build": "npx webpack -c webpack.config.js",
