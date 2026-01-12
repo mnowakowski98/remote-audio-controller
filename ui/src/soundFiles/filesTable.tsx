@@ -1,9 +1,6 @@
 import { useContext } from 'react'
 import { useMutation } from '@tanstack/react-query'
 
-import Table from 'react-bootstrap/Table'
-import Button from 'react-bootstrap/Button'
-
 import { soundFileKey, type SoundFile } from '../models/soundFiles'
 import settingsContext from '../settingsContext'
 import useSyncedState from '../hooks/useSyncedState'
@@ -28,7 +25,7 @@ export default function FilesTable(props: FilesTableProps) {
     if (soundFiles.isError == true) return 'Goofed'
 
     return <>
-        {(soundFiles.data?.length ?? 0) > 0 && <Table>
+        {(soundFiles.data?.length ?? 0) > 0 && <table>
             <thead>
                 <tr>
                     <th>Filename</th>
@@ -42,22 +39,21 @@ export default function FilesTable(props: FilesTableProps) {
                     <tr key={file.id}
                         onClick={() => {
                             if (props.onSelect != undefined) props.onSelect(file.id)
-                        }}
-                        className={props.selectedFileId == file.id ? 'table-primary' : undefined}>
+                        }}>
                         <td>{file.name}</td>
                         <td>{file.title}</td>
                         <td>{file.artist}</td>
                         <td>{(file.durationMs / 1000).toFixed(2)}</td>
                         {props.showDeleteButtons && <td>
-                            <Button
+                            <button
                                 type='button'
                                 onClick={() => removeFile.mutate(file.id)}
-                            >X</Button>
+                            >X</button>
                         </td>}
                     </tr>
                 )}
             </tbody>
-        </Table>}
-        {soundFiles.data?.length == 0 && <div className='text-center mb-3'>No files</div>}
+        </table>}
+        {soundFiles.data?.length == 0 && <div>No files</div>}
     </>
 }

@@ -1,12 +1,6 @@
 import { type ChangeEvent, type ReactElement, useContext, useRef, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 
-import InputGroup from 'react-bootstrap/InputGroup'
-import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
-import Toast from 'react-bootstrap/Toast'
-import ToastContainer from 'react-bootstrap/ToastContainer'
-
 import settingsContext from '../settingsContext'
 
 interface FileUploaderProps {
@@ -18,8 +12,6 @@ export default function FileUploader(props: FileUploaderProps) {
 
     const fileInput = useRef<HTMLInputElement | null>(null)
     const [audioFile, setAudioFile] = useState<File | null>()
-
-    const [showErrorToast, setShowErrorToast] = useState(false)
 
     const uploadFile = useMutation({
         mutationFn: async () => {
@@ -33,7 +25,6 @@ export default function FileUploader(props: FileUploaderProps) {
                 throw new Error(errorMessage)
             }
         },
-        onError: () => setShowErrorToast(true),
         onSuccess: () => {
             setAudioFile(null)
             if (fileInput.current != null) fileInput.current.value = ''
@@ -41,27 +32,27 @@ export default function FileUploader(props: FileUploaderProps) {
     })
 
     return <>
-        <InputGroup>
-            <InputGroup.Text>Upload audio</InputGroup.Text>
-            <Form.Control
+        <div>
+            <label>Upload audio</label>
+            <input
                 ref={fileInput}
                 type='file'
                 disabled={uploadFile.isPending}
                 onChange={(event: ChangeEvent<HTMLInputElement>) =>
                     setAudioFile(event.target.files?.item(0))}
             />
-            <Button
+            <button
                 type='button'
                 disabled={audioFile == null || uploadFile.isPending == true}
                 onClick={() => uploadFile.mutate()}
-            >Upload</Button>
+            >Upload</button>
             {props.children}
-        </InputGroup>
+        </div>
 
-        <ToastContainer position='bottom-end'>
+        {/* <ToastContainer position='bottom-end'>
             <Toast bg='danger' className='m-3' show={showErrorToast} onClose={() => setShowErrorToast(false)} delay={3000} autohide>
                 <Toast.Body className='text-white'>{uploadFile.error?.message}</Toast.Body>
             </Toast>
-        </ToastContainer>
+        </ToastContainer> */}
     </>
 }

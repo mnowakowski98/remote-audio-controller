@@ -1,8 +1,6 @@
 import { useContext } from 'react'
 import { useMutation } from '@tanstack/react-query'
 
-import Button from 'react-bootstrap/Button'
-
 import settingsContext from '../settingsContext'
 
 interface ClearButtonProps {
@@ -16,10 +14,10 @@ export default function ClearButton(props: ClearButtonProps) {
         mutationFn: async () => await fetch(url, { method: 'DELETE' }),
     })
 
-    return <Button
+    return <button
         type='button'
         disabled={clearFile.isPending == true || props.hasFile == false}
         onClick={() => clearFile.mutate()}>
         Clear file
-    </Button>
+    </button>
 }

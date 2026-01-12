@@ -1,5 +1,3 @@
-import Table from 'react-bootstrap/Table'
-
 import useFilePlayerState from './useFilePlayerState'
 
 export default function FileInfo() {
@@ -8,8 +6,8 @@ export default function FileInfo() {
     if (playerState.isLoading) return 'Loading'
     if (playerState.isError) return playerState.error.message
 
-    return <Table className='text-start'>
-        <thead className='fw-bold'>
+    return <table>
+        <thead>
             <tr>
                 <td>Title</td>
                 <td>Artist</td>
@@ -21,5 +19,5 @@ export default function FileInfo() {
                 <td>{playerState.data?.playingFile?.artist ?? '(No artist)'}</td>
             </tr>
         </tbody>
-    </Table>
+    </table>
 }

@@ -1,10 +1,6 @@
 import { useContext } from 'react'
 import { useMutation } from '@tanstack/react-query'
 
-import Form from 'react-bootstrap/Form'
-import InputGroup from 'react-bootstrap/InputGroup'
-import Button from 'react-bootstrap/Button'
-
 import SettingsContext from '../settingsContext'
 import useFilePlayerState from './useFilePlayerState'
 
@@ -30,27 +26,26 @@ export default function PlayerControls(props: PlayerControlsProps) {
     if (playerState.isLoading) return 'Loading'
     if (playerState.isError || playerState.data == null) return playerState.error?.message ?? 'Goofed'
     
-    return <InputGroup className='justify-content-end'>
-        <InputGroup.Text className={`text-light ${playerState.data.loop ? 'bg-success' : 'bg-secondary'}`}>
-            <Form.Check reverse label='Loop' checked={playerState.data.loop} onChange={(event) => setLoopState.mutate(event.target.checked)} />
-        </InputGroup.Text>
-        <Button
+    return <div>
+        <label htmlFor='loopCheck'>Loop</label>
+        <input id='loopCheck' type='checkbox' checked={playerState.data.loop} onChange={(event) => setLoopState.mutate(event.target.checked)} />
+        <button
             type='button'
             disabled={playerState.data.playingState == 'playing' || props.hasFile == false}
             onClick={() => setPlayingState.mutate('start')}>
             Start
-        </Button>
-        <Button
+        </button>
+        <button
             type='button'
             disabled={playerState.data.playingState == 'paused' || playerState.data.playingState == 'stopped' || props.hasFile == false}
             onClick={() => setPlayingState.mutate('pause')}>
             Pause
-        </Button>
-        <Button
+        </button>
+        <button
             type='button'
             disabled={playerState.data.playingState == 'stopped' || props.hasFile == false}
             onClick={() => setPlayingState.mutate('stop')}>
             Stop
-        </Button>
-    </InputGroup>
+        </button>
+    </div>
 }
