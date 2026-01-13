@@ -1,16 +1,14 @@
 import { useContext, useEffect, useRef, useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
 
+import settingsContext from '../settingsContext'
 import useSyncedState from '../hooks/useSyncedState'
 
-import { useMutation } from '@tanstack/react-query'
-import settingsContext from '../settingsContext'
+import classes from './seekBar.module.scss'
+
 import { filePlayerKey, type FilePlayerState } from '../models/filePlayer'
 
-interface SeekBarProps {
-    maxDuration: number
-}
-
-export default function SeekBar(props: SeekBarProps) {
+export default function SeekBar() {
     const baseUrl = useContext(settingsContext).hostUrl
 
     const doUpdate = useRef(true)
@@ -21,7 +19,7 @@ export default function SeekBar(props: SeekBarProps) {
     const [lastSyncMessageTime, setLastSyncMessageTime] = useState(performance.now())
 
     const { data, isLoading } = useSyncedState<FilePlayerState>(filePlayerKey,
-        { queryUrl: './status', enabled: false },
+        { queryUrl: baseUrl, enabled: false },
         { onMessage: (data) => {
             setLastServerTime(data.seekPosition)
             setLastSyncMessageTime(performance.now())
@@ -51,13 +49,13 @@ export default function SeekBar(props: SeekBarProps) {
     }, [data?.playingState, lastServerTime, lastSyncMessageTime])
     if (isLoading == true) return 0
 
-    return <div>
-        <div>
+    return <div className={classes.seekBar}>
+        <div className={classes.timeDisplay}>
             <span ref={seekTime}>0.00</span> /
-            <span> {(props.maxDuration / 1000).toFixed(2)}s</span>
+            <span> {((data?.playingFile?.durationMs ?? 0) / 1000).toFixed(2)}s</span>
         </div>
-        <input className='w-100' type='range' onChange={(event) => {
+        <input type='range' onChange={(event) => {
             seek.mutate(event.target.valueAsNumber)
-        }} ref={audio} min={0} max={props.maxDuration} />
+        }} ref={audio} min={0} max={data?.playingFile?.durationMs ?? 0} />
     </div>
 }

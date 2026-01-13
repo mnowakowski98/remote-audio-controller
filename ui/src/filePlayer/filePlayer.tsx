@@ -1,29 +1,17 @@
-import { useContext, useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
-
 import FileInfo from './fileInfo'
 import PlayerControls from './playerControls'
-import FileUploader from '../soundFiles/fileUploader'
-import FilesTable from '../soundFiles/filesTable'
-import ClearButton from './clearButton'
-
-import useFilePlayerState from './useFilePlayerState'
-import settingsContext from '../settingsContext'
 import SeekBar from './seekBar'
 
-export default function FilePlayer() {
-    const baseUrl = useContext(settingsContext).hostUrl
+import classes from './filePlayer.module.scss'
 
-    const playerState = useFilePlayerState()
-    const hasFile = () => playerState.isSuccess == true && playerState.data?.playingFile != null
+import type { FilePlayerState } from '../models/filePlayer'
 
-    const [selectedFile, setSelectedFile] = useState<string | null>(null)
-    const setFile = useMutation({
-        mutationFn: async () => await fetch(new URL(`./${selectedFile}`, baseUrl), { method: 'POST' }),
-        onSuccess: () => setSelectedFile(null)
-    })
-
-    return <div>
-        
+export default function FilePlayer(props: {state: FilePlayerState}) {
+    return <div className={classes.filePlayer}>
+        <FileInfo state={props.state} />
+        <div>
+            <SeekBar />
+            <PlayerControls state={props.state} />
+        </div>
     </div>
 }

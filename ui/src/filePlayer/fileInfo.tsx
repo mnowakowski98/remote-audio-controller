@@ -1,23 +1,23 @@
-import useFilePlayerState from './useFilePlayerState'
+import type { FilePlayerState } from '../models/filePlayer'
 
-export default function FileInfo() {
-    const playerState = useFilePlayerState()
+import classes from './fileInfo.module.scss'
 
-    if (playerState.isLoading) return 'Loading'
-    if (playerState.isError) return playerState.error.message
-
-    return <table>
-        <thead>
-            <tr>
-                <td>Title</td>
-                <td>Artist</td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>{playerState.data?.playingFile?.title ?? '(No title)'}</td>
-                <td>{playerState.data?.playingFile?.artist ?? '(No artist)'}</td>
-            </tr>
-        </tbody>
-    </table>
+export default function FileInfo(props: { state: FilePlayerState }) {
+    return <div className={classes.fileInfo}>
+        {props.state.playingFile == null && <span>No File loaded</span>}
+        {props.state.playingFile != null && <table>
+            <thead>
+                <tr>
+                    <td>Title</td>
+                    <td>Artist</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{props.state.playingFile.title}</td>
+                    <td>{props.state.playingFile.artist}</td>
+                </tr>
+            </tbody>
+        </table>}
+    </div>
 }

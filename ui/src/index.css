@@ -1,4 +1,5 @@
 body {
+    height: 100vh;
     margin: 0;
 }
 
@@ -33,6 +34,12 @@ body {
 }
 
 @property --textcolor-primary {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: white;
+}
+
+@property --textcolor-secondary {
     syntax: "<color>";
     inherits: true;
     initial-value: white;

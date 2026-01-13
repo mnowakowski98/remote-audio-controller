@@ -1,0 +1,24 @@
+.navbar {
+    background-color: var(--backgroundcolor-primary);
+    color: var(--textcolor-primary);
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    padding: 1em;
+
+    a {
+        text-decoration: none;
+
+        &:visited {
+            color: var(--textcolor-primary);
+        }
+    }
+}
+
+.page {
+    padding: 1em;
+
+    > {
+        height: 100%;
+    }
+}

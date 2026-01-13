@@ -2,16 +2,12 @@ import { useContext } from 'react'
 import { useMutation } from '@tanstack/react-query'
 
 import SettingsContext from '../settingsContext'
-import useFilePlayerState from './useFilePlayerState'
 
-interface PlayerControlsProps {
-    hasFile: boolean
-}
+import classes from './playerControls.module.scss'
+import type { FilePlayerState } from '../models/filePlayer'
 
-export default function PlayerControls(props: PlayerControlsProps) {
+export default function PlayerControls(props: { state: FilePlayerState }) {
     const baseUrl = useContext(SettingsContext).hostUrl
-
-    const playerState = useFilePlayerState()
 
     const setPlayingState = useMutation({
         mutationFn: async (command: 'start' | 'pause' | 'stop') =>
@@ -23,29 +19,31 @@ export default function PlayerControls(props: PlayerControlsProps) {
             await fetch(new URL('./status/loop', baseUrl), { method: 'PUT', body: loop ? 'true' : 'false' })
     })
 
-    if (playerState.isLoading) return 'Loading'
-    if (playerState.isError || playerState.data == null) return playerState.error?.message ?? 'Goofed'
-    
-    return <div>
-        <label htmlFor='loopCheck'>Loop</label>
-        <input id='loopCheck' type='checkbox' checked={playerState.data.loop} onChange={(event) => setLoopState.mutate(event.target.checked)} />
-        <button
-            type='button'
-            disabled={playerState.data.playingState == 'playing' || props.hasFile == false}
-            onClick={() => setPlayingState.mutate('start')}>
-            Start
-        </button>
-        <button
-            type='button'
-            disabled={playerState.data.playingState == 'paused' || playerState.data.playingState == 'stopped' || props.hasFile == false}
-            onClick={() => setPlayingState.mutate('pause')}>
-            Pause
-        </button>
-        <button
-            type='button'
-            disabled={playerState.data.playingState == 'stopped' || props.hasFile == false}
-            onClick={() => setPlayingState.mutate('stop')}>
-            Stop
-        </button>
+    return <div className={classes.playerControls}>
+        <div className={classes.loopControl}>
+            <label htmlFor='loopCheck'>Loop</label>
+            <input id='loopCheck' type='checkbox' checked={props.state.loop} onChange={(event) => setLoopState.mutate(event.target.checked)} />
+        </div>
+
+        <div className={classes.playbackControl}>
+            <button
+                type='button'
+                disabled={props.state.playingState == 'playing' || props.state.playingState == 'unloaded'}
+                onClick={() => setPlayingState.mutate('start')}>
+                Start
+            </button>
+            <button
+                type='button'
+                disabled={props.state.playingState == 'paused' || props.state.playingState == 'stopped' ||  props.state.playingState == 'unloaded'}
+                onClick={() => setPlayingState.mutate('pause')}>
+                Pause
+            </button>
+            <button
+                type='button'
+                disabled={props.state.playingState == 'stopped' ||  props.state.playingState == 'unloaded'}
+                onClick={() => setPlayingState.mutate('stop')}>
+                Stop
+            </button>
+        </div>
     </div>
 }
