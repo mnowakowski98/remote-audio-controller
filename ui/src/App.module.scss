@@ -1,24 +1,33 @@
-.navbar {
-    background-color: var(--backgroundcolor-primary);
-    color: var(--textcolor-primary);
-    display: flex;
-    flex-direction: row;
-    gap: 1em;
-    padding: 1em;
+.app {
+    height: 100vh;
 
-    a {
-        text-decoration: none;
+    .navbar {
+        background-color: var(--backgroundcolor-primary);
+        color: var(--textcolor-primary);
+        display: flex;
+        flex-direction: row;
+        gap: 1em;
+        height: 1em;
+        padding: 1em;
 
-        &:visited {
-            color: var(--textcolor-primary);
+        a {
+            font-size: large;
+            font-weight: bold;
+            margin: auto 0;
+            text-decoration: none;
+
+            &:visited {
+                color: var(--textcolor-primary);
+            }
         }
     }
-}
 
-.page {
-    padding: 1em;
+    .page {
+        height: calc(100vh - 5em);
+        padding: 1em;
 
-    > {
-        height: 100%;
+        > div {
+            height: calc(100vh - 5em)
+        }
     }
 }

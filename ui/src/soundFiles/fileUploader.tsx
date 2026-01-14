@@ -1,13 +1,9 @@
-import { type ChangeEvent, type ReactElement, useContext, useRef, useState } from 'react'
+import { type ChangeEvent, useContext, useRef, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 
 import settingsContext from '../settingsContext'
 
-interface FileUploaderProps {
-    children?: ReactElement
-}
-
-export default function FileUploader(props: FileUploaderProps) {
+export default function FileUploader() {
     const uploadUrl = useContext(settingsContext).hostUrl
 
     const fileInput = useRef<HTMLInputElement | null>(null)
@@ -46,7 +42,6 @@ export default function FileUploader(props: FileUploaderProps) {
                 disabled={audioFile == null || uploadFile.isPending == true}
                 onClick={() => uploadFile.mutate()}
             >Upload</button>
-            {props.children}
         </div>
 
         {/* <ToastContainer position='bottom-end'>
