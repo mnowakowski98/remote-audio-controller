@@ -6,6 +6,10 @@ import SettingsContext from '../settingsContext'
 import classes from './playerControls.module.scss'
 import type { FilePlayerState } from '../models/filePlayer'
 
+import playButton from '../assets/play-button.svg'
+import pauseButton from '../assets/pause-button.svg'
+import stopButton from '../assets/stop-button.svg'
+
 export default function PlayerControls(props: { state: FilePlayerState }) {
     const baseUrl = useContext(SettingsContext).hostUrl
 
@@ -27,22 +31,25 @@ export default function PlayerControls(props: { state: FilePlayerState }) {
 
         <div className={classes.playbackControl}>
             <button
+                className={classes.playbackButton}
                 type='button'
                 disabled={props.state.playingState == 'playing' || props.state.playingState == 'unloaded'}
                 onClick={() => setPlayingState.mutate('start')}>
-                Start
+                <img src={playButton} className={classes.playbackButtonImg} />
             </button>
             <button
+                className={classes.playbackButton}
                 type='button'
                 disabled={props.state.playingState == 'paused' || props.state.playingState == 'stopped' ||  props.state.playingState == 'unloaded'}
                 onClick={() => setPlayingState.mutate('pause')}>
-                Pause
+                <img src={pauseButton} className={classes.playbackButtonImg} />
             </button>
             <button
+                className={classes.playbackButton}
                 type='button'
                 disabled={props.state.playingState == 'stopped' ||  props.state.playingState == 'unloaded'}
                 onClick={() => setPlayingState.mutate('stop')}>
-                Stop
+                <img src={stopButton} className={classes.playbackButtonImg} />
             </button>
         </div>
     </div>

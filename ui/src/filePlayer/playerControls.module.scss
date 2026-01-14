@@ -3,7 +3,15 @@
     flex-direction: row;
     justify-content: center;
     width: 100%;
-}
 
-.loopControl {
+    .playbackButton {
+        background: none;
+        border: none;
+    }
+
+    .playbackButtonImg {
+        height: 3.5em;
+        vertical-align: middle;
+        width: 3.5em;
+    }
 }
