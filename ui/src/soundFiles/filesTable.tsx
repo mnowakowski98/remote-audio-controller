@@ -62,6 +62,6 @@ export default function FilesTable(props: FilesTableProps) {
                 )}
             </tbody>
         </table>}
-        {soundFiles.data?.length == 0 && <div>No files</div>}
+        {soundFiles.data?.length == 0 && <div className={classes.noFiles}>No files</div>}
     </div>
 }

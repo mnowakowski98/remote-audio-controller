@@ -1,4 +1,14 @@
 .fileInfo {
-    display: block;
-    padding: auto 0;
+    height: 100%;
+
+    .albumArt {
+        display: block;
+        margin: 0 auto;
+        width: 50%;
+    }
+
+    .noFile {
+        margin: auto;
+        text-align: center;
+    }
 }

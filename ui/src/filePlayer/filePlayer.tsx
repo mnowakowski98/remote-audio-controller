@@ -41,7 +41,10 @@ export default function FilePlayer(props: { state: FilePlayerState }) {
             <SettingsContext value={{ hostUrl: new URL('/soundfiles/', settings.hostUrl) }}>
                 <FilesTable
                     selectedFileId={selectedFileId}
-                    onSelect={(id: string) => setSelectedFileId(id)}
+                    onSelect={(id: string) => {
+                        if (selectedFileId == id) setSelectedFileId(null)
+                        else setSelectedFileId(id)
+                    }}
                 />
             </SettingsContext>
         </div>
@@ -67,6 +70,7 @@ export default function FilePlayer(props: { state: FilePlayerState }) {
         </button>
 
         <div className={classes.controls}>
+            <hr />
             <SeekBar />
             <PlayerControls state={props.state} />
         </div>

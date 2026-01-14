@@ -7,7 +7,7 @@
         'set-button clear-button'
         'controls controls'
     ;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1.5fr 1fr;
     grid-template-rows: auto 1fr auto auto;
 
     .controls {
@@ -20,17 +20,18 @@
 
     .fileSelection {
         grid-area: file-selection;
+        height: 100%;
         text-align: center;
     }
 
     .setButton {
         grid-area: set-button;
-        width: 100%;    
+        width: 100%;
     }
 
     .playingInfo {
         grid-area: playing-info;
-        text-align: center;
+        height: 100%;
     }
 
     .clearButton {

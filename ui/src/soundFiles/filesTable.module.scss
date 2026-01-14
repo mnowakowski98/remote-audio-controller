@@ -1,17 +1,24 @@
 .filesTable {
+    height: 100%;
     overflow-y: auto;
-    
+
     table {
         text-align: left;
+        width: 100%;
+
+        caption {
+            font-weight: bold;
+            text-align: left;
+        }
+
+        td {
+            border: none;
+            padding: .5em;
+        }
     }
 
-    caption {
-        font-weight: bold;
-        text-align: left;
-    }
-    
-    td {
-        border: none;
-        padding: .5em;
+    .noFiles {
+        margin: auto;
+        text-align: center;
     }
 }
