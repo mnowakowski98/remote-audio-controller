@@ -1,0 +1,13 @@
+.fileUploader {
+    text-align: left;
+    width: 100%;
+    
+    .inputs {
+        display: flex;
+        flex-direction: row;
+
+        input {
+            flex-grow: 1;
+        }
+    }
+}

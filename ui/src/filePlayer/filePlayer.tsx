@@ -1,15 +1,72 @@
+import { useContext, useState } from 'react'
+
+import SettingsContext from '../settingsContext'
+import settingsContext from '../settingsContext'
+
 import FileInfo from './fileInfo'
 import PlayerControls from './playerControls'
 import SeekBar from './seekBar'
-
-import classes from './filePlayer.module.scss'
+import FilesTable from '../soundFiles/filesTable'
 
 import type { FilePlayerState } from '../models/filePlayer'
 
-export default function FilePlayer(props: {state: FilePlayerState}) {
+import classes from './filePlayer.module.scss'
+import FileUploader from '../soundFiles/fileUploader'
+import { useMutation } from '@tanstack/react-query'
+
+export default function FilePlayer(props: { state: FilePlayerState }) {
+    const settings = useContext(settingsContext)
+
+    const [selectedFileId, setSelectedFileId] = useState<string | null>(null)
+
+    const setFile = useMutation({
+        mutationFn: async (id: string) => {
+            const response = await fetch(new URL(`./${id}`, settings.hostUrl), { method: 'POST' })
+            if (response.status == 404) throw await response.text()
+            return response.json()
+        }
+    })
+
+    const clearFile = useMutation({
+        mutationFn: async () => await fetch(settings.hostUrl, { method: 'DELETE' }),
+    })
+
     return <div className={classes.filePlayer}>
-        <FileInfo state={props.state} />
-        <div>
+        <div className={classes.uploader}>
+            <FileUploader />
+            <hr />
+        </div>
+
+        <div className={classes.fileSelection}>
+            <SettingsContext value={{ hostUrl: new URL('/soundfiles/', settings.hostUrl) }}>
+                <FilesTable
+                    selectedFileId={selectedFileId}
+                    onSelect={(id: string) => setSelectedFileId(id)}
+                />
+            </SettingsContext>
+        </div>
+
+        <button className={classes.setButton}
+            type='button'
+            onClick={() => {
+                if (selectedFileId == null) return
+                setFile.mutate(selectedFileId)
+            }}
+            disabled={selectedFileId == null}
+        >Load file</button>
+
+        <div className={classes.playingInfo}>
+            <FileInfo state={props.state} />
+        </div>
+
+        <button className={classes.clearButton}
+            type='button'
+            disabled={clearFile.isPending == true || props.state.playingFile == null}
+            onClick={() => clearFile.mutate()}>
+            Clear file
+        </button>
+
+        <div className={classes.controls}>
             <SeekBar />
             <PlayerControls state={props.state} />
         </div>

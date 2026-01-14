@@ -1,4 +1,40 @@
 .filePlayer {
+    column-gap: 1em;
     display: grid;
-    grid-template-rows: 1fr auto;
+    grid-template-areas:
+        'uploader uploader'
+        'file-selection playing-info'
+        'set-button clear-button'
+        'controls controls'
+    ;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: auto 1fr auto auto;
+
+    .controls {
+        grid-area: controls;
+    }
+
+    .uploader {
+        grid-area: uploader;
+    }
+
+    .fileSelection {
+        grid-area: file-selection;
+        text-align: center;
+    }
+
+    .setButton {
+        grid-area: set-button;
+        width: 100%;    
+    }
+
+    .playingInfo {
+        grid-area: playing-info;
+        text-align: center;
+    }
+
+    .clearButton {
+        grid-area: clear-button;
+        width: 100%;
+    }
 }

@@ -1,0 +1,17 @@
+.filesTable {
+    overflow-y: auto;
+    
+    table {
+        text-align: left;
+    }
+
+    caption {
+        font-weight: bold;
+        text-align: left;
+    }
+    
+    td {
+        border: none;
+        padding: .5em;
+    }
+}

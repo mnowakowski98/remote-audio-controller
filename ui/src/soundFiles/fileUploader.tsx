@@ -3,6 +3,8 @@ import { useMutation } from '@tanstack/react-query'
 
 import settingsContext from '../settingsContext'
 
+import classes from './fileUploader.module.scss'
+
 export default function FileUploader() {
     const uploadUrl = useContext(settingsContext).hostUrl
 
@@ -28,20 +30,22 @@ export default function FileUploader() {
     })
 
     return <>
-        <div>
-            <label>Upload audio</label>
-            <input
-                ref={fileInput}
-                type='file'
-                disabled={uploadFile.isPending}
-                onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                    setAudioFile(event.target.files?.item(0))}
-            />
-            <button
+        <div className={classes.fileUploader}>
+            <label><h3>Upload audio</h3></label>
+            <div className={classes.inputs}>
+                <input
+                    ref={fileInput}
+                    type='file'
+                    disabled={uploadFile.isPending}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                        setAudioFile(event.target.files?.item(0))}
+                />
+                <button
                 type='button'
                 disabled={audioFile == null || uploadFile.isPending == true}
                 onClick={() => uploadFile.mutate()}
             >Upload</button>
+            </div>
         </div>
 
         {/* <ToastContainer position='bottom-end'>
