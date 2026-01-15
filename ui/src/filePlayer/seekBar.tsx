@@ -11,7 +11,6 @@ import { filePlayerKey, type FilePlayerState } from '../models/filePlayer'
 export default function SeekBar() {
     const baseUrl = useContext(settingsContext).hostUrl
 
-    const doUpdate = useRef(true)
     const seekTime = useRef<HTMLSpanElement>(null)
     const audio = useRef<HTMLInputElement>(null)
 
@@ -38,7 +37,6 @@ export default function SeekBar() {
     useEffect(() => {
         const timeSinceLastSync = () => performance.now() - lastSyncMessageTime
         timeout.current = setInterval(() => {
-            if (doUpdate.current == false) return
             if (seekTime.current == null || audio.current == null) return
             const seekValue = lastServerTime + (data?.playingState == 'playing' ? timeSinceLastSync() : 0)
             seekTime.current.innerText = (seekValue / 1000).toFixed(2)

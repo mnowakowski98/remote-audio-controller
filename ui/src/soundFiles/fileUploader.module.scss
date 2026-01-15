@@ -3,11 +3,20 @@
     width: 100%;
     
     .inputs {
+        border: 2px solid var(--background-color-highlight);
+        border-right: none;
+        border-radius: var(--input-border-radius);
         display: flex;
         flex-direction: row;
 
         input {
+            align-self: center;
             flex-grow: 1;
+        }
+
+        button {
+            align-self: center;
+            box-sizing: content-box;
         }
     }
 }

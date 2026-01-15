@@ -44,24 +44,24 @@ export default function PlayerControls(props: { state: FilePlayerState }) {
         </button>
 
         {props.state.playingState != 'unloaded' && <div className={classes.playbackControl}>
-            {props.state.playingState != 'playing' && <button
-                className={classes.playbackButton}
-                type='button'
-                onClick={() => setPlayingState.mutate('start')}>
-                <img src={playButton} className={classes.playbackButtonImg} />
-            </button>}
-            {props.state.playingState != 'paused' && props.state.playingState != 'stopped' && <button
-                className={classes.playbackButton}
-                type='button'
-                onClick={() => setPlayingState.mutate('pause')}>
-                <img src={pauseButton} className={classes.playbackButtonImg} />
-            </button>}
-            {props.state.playingState != 'stopped' && <button
-                className={classes.playbackButton}
-                type='button'
-                onClick={() => setPlayingState.mutate('stop')}>
-                <img src={stopButton} className={classes.playbackButtonImg} />
-            </button>}
+            {props.state.playingState != 'playing' && 
+                <img
+                    className={classes.playbackButtonImg}
+                    src={playButton}
+                    onClick={() => setPlayingState.mutate('start')}
+                />}
+            {props.state.playingState != 'paused' && props.state.playingState != 'stopped' &&
+                <img
+                    className={classes.playbackButtonImg}
+                    src={pauseButton}
+                    onClick={() => setPlayingState.mutate('pause')}
+                />
+            }
+            {props.state.playingState != 'stopped' && <img
+                className={classes.playbackButtonImg}
+                src={stopButton}
+                onClick={() => setPlayingState.mutate('stop')}
+            />}
         </div>}
     </div>
 }

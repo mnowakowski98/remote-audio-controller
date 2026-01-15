@@ -1,7 +1,9 @@
 import { type ChangeEvent, useContext, useRef, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
 
 import settingsContext from '../settingsContext'
+import useSemantic from '../hooks/useSemantic'
 
 import classes from './fileUploader.module.scss'
 
@@ -10,6 +12,8 @@ export default function FileUploader() {
 
     const fileInput = useRef<HTMLInputElement | null>(null)
     const [audioFile, setAudioFile] = useState<File | null>()
+
+    const errorColors = useSemantic('error')
 
     const uploadFile = useMutation({
         mutationFn: async () => {
@@ -26,7 +30,15 @@ export default function FileUploader() {
         onSuccess: () => {
             setAudioFile(null)
             if (fileInput.current != null) fileInput.current.value = ''
-        }
+            toast.success('File uploaded successfully')
+        },
+        onError: (error) => toast.error(error.message, {
+            position: 'bottom-right',
+            style: {
+                background: errorColors.background,
+                color: errorColors.text
+            }
+        })
     })
 
     return <>
@@ -41,17 +53,12 @@ export default function FileUploader() {
                         setAudioFile(event.target.files?.item(0))}
                 />
                 <button
-                type='button'
-                disabled={audioFile == null || uploadFile.isPending == true}
-                onClick={() => uploadFile.mutate()}
-            >Upload</button>
+                    className='primary'
+                    type='button'
+                    disabled={audioFile == null || uploadFile.isPending == true}
+                    onClick={() => uploadFile.mutate()}
+                >Upload</button>
             </div>
         </div>
-
-        {/* <ToastContainer position='bottom-end'>
-            <Toast bg='danger' className='m-3' show={showErrorToast} onClose={() => setShowErrorToast(false)} delay={3000} autohide>
-                <Toast.Body className='text-white'>{uploadFile.error?.message}</Toast.Body>
-            </Toast>
-        </ToastContainer> */}
     </>
 }

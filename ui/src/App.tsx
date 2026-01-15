@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router';
+import { Toaster } from 'react-hot-toast';
 
 import classes from './App.module.scss'
 
@@ -16,6 +17,7 @@ export default function App() {
       </nav>
 
       <div className={classes.page}>
+        <Toaster />
         <Routes>
           <Route path='fileplayer' element={<FilePlayerContext />} />
           <Route path='soundfiles' element={<SoundFilesContext />} />

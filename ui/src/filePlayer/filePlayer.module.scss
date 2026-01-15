@@ -9,6 +9,7 @@
     ;
     grid-template-columns: 1.5fr 1fr;
     grid-template-rows: auto 1fr auto auto;
+    row-gap: 1em;
 
     .controls {
         grid-area: controls;

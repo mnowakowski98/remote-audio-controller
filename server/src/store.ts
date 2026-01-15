@@ -36,7 +36,14 @@ export const store = configureStore({
         filePlayer: filePlayerReducer,
         soundFiles: soundFilesReducer
     },
-    middleware: (gdm) => gdm().concat(dataSync)
+    middleware: (gdm) => gdm({
+      // (music-metadata) IAduioMetadata.ID3v2 has a UINT8 array (most everything else is strings)
+      // TODO: Either serialize or ignore the buffer from state
+      // For now it's fine to exist, out of scope (like a scope existed :/ ) for 0.10.0 to fix
+      serializableCheck: {
+        ignoredPaths: ['filePlayer.playingFile.metadata']
+      }
+    }).concat(dataSync)
 })
 
 // Infer the type of `store`

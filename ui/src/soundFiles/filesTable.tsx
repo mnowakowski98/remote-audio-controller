@@ -6,7 +6,6 @@ import settingsContext from '../settingsContext'
 import useSyncedState from '../hooks/useSyncedState'
 
 import classes from './filesTable.module.scss'
-import useProperty from '../hooks/useColor'
 
 interface FilesTableProps {
     showDeleteButtons?: boolean,
@@ -16,7 +15,6 @@ interface FilesTableProps {
 
 export default function FilesTable(props: FilesTableProps) {
     const baseUrl = useContext(settingsContext).hostUrl
-    const primaryColor = useProperty('primary')
 
     const soundFiles = useSyncedState<SoundFile[]>(soundFileKey, { queryUrl: baseUrl })
 
@@ -41,13 +39,11 @@ export default function FilesTable(props: FilesTableProps) {
             <tbody>
                 {soundFiles.data?.map((file) =>
                     <tr key={file.id}
+                        className={props.selectedFileId == file.id ? 'highlight' : undefined}
                         onClick={() => {
                             if (props.onSelect != undefined) props.onSelect(file.id)
                         }}
-                        style={{
-                            backgroundColor: props.selectedFileId == file.id ? primaryColor.background : 'transparent',
-                            color: props.selectedFileId == file.id ? primaryColor.text : 'black'
-                        }}>
+                    >
                         <td>{file.name}</td>
                         <td>{file.title}</td>
                         <td>{file.artist}</td>

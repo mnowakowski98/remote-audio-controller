@@ -49,7 +49,7 @@ export default function FilePlayer(props: { state: FilePlayerState }) {
             </SettingsContext>
         </div>
 
-        <button className={classes.setButton}
+        <button className={`${classes.setButton} primary`}
             type='button'
             onClick={() => {
                 if (selectedFileId == null) return
@@ -62,7 +62,7 @@ export default function FilePlayer(props: { state: FilePlayerState }) {
             <FileInfo state={props.state} />
         </div>
 
-        <button className={classes.clearButton}
+        <button className={`${classes.clearButton} primary`}
             type='button'
             disabled={clearFile.isPending == true || props.state.playingFile == null}
             onClick={() => clearFile.mutate()}>
