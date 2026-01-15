@@ -223,7 +223,7 @@ export const startMpg123 = (execPath: string, pipe: string): AppThunk => {
                 const outputPipeSpawn = spawn('mkfifo', [outputPipe])
                 outputPipeSpawn.on('exit', async () => {
                     const outputPipeDescriptor = await open(outputPipe, 'r+')
-                    console.log(`\nStarting mpg123\npipe: ${pipe}\noutput-pipe: ${outputPipe}`)
+                    console.log(`\nStarting mpg123\nCommand pipe: ${pipe}\nOutput pipe: ${outputPipe}`)
                     mpg123Process = spawn(`${execPath}`, ['-R', '--fifo', pipe, '--no-control', '--keep-open', '-q'], {
                         stdio: ['pipe', outputPipeDescriptor.createWriteStream(), 'pipe']
                     })
