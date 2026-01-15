@@ -10,6 +10,9 @@ import playButton from '../assets/play-button.svg'
 import pauseButton from '../assets/pause-button.svg'
 import stopButton from '../assets/stop-button.svg'
 
+import loopOff from '../assets/loop-off.svg'
+import loopSingle from '../assets/loop-single.svg'
+
 export default function PlayerControls(props: { state: FilePlayerState }) {
     const baseUrl = useContext(SettingsContext).hostUrl
 
@@ -24,33 +27,41 @@ export default function PlayerControls(props: { state: FilePlayerState }) {
     })
 
     return <div className={classes.playerControls}>
-        <div className={classes.loopControl}>
+        {/* <div className={classes.loopControl}>
             <label htmlFor='loopCheck'>Loop</label>
             <input id='loopCheck' type='checkbox' checked={props.state.loop} onChange={(event) => setLoopState.mutate(event.target.checked)} />
-        </div>
+        </div> */}
 
-        <div className={classes.playbackControl}>
-            <button
+        <button
+            className={classes.playbackButton}
+            type='button'
+            onClick={() => {
+                setLoopState.mutate(!props.state.loop)
+            }}
+        >
+            {props.state.loop == false && <img src={loopOff} className={classes.playbackButtonImg} />}
+            {props.state.loop == true && <img src={loopSingle} className={classes.playbackButtonImg} />}
+        </button>
+
+        {props.state.playingState != 'unloaded' && <div className={classes.playbackControl}>
+            {props.state.playingState != 'playing' && <button
                 className={classes.playbackButton}
                 type='button'
-                disabled={props.state.playingState == 'playing' || props.state.playingState == 'unloaded'}
                 onClick={() => setPlayingState.mutate('start')}>
                 <img src={playButton} className={classes.playbackButtonImg} />
-            </button>
-            <button
+            </button>}
+            {props.state.playingState != 'paused' && props.state.playingState != 'stopped' && <button
                 className={classes.playbackButton}
                 type='button'
-                disabled={props.state.playingState == 'paused' || props.state.playingState == 'stopped' ||  props.state.playingState == 'unloaded'}
                 onClick={() => setPlayingState.mutate('pause')}>
                 <img src={pauseButton} className={classes.playbackButtonImg} />
-            </button>
-            <button
+            </button>}
+            {props.state.playingState != 'stopped' && <button
                 className={classes.playbackButton}
                 type='button'
-                disabled={props.state.playingState == 'stopped' ||  props.state.playingState == 'unloaded'}
                 onClick={() => setPlayingState.mutate('stop')}>
                 <img src={stopButton} className={classes.playbackButtonImg} />
-            </button>
-        </div>
+            </button>}
+        </div>}
     </div>
 }
