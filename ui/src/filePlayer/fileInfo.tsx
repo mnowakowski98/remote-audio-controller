@@ -5,7 +5,7 @@ import classes from './fileInfo.module.scss'
 
 export default function FileInfo(props: { state: FilePlayerState }) {
     return <div className={classes.fileInfo}>
-        {props.state.playingFile == null && <div className={classes.noFile}>No File loaded</div>}
+        {props.state.playingFile == null && <div className={classes.noFile}>No file loaded</div>}
         {props.state.playingFile != null && <div>
             <h3>Playing Now</h3>
             {props.state.playingFile.thumbnail != null && <>
