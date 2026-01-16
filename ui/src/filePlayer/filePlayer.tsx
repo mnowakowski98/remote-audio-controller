@@ -13,6 +13,8 @@ import type { FilePlayerState } from '../models/filePlayer'
 import classes from './filePlayer.module.scss'
 import FileUploader from '../soundFiles/fileUploader'
 import { useMutation } from '@tanstack/react-query'
+import useSyncedState from '../hooks/useSyncedState'
+import { soundFileKey, type SoundFile } from '../models/soundFiles'
 
 export default function FilePlayer(props: { state: FilePlayerState }) {
     const settings = useContext(settingsContext)
@@ -31,6 +33,12 @@ export default function FilePlayer(props: { state: FilePlayerState }) {
         mutationFn: async () => await fetch(settings.hostUrl, { method: 'DELETE' }),
     })
 
+    const queryUrl = new URL('/soundfiles/', settings.hostUrl)
+    const soundFiles = useSyncedState<SoundFile[]>(soundFileKey, { queryUrl })
+
+    if (soundFiles.isLoading == true) return 'Loading'
+    if (soundFiles.data == undefined || soundFiles.error != null) return soundFiles.error?.message
+
     return <div className={classes.filePlayer}>
         <div className={classes.uploader}>
             <FileUploader />
@@ -38,8 +46,9 @@ export default function FilePlayer(props: { state: FilePlayerState }) {
         </div>
 
         <div className={classes.fileSelection}>
-            <SettingsContext value={{ hostUrl: new URL('/soundfiles/', settings.hostUrl) }}>
+            <SettingsContext value={{ hostUrl: queryUrl }}>
                 <FilesTable
+                    state={soundFiles.data}
                     selectedFileId={selectedFileId}
                     onSelect={(id: string) => {
                         if (selectedFileId == id) setSelectedFileId(null)

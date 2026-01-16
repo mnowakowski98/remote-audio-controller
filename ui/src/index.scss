@@ -154,12 +154,12 @@ body {
 }
 
 .danger {
-    background-color: var(--background-color-warning);
-    color: var(--text-color-warning);
+    background-color: var(--background-color-danger);
+    color: var(--text-color-danger);
     transition: all var(--transition-duration-default);
     
     &:disabled {
-        background-color: var(--background-color-warning-disabled);
+        background-color: var(--background-color-danger-disabled);
     }
 }
 
