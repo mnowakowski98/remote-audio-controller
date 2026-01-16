@@ -1,14 +1,21 @@
 .filesTable {
-    height: 100%;
-    overflow-y: auto;
+    text-align: left;
 
     table {
-        text-align: left;
         width: 100%;
 
         caption {
             font-weight: bold;
             text-align: left;
+        }
+
+        thead h3 {
+            width: 100%;
+        }
+
+        tbody tr:hover {
+            background-color: var(--background-color-secondary);
+            color: var(--text-color-highlight)
         }
 
         td {

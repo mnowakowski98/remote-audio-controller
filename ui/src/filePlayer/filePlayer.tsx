@@ -70,8 +70,8 @@ export default function FilePlayer(props: { state: FilePlayerState }) {
         </button>
 
         <div className={classes.controls}>
-            <hr />
             <SeekBar />
+            <hr />
             <PlayerControls state={props.state} />
         </div>
     </div>

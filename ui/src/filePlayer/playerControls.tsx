@@ -26,24 +26,16 @@ export default function PlayerControls(props: { state: FilePlayerState }) {
             await fetch(new URL('./status/loop', baseUrl), { method: 'PUT', body: loop ? 'true' : 'false' })
     })
 
+    const loopSrc = props.state.loop == true ? loopSingle : loopOff
+
     return <div className={classes.playerControls}>
-        {/* <div className={classes.loopControl}>
-            <label htmlFor='loopCheck'>Loop</label>
-            <input id='loopCheck' type='checkbox' checked={props.state.loop} onChange={(event) => setLoopState.mutate(event.target.checked)} />
-        </div> */}
+        <img
+            className={classes.playbackButtonImg}
+            src={loopSrc}
+            onClick={() => setLoopState.mutate(!props.state.loop)}
+        />
 
-        <button
-            className={classes.playbackButton}
-            type='button'
-            onClick={() => {
-                setLoopState.mutate(!props.state.loop)
-            }}
-        >
-            {props.state.loop == false && <img src={loopOff} className={classes.playbackButtonImg} />}
-            {props.state.loop == true && <img src={loopSingle} className={classes.playbackButtonImg} />}
-        </button>
-
-        {props.state.playingState != 'unloaded' && <div className={classes.playbackControl}>
+        {props.state.playingState != 'unloaded' && <>
             {props.state.playingState != 'playing' && 
                 <img
                     className={classes.playbackButtonImg}
@@ -62,6 +54,6 @@ export default function PlayerControls(props: { state: FilePlayerState }) {
                 src={stopButton}
                 onClick={() => setPlayingState.mutate('stop')}
             />}
-        </div>}
+        </>}
     </div>
 }

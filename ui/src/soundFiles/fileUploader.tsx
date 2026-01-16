@@ -33,7 +33,6 @@ export default function FileUploader() {
             toast.success('File uploaded successfully')
         },
         onError: (error) => toast.error(error.message, {
-            position: 'bottom-right',
             style: {
                 background: errorColors.background,
                 color: errorColors.text
@@ -43,7 +42,7 @@ export default function FileUploader() {
 
     return <>
         <div className={classes.fileUploader}>
-            <label><h3>Upload audio</h3></label>
+            <h3>Upload audio</h3>
             <div className={classes.inputs}>
                 <input
                     ref={fileInput}
@@ -52,8 +51,15 @@ export default function FileUploader() {
                     onChange={(event: ChangeEvent<HTMLInputElement>) =>
                         setAudioFile(event.target.files?.item(0))}
                 />
+                <div className={classes.browseButton}>
+                    <button
+                        className='secondary'
+                        onClick={() => fileInput.current?.click()}
+                    >Browse...</button>
+                </div>
+                <span className={classes.fileName}>{audioFile?.name ?? 'No file selected'}</span>
                 <button
-                    className='primary'
+                    className={`${classes.uploadButton} primary`}
                     type='button'
                     disabled={audioFile == null || uploadFile.isPending == true}
                     onClick={() => uploadFile.mutate()}

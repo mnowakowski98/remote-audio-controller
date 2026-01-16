@@ -26,38 +26,39 @@ export default function FilesTable(props: FilesTableProps) {
     if (soundFiles.isError == true) return soundFiles.error.message
 
     return <div className={classes.filesTable}>
-        {(soundFiles.data?.length ?? 0) > 0 && <table>
-            <caption><h3>Available files</h3></caption>
-            <thead>
-                <tr>
-                    <th>Filename</th>
-                    <th>Title</th>
-                    <th>Artist</th>
-                    <th>Duration</th>
-                </tr>
-            </thead>
-            <tbody>
-                {soundFiles.data?.map((file) =>
-                    <tr key={file.id}
-                        className={props.selectedFileId == file.id ? 'highlight' : undefined}
-                        onClick={() => {
-                            if (props.onSelect != undefined) props.onSelect(file.id)
-                        }}
-                    >
-                        <td>{file.name}</td>
-                        <td>{file.title}</td>
-                        <td>{file.artist}</td>
-                        <td>{(file.durationMs / 1000).toFixed(2)}</td>
-                        {props.showDeleteButtons && <td>
-                            <button
-                                type='button'
-                                onClick={() => removeFile.mutate(file.id)}
-                            >X</button>
-                        </td>}
+        {(soundFiles.data?.length ?? 0) > 0 && <>
+            <table>
+                <caption></caption>
+                <thead>
+                    <h3>Available files</h3>
+                    <tr>
+                        <th>Filename</th>
+                        <th>Title</th>
+                        <th>Artist</th>
+                        <th>Duration</th>
                     </tr>
-                )}
-            </tbody>
-        </table>}
+                </thead>
+                <tbody>
+                    {soundFiles.data?.map((file) =>
+                        <tr key={file.id}
+                            className={props.selectedFileId == file.id ? 'highlight' : undefined}
+                            onClick={() => props.onSelect?.(file.id)}
+                        >
+                            <td>{file.name}</td>
+                            <td>{file.title}</td>
+                            <td>{file.artist}</td>
+                            <td>{(file.durationMs / 1000).toFixed(2)}</td>
+                            {props.showDeleteButtons && <td>
+                                <button
+                                    type='button'
+                                    onClick={() => removeFile.mutate(file.id)}
+                                >X</button>
+                            </td>}
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+        </>}
         {soundFiles.data?.length == 0 && <div className={classes.noFiles}>No files</div>}
     </div>
 }

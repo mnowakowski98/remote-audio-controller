@@ -1,22 +1,33 @@
 .fileUploader {
     text-align: left;
-    width: 100%;
     
     .inputs {
-        border: 2px solid var(--background-color-highlight);
+        border: 2px solid var(--background-color-secondary);
+        border-left: none;
         border-right: none;
         border-radius: var(--input-border-radius);
         display: flex;
         flex-direction: row;
+        gap: 1em;
 
         input {
-            align-self: center;
+            display: none;
+        }
+
+        .browseButton > button {
+            border: 2px solid var(--background-color-secondary);
+        }
+
+        .fileName {
             flex-grow: 1;
         }
 
-        button {
+        .uploadButton {
+            border: 2px solid var(--background-color-secondary);
+        }
+
+        > * {
             align-self: center;
-            box-sizing: content-box;
         }
     }
 }

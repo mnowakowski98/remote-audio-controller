@@ -2,7 +2,7 @@
     column-gap: 1em;
     display: grid;
     grid-template-areas:
-        'uploader uploader'
+        'uploader playing-info'
         'file-selection playing-info'
         'set-button clear-button'
         'controls controls'
@@ -12,7 +12,10 @@
     row-gap: 1em;
 
     .controls {
+        background-color: var(--background-color-primary-disabled);
+        border-radius: var(--input-border-radius);
         grid-area: controls;
+        padding: 1em;
     }
 
     .uploader {
@@ -21,13 +24,14 @@
 
     .fileSelection {
         grid-area: file-selection;
-        height: 100%;
+        overflow-y: auto;
         text-align: center;
     }
 
     .setButton {
         grid-area: set-button;
-        width: 100%;
+        margin: 0 auto;
+        width: 50%;
     }
 
     .playingInfo {
@@ -37,6 +41,7 @@
 
     .clearButton {
         grid-area: clear-button;
-        width: 100%;
+        margin: 0 auto;
+        width: 50%;
     }
 }

@@ -7,13 +7,17 @@ export default function FileInfo(props: { state: FilePlayerState }) {
         {props.state.playingFile == null && <div className={classes.noFile}>No File loaded</div>}
         {props.state.playingFile != null && <div>
             <h3>Playing Now</h3>
-            <img src='#' className={classes.albumArt} />
-            <hr />
-            <div>File name: {props.state.playingFile.name}</div>
-            <div>Title: {props.state.playingFile.title}</div>
-            <div>Artist: {props.state.playingFile.artist}</div>
-            <div>Album: {props.state.playingFile.album}</div>
-            <div>Length: {props.state.playingFile.durationMs / 1000}</div>
+            {props.state.playingFile.thumbnail != null && <>
+                <img className={classes.albumArt} src={props.state.playingFile.thumbnail} />
+                <hr />
+            </>}
+            <div className={classes.common}>
+                <div>File name: {props.state.playingFile.name}</div>
+                <div>Title: {props.state.playingFile.title}</div>
+                <div>Artist: {props.state.playingFile.artist}</div>
+                <div>Album: {props.state.playingFile.album}</div>
+                <div>Length: {props.state.playingFile.durationMs / 1000}</div>
+            </div>
         </div>}
     </div>
 }

@@ -8,7 +8,7 @@ body {
 @property --transition-duration-default {
     syntax: "<time>";
     inherits: true;
-    initial-value: 200ms;
+    initial-value: 300ms;
 }
 
 @property --page-background {
@@ -26,19 +26,19 @@ body {
 @property --background-color-primary {
     syntax: "<color>";
     inherits: true;
-    initial-value: #e19004;
+    initial-value: #f00b66;
 }
 
 @property --background-color-primary-disabled {
     syntax: "<color>";
     inherits: true;
-    initial-value: #b67e1d;
+    initial-value: #f00b6678;
 }
 
 @property --text-color-primary {
     syntax: "<color>";
     inherits: true;
-    initial-value: black;
+    initial-value: white;
 }
 
 .primary {
@@ -54,13 +54,13 @@ body {
 @property --background-color-secondary {
     syntax: "<color>";
     inherits: true;
-    initial-value: #8e989c;
+    initial-value: #529fbe;
 }
 
 @property --background-color-secondary-disabled {
     syntax: "<color>";
     inherits: true;
-    initial-value: #bcbcbc;
+    initial-value: #529fbe78;
 }
 
 @property --text-color-secondary {
@@ -82,19 +82,19 @@ body {
 @property --background-color-highlight {
     syntax: "<color>";
     inherits: true;
-    initial-value: #158de9;
+    initial-value: #10e900;
 }
 
 @property --background-color-highlight-disabled {
     syntax: "<color>";
     inherits: true;
-    initial-value: #0a4877;
+    initial-value: #10e90078;
 }
 
 @property --text-color-highlight {
     syntax: "<color>";
     inherits: true;
-    initial-value: white;
+    initial-value: black;
 }
 
 .highlight {
@@ -110,13 +110,13 @@ body {
 @property --background-color-affirm {
     syntax: "<color>";
     inherits: true;
-    initial-value: green;
+    initial-value: #008000;
 }
 
 @property --background-color-affirm-disabled {
     syntax: "<color>";
     inherits: true;
-    initial-value: #034703;
+    initial-value: #00800078;
 }
 
 @property --text-color-affirm {
@@ -144,7 +144,7 @@ body {
 @property --background-color-danger-disabled {
     syntax: "<color>";
     inherits: true;
-    initial-value: #aa2a03;
+    initial-value: #ff3c0078;
 }
 
 @property --text-color-danger {
@@ -174,7 +174,7 @@ body {
 @property --background-color-warning-disabled {
     syntax: "<color>";
     inherits: true;
-    initial-value: #bdb101;
+    initial-value: #f9e90a78;
 }
 
 @property --text-color-warning {
@@ -199,10 +199,10 @@ body {
     initial-value: #c91717;
 }
 
-@property --background-color-error-dsiabled {
+@property --background-color-error-disabled {
     syntax: "<color>";
     inherits: true;
-    initial-value: #6e1010;
+    initial-value: #c9171778;
 }
 
 @property --text-color-error {
