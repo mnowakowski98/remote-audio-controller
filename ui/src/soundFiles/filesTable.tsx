@@ -5,6 +5,7 @@ import { type SoundFile } from '../models/soundFiles'
 import settingsContext from '../settingsContext'
 
 import classes from './filesTable.module.scss'
+import { getDurationString } from '../hooks/getDurationString'
 
 interface FilesTableProps {
     state: SoundFile[],
@@ -30,7 +31,8 @@ export default function FilesTable(props: FilesTableProps) {
                             <th>Filename</th>
                             <th>Title</th>
                             <th>Artist</th>
-                            <th>Duration</th>
+                            <th>Album</th>
+                            <th>Length</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -42,7 +44,8 @@ export default function FilesTable(props: FilesTableProps) {
                                 <td>{file.name}</td>
                                 <td>{file.title}</td>
                                 <td>{file.artist}</td>
-                                <td>{(file.durationMs / 1000).toFixed(2)}</td>
+                                <td>{file.album}</td>
+                                <td>{getDurationString(file.durationMs)}</td>
                                 {props.showDeleteButtons && <td>
                                     <button
                                         className={`${classes.deleteButton} warning`}

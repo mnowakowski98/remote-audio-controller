@@ -1,3 +1,4 @@
+import { getDurationString } from '../hooks/getDurationString'
 import type { FilePlayerState } from '../models/filePlayer'
 
 import classes from './fileInfo.module.scss'
@@ -16,7 +17,7 @@ export default function FileInfo(props: { state: FilePlayerState }) {
                 <div>Title: {props.state.playingFile.title}</div>
                 <div>Artist: {props.state.playingFile.artist}</div>
                 <div>Album: {props.state.playingFile.album}</div>
-                <div>Length: {props.state.playingFile.durationMs / 1000}</div>
+                <div>Length: {getDurationString(props.state.playingFile.durationMs)}</div>
             </div>
         </div>}
     </div>

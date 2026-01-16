@@ -7,6 +7,7 @@ import useSyncedState from '../hooks/useSyncedState'
 import classes from './seekBar.module.scss'
 
 import { filePlayerKey, type FilePlayerState } from '../models/filePlayer'
+import { getDurationString } from '../hooks/getDurationString'
 
 export default function SeekBar() {
     const baseUrl = useContext(settingsContext).hostUrl
@@ -39,7 +40,7 @@ export default function SeekBar() {
         timeout.current = setInterval(() => {
             if (seekTime.current == null || audio.current == null) return
             const seekValue = lastServerTime + (data?.playingState == 'playing' ? timeSinceLastSync() : 0)
-            seekTime.current.innerText = (seekValue / 1000).toFixed(2)
+            seekTime.current.innerText = getDurationString(seekValue)
             audio.current.valueAsNumber = seekValue
         })
 
@@ -49,8 +50,8 @@ export default function SeekBar() {
 
     return <div className={classes.seekBar}>
         <div className={classes.timeDisplay}>
-            <span ref={seekTime}>0.00</span> /
-            <span> {((data?.playingFile?.durationMs ?? 0) / 1000).toFixed(2)}s</span>
+            <span ref={seekTime}>00:00:00</span> /
+            <span> {getDurationString(data?.playingFile?.durationMs ?? 0)}</span>
         </div>
         <input type='range' onChange={(event) => {
             seek.mutate(event.target.valueAsNumber)
