@@ -1,0 +1,19 @@
+.fileInfo {
+    margin: auto 0;
+
+    .albumArt {
+        display: block;
+        margin: 0 auto;
+        width: 50%;
+    }
+
+    .common {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+    }
+
+    .noFile {
+        text-align: center;
+    }
+}

@@ -1,0 +1,47 @@
+.filePlayer {
+    column-gap: 1em;
+    display: grid;
+    grid-template-areas:
+        'uploader playing-info'
+        'file-selection playing-info'
+        'set-button clear-button'
+        'controls controls'
+    ;
+    grid-template-columns: 1.5fr 1fr;
+    grid-template-rows: auto 1fr auto auto;
+    row-gap: 1em;
+
+    .controls {
+        background-color: var(--background-color-primary-disabled);
+        border-radius: var(--input-border-radius);
+        grid-area: controls;
+        padding: 1em;
+    }
+
+    .uploader {
+        grid-area: uploader;
+    }
+
+    .fileSelection {
+        grid-area: file-selection;
+        overflow-y: auto;
+        text-align: center;
+    }
+
+    .setButton {
+        grid-area: set-button;
+        margin: 0 auto;
+        width: 50%;
+    }
+
+    .playingInfo {
+        grid-area: playing-info;
+        height: 100%;
+    }
+
+    .clearButton {
+        grid-area: clear-button;
+        margin: 0 auto;
+        width: 50%;
+    }
+}

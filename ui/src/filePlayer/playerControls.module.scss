@@ -1,0 +1,12 @@
+.playerControls {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    justify-content: center;
+    width: 100%;
+
+    .playbackButtonImg {
+        height: 3em;
+        width: 3em;
+    }
+}

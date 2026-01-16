@@ -1,0 +1,13 @@
+.seekBar {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .timeDisplay {
+        align-self: end;
+    }
+
+    input {
+        width: 100%;
+    }
+}

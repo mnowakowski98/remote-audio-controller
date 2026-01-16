@@ -1,21 +1,20 @@
 import { useContext } from 'react'
 import { useMutation } from '@tanstack/react-query'
 
-import Form from 'react-bootstrap/Form'
-import InputGroup from 'react-bootstrap/InputGroup'
-import Button from 'react-bootstrap/Button'
-
 import SettingsContext from '../settingsContext'
-import useFilePlayerState from './useFilePlayerState'
 
-interface PlayerControlsProps {
-    hasFile: boolean
-}
+import classes from './playerControls.module.scss'
+import type { FilePlayerState } from '../models/filePlayer'
 
-export default function PlayerControls(props: PlayerControlsProps) {
+import playButton from '../assets/play-button.svg'
+import pauseButton from '../assets/pause-button.svg'
+import stopButton from '../assets/stop-button.svg'
+
+import loopOff from '../assets/loop-off.svg'
+import loopSingle from '../assets/loop-single.svg'
+
+export default function PlayerControls(props: { state: FilePlayerState }) {
     const baseUrl = useContext(SettingsContext).hostUrl
-
-    const playerState = useFilePlayerState()
 
     const setPlayingState = useMutation({
         mutationFn: async (command: 'start' | 'pause' | 'stop') =>
@@ -27,30 +26,34 @@ export default function PlayerControls(props: PlayerControlsProps) {
             await fetch(new URL('./status/loop', baseUrl), { method: 'PUT', body: loop ? 'true' : 'false' })
     })
 
-    if (playerState.isLoading) return 'Loading'
-    if (playerState.isError || playerState.data == null) return playerState.error?.message ?? 'Goofed'
-    
-    return <InputGroup className='justify-content-end'>
-        <InputGroup.Text className={`text-light ${playerState.data.loop ? 'bg-success' : 'bg-secondary'}`}>
-            <Form.Check reverse label='Loop' checked={playerState.data.loop} onChange={(event) => setLoopState.mutate(event.target.checked)} />
-        </InputGroup.Text>
-        <Button
-            type='button'
-            disabled={playerState.data.playingState == 'playing' || props.hasFile == false}
-            onClick={() => setPlayingState.mutate('start')}>
-            Start
-        </Button>
-        <Button
-            type='button'
-            disabled={playerState.data.playingState == 'paused' || playerState.data.playingState == 'stopped' || props.hasFile == false}
-            onClick={() => setPlayingState.mutate('pause')}>
-            Pause
-        </Button>
-        <Button
-            type='button'
-            disabled={playerState.data.playingState == 'stopped' || props.hasFile == false}
-            onClick={() => setPlayingState.mutate('stop')}>
-            Stop
-        </Button>
-    </InputGroup>
+    const loopSrc = props.state.loop == true ? loopSingle : loopOff
+
+    return <div className={classes.playerControls}>
+        <img
+            className={classes.playbackButtonImg}
+            src={loopSrc}
+            onClick={() => setLoopState.mutate(!props.state.loop)}
+        />
+
+        {props.state.playingState != 'unloaded' && <>
+            {props.state.playingState != 'playing' && 
+                <img
+                    className={classes.playbackButtonImg}
+                    src={playButton}
+                    onClick={() => setPlayingState.mutate('start')}
+                />}
+            {props.state.playingState != 'paused' && props.state.playingState != 'stopped' &&
+                <img
+                    className={classes.playbackButtonImg}
+                    src={pauseButton}
+                    onClick={() => setPlayingState.mutate('pause')}
+                />
+            }
+            {props.state.playingState != 'stopped' && <img
+                className={classes.playbackButtonImg}
+                src={stopButton}
+                onClick={() => setPlayingState.mutate('stop')}
+            />}
+        </>}
+    </div>
 }

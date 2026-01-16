@@ -1,0 +1,17 @@
+@property --input-border-radius {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 20px;
+}
+
+button {
+    border: none;
+    border-radius: var(--input-border-radius);
+    padding: 1em;
+    transition: all var(--transition-duration-default);
+
+    &:hover:not(:disabled) {
+        background-color: var(--background-color-highlight);
+        color: var(--text-color-highlight);
+    }
+}

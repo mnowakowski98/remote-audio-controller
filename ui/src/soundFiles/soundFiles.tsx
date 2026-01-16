@@ -1,23 +1,18 @@
-import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-
 import FilesTable from './filesTable'
 import FileUploader from './fileUploader'
 
-export default function SoundFiles() {
-    return <Container fluid>
-        <Row>
-            <Col>
-                <FilesTable showDeleteButtons={true} />
-            </Col>
-        </Row>
+import type { SoundFile } from '../models/soundFiles'
 
-        <hr />
-        <Row>
-            <Col>
-                <FileUploader />
-            </Col>
-        </Row>
-    </Container>
+import classes from './soundFiles.module.scss'
+
+export default function SoundFiles(props: { state: SoundFile[] }) {
+    return <div className={classes.soundFiles}>
+        <div className={classes.fileUploader}>
+            <FileUploader />
+            <hr />
+        </div>
+        <div className={classes.filesTable}>
+            <FilesTable state={props.state} showDeleteButtons={true} />
+        </div>
+    </div>
 }

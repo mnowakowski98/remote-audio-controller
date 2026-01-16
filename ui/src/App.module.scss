@@ -1,0 +1,33 @@
+.app {
+    height: 100vh;
+
+    .navbar {
+        background-color: var(--background-color-primary);
+        color: var(--text-color-primary);
+        display: flex;
+        flex-direction: row;
+        gap: 1em;
+        height: 1em;
+        padding: 1em;
+
+        a {
+            font-size: large;
+            font-weight: bold;
+            margin: auto 0;
+            text-decoration: none;
+
+            &:visited {
+                color: var(--textcolor-primary);
+            }
+        }
+    }
+
+    .page {
+        height: calc(100vh - 5em);
+        padding: 1em;
+
+        > * {
+            height: calc(100vh - 5em)
+        }
+    }
+}

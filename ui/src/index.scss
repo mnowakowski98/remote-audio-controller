@@ -1,0 +1,222 @@
+body {
+    background: var(--page-background);
+    color: var(--page-text-color);
+    height: 100vh;
+    margin: 0;
+}
+
+@property --transition-duration-default {
+    syntax: "<time>";
+    inherits: true;
+    initial-value: 300ms;
+}
+
+@property --page-background {
+    syntax: "<image>";
+    inherits: true;
+    initial-value: linear-gradient(0.25turn, #5f5c55, #3d3023);
+}
+
+@property --page-text-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: white;
+}
+
+@property --background-color-primary {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #f00b66;
+}
+
+@property --background-color-primary-disabled {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #f00b6678;
+}
+
+@property --text-color-primary {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: white;
+}
+
+.primary {
+    background-color: var(--background-color-primary);
+    color: var(--text-color-primary);
+    transition: all var(--transition-duration-default);
+
+    &:disabled {
+        background-color: var(--background-color-primary-disabled);
+    }
+}
+
+@property --background-color-secondary {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #529fbe;
+}
+
+@property --background-color-secondary-disabled {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #529fbe78;
+}
+
+@property --text-color-secondary {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: black;
+}
+
+.secondary {
+    background-color: var(--background-color-secondary);
+    color: var(--text-color-secondary);
+    transition: all var(--transition-duration-default);
+    
+    &:disabled {
+        background-color: var(--background-color-secondary-disabled);
+    }
+}
+
+@property --background-color-highlight {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #10e900;
+}
+
+@property --background-color-highlight-disabled {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #10e90078;
+}
+
+@property --text-color-highlight {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: black;
+}
+
+.highlight {
+    background-color: var(--background-color-highlight);
+    color: var(--text-color-highlight);
+    transition: all var(--transition-duration-default);
+    
+    &:disabled {
+        background-color: var(--background-color-highlight-disabled);
+    }
+}
+
+@property --background-color-affirm {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #008000;
+}
+
+@property --background-color-affirm-disabled {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #00800078;
+}
+
+@property --text-color-affirm {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: white;
+}
+
+.affirm {
+    background-color: var(--background-color-affirm);
+    color: var(--text-color-affirm);
+    transition: all var(--transition-duration-default);
+    
+    &:disabled {
+        background-color: var(--background-color-affirm-disabled);
+    }
+}
+
+@property --background-color-danger {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #ff3c00;
+}
+
+@property --background-color-danger-disabled {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #ff3c0078;
+}
+
+@property --text-color-danger {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: white;
+}
+
+.danger {
+    background-color: var(--background-color-danger);
+    color: var(--text-color-danger);
+    transition: all var(--transition-duration-default);
+    
+    &:disabled {
+        background-color: var(--background-color-danger-disabled);
+    }
+}
+
+
+
+@property --background-color-warning {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #f9e90a;
+}
+
+@property --background-color-warning-disabled {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #f9e90a78;
+}
+
+@property --text-color-warning {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: black;
+}
+
+.warning {
+    background-color: var(--background-color-warning);
+    color: var(--text-color-warning);
+    transition: all var(--transition-duration-default);
+    
+    &:disabled {
+        background-color: var(--background-color-warning-disabled);
+    }
+}
+
+@property --background-color-error {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #c91717;
+}
+
+@property --background-color-error-disabled {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #c9171778;
+}
+
+@property --text-color-error {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: white;
+}
+
+.error {
+    background-color: var(--background-error-warning);
+    color: var(--text-error-warning);
+    transition: all var(--transition-duration-default);
+    
+    &:disabled {
+        background-color: var(--background-error-warning-disabled);
+    }
+}

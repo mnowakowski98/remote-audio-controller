@@ -6,5 +6,6 @@ export interface SoundFile {
     title: string,
     artist: string,
     album: string,
-    durationMs: number
+    durationMs: number,
+    thumbnail?: string
 }

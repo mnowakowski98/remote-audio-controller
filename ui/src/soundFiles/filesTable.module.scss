@@ -1,0 +1,26 @@
+.filesTable {
+    text-align: left;
+
+    table {
+        width: 100%;
+
+        tbody tr:hover {
+            background-color: var(--background-color-secondary);
+            color: var(--text-color-highlight)
+        }
+
+        td {
+            padding: .5em;
+        }
+
+        .deleteButton:hover {
+            background-color: var(--background-color-danger);
+            color: var(--text-color-danger);
+        }
+    }
+
+    .noFiles {
+        margin: auto;
+        text-align: center;
+    }
+}
