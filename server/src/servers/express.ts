@@ -1,12 +1,26 @@
-import express, { Express, NextFunction, Request, Response } from 'express'
+import express, { Express, Request } from 'express'
 import cors from 'cors'
 
 import { AppStore } from '../store'
 import { selectConfig } from '../slices/configSlice'
 
+import {
+    createCipheriv,
+    createDecipheriv,
+    createPrivateKey,
+    KeyObject,
+    randomFill,
+    subtle
+} from 'node:crypto'
+import { join } from 'node:path'
+import { readFile } from 'node:fs/promises'
+import { cwd } from 'node:process'
+
 import filePlayer from '../routes/filePlayer'
 import soundFiles from '../routes/soundFiles'
 import config from '../routes/config'
+import { algorithm } from '../models/validate'
+
 
 let app: Express | null = null
 
@@ -27,7 +41,6 @@ export type LocalContext = {
 export const getContext = (req: Request): LocalContext => req.app.locals.context
 
 export const createApp = (store: AppStore, options: {
-    middleware?: ((req: Request, res: Response, next: NextFunction) => void)[],
     controlCallbacks: ServerControls
 }) => {
     app = express()
@@ -42,13 +55,29 @@ export const createApp = (store: AppStore, options: {
     }
     app.locals.context = context
 
-    if (options.middleware != undefined) app.use(options.middleware)
-
     app.use('/fileplayer', filePlayer)
     app.use('/soundfiles', soundFiles)
     app.use('/config', config)
 
-    app.get('/', (_req, res) => res.send('remote-audio-controller-server'))
+    // app.get('/', (_req, res) => res.send('remote-audio-controller-server'))
+    // TODO: Send frontend (maybe check for public directory/server configuration, frontend could also be hosted independently or through a proxy)
+
+    let privateKey: KeyObject | null = null
+    const loadPrivateKey = async () => {
+        const keyFileData = await readFile(join(cwd(), './keys/server.internal.pem'))
+        privateKey = createPrivateKey(keyFileData)
+    }
+    loadPrivateKey()
+
+    app.post('/server-validate', express.text(), async (req, res) => {
+        const key = privateKey!.toCryptoKey(algorithm, false, ['encrypt', 'decrypt'])
+        const buffer = await subtle.decrypt(algorithm, key, req.body)
+        const body = Buffer.from(buffer)
+        console.log(body)
+        const matches = Buffer.compare(body, Buffer.from('remote-audio-controller'))
+        const message = await subtle.encrypt(algorithm, key, Buffer.from('remote-audio-controller'))
+        res.send(message)
+    })
 
     app.post('/reload/:service', (req, res) => {
         const service = req.params.service
