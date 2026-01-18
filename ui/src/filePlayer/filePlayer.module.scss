@@ -12,7 +12,7 @@
     row-gap: 1em;
 
     .controls {
-        background-color: var(--background-color-primary-disabled);
+        background: var(--background-primary-disabled);
         border-radius: var(--input-border-radius);
         grid-area: controls;
         padding: 1em;

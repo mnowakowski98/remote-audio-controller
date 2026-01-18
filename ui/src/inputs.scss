@@ -11,7 +11,7 @@ button {
     transition: all var(--transition-duration-default);
 
     &:hover:not(:disabled) {
-        background-color: var(--background-color-highlight);
+        background: var(--background-highlight);
         color: var(--text-color-highlight);
     }
 }

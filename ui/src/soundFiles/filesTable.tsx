@@ -38,7 +38,7 @@ export default function FilesTable(props: FilesTableProps) {
                     <tbody>
                         {props.state.map((file) =>
                             <tr key={file.id}
-                                className={props.selectedFileId == file.id ? 'highlight' : undefined}
+                                className={props.selectedFileId == file.id ? 'secondary' : undefined}
                                 onClick={() => props.onSelect?.(file.id)}
                             >
                                 <td>{file.name}</td>

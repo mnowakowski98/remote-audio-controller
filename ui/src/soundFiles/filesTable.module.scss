@@ -5,7 +5,7 @@
         width: 100%;
 
         tbody tr:hover {
-            background-color: var(--background-color-secondary);
+            background: var(--background-highlight);
             color: var(--text-color-highlight)
         }
 
@@ -14,7 +14,7 @@
         }
 
         .deleteButton:hover {
-            background-color: var(--background-color-danger);
+            background: var(--background-danger);
             color: var(--text-color-danger);
         }
     }
