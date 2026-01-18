@@ -14,7 +14,7 @@ body {
 @property --page-background {
     syntax: "<image>";
     inherits: true;
-    initial-value: linear-gradient(0.25turn, #5f5c55, #3d3023);
+    initial-value: linear-gradient(#010610, #427998);
 }
 
 @property --page-text-color {

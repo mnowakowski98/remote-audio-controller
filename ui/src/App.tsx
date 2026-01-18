@@ -5,7 +5,7 @@ import classes from './App.module.scss'
 
 import FilePlayerContext from './filePlayer/filePlayerContext';
 import SoundFilesContext from './soundFiles/soundFilesContext';
-import SettingsContext from './settingsContext';
+import SettingsContext from './SettingsContext';
 
 export default function App() {
   return <SettingsContext value={{ hostUrl: new URL('http://localhost/') }}>
