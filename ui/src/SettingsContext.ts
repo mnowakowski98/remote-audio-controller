@@ -1,7 +1,9 @@
 import { createContext } from 'react';
 
-export interface Settings {
-    hostUrl: URL
+export const defaultSettings = {
+    hostUrl: new URL('http://localhost/')
 }
 
-export default createContext<Settings>({ hostUrl: new URL('http://localhost') })
+export type Settings = typeof defaultSettings
+
+export default createContext<Settings>(defaultSettings)
