@@ -38,8 +38,8 @@ export default function App() {
   //   }
   // })
 
-  if (validation.isLoading == true) return 'Loading'
-  if (validation.error != null) return validation.error.message
+  // if (validation.isLoading == true) return 'Loading'
+  // if (validation.error != null) return validation.error.message
 
   return <SettingsContext value={appSettings}>
     <div className={classes.app}>
