@@ -12,7 +12,7 @@ body {
 }
 
 @property --page-background {
-    syntax: "<image>";
+    syntax: "<color> | <image>";
     inherits: true;
     initial-value: linear-gradient(#010610, #427998);
 }
@@ -26,19 +26,19 @@ body {
 @property --background-primary {
     syntax: "<color> | <image>";
     inherits: true;
-    initial-value: linear-gradient(to left top, #ece519, #e0cf16);
+    initial-value: radial-gradient(#fa7d01, #e07d19);
 }
 
 @property --background-primary-disabled {
-    syntax: "<color>";
+    syntax: "<color> | <image>";
     inherits: true;
-    initial-value: #f00b6678;
+    initial-value: #fa7d01aa;
 }
 
 @property --text-color-primary {
     syntax: "<color>";
     inherits: true;
-    initial-value: white;
+    initial-value: black;
 }
 
 .primary {
@@ -52,15 +52,15 @@ body {
 }
 
 @property --background-secondary {
-    syntax: "<color>";
+    syntax: "<color> | <image>";
     inherits: true;
-    initial-value: #529fbe;
+    initial-value: #139ed5;
 }
 
 @property --background-secondary-disabled {
-    syntax: "<color>";
+    syntax: "<color> | <image>";
     inherits: true;
-    initial-value: #529fbe78;
+    initial-value: #139ed578;
 }
 
 @property --text-color-secondary {
@@ -80,15 +80,15 @@ body {
 }
 
 @property --background-highlight {
-    syntax: "<color>";
+    syntax: "<color> | <image>";
     inherits: true;
-    initial-value: #10e900;
+    initial-value: #84f009;
 }
 
 @property --background-highlight-disabled {
-    syntax: "<color>";
+    syntax: "<color> | <image>";
     inherits: true;
-    initial-value: #10e90078;
+    initial-value: #84f00978;
 }
 
 @property --text-color-highlight {
@@ -108,13 +108,13 @@ body {
 }
 
 @property --background-affirm {
-    syntax: "<color>";
+    syntax: "<color> | <image>";
     inherits: true;
     initial-value: #008000;
 }
 
 @property --background-affirm-disabled {
-    syntax: "<color>";
+    syntax: "<color> | <image>";
     inherits: true;
     initial-value: #00800078;
 }
@@ -136,13 +136,13 @@ body {
 }
 
 @property --background-danger {
-    syntax: "<color>";
+    syntax: "<color> | <image>";
     inherits: true;
     initial-value: #ff3c00;
 }
 
 @property --background-danger-disabled {
-    syntax: "<color>";
+    syntax: "<color> | <image>";
     inherits: true;
     initial-value: #ff3c0078;
 }
@@ -166,13 +166,13 @@ body {
 
 
 @property --background-warning {
-    syntax: "<color>";
+    syntax: "<color> | <image>";
     inherits: true;
     initial-value: #f9e90a;
 }
 
 @property --background-warning-disabled {
-    syntax: "<color>";
+    syntax: "<color> | <image>";
     inherits: true;
     initial-value: #f9e90a78;
 }
@@ -194,13 +194,13 @@ body {
 }
 
 @property --background-error {
-    syntax: "<color>";
+    syntax: "<color> | <image>";
     inherits: true;
     initial-value: #c91717;
 }
 
 @property --background-error-disabled {
-    syntax: "<color>";
+    syntax: "<color> | <image>";
     inherits: true;
     initial-value: #c9171778;
 }

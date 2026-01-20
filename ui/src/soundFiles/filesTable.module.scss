@@ -6,7 +6,8 @@
 
         tbody tr:hover {
             background: var(--background-highlight);
-            color: var(--text-color-highlight)
+            color: var(--text-color-highlight);
+            transition: all var(--transition-duration-default);
         }
 
         td {

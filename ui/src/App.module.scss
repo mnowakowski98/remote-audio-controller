@@ -15,9 +15,14 @@
             font-weight: bold;
             margin: auto 0;
             text-decoration: none;
+            transition: all var(--transition-duration-default);
 
-            &:visited {
-                color: var(--textcolor-primary);
+            &:visited:not(:hover) {
+                color: var(--text-color-primary);
+            }
+
+            &:hover {
+                color: var(--background-highlight)
             }
         }
     }

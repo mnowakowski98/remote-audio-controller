@@ -85,9 +85,20 @@ const slice = createSlice({
             if (state.audioPlaying == false) state.seekTimings.lastPause = 0
         },
         setFileInfo: (state, action: PayloadAction<PlayingFile | null>) => {
+            const wasPlaying = state.audioPlaying == true && state.audioPaused == false
             state.playingFile = action.payload
             state.audioPaused = false
-            if (action.payload == null) state.audioPlaying = false
+            state.seekTimings.audioStart = null
+            state.seekTimings.initialPositionMs = 0
+            state.seekTimings.lastPause = 0
+            state.seekTimings.timePaused = 0
+
+            if (action.payload == null) {
+                state.audioPlaying = false
+                return
+            }
+
+            if (wasPlaying == true) state.seekTimings.audioStart = performance.now()
         },
         setLoop: (state, action: PayloadAction<boolean | null>) => {
             const currentLoop = state.controls.loop

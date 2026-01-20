@@ -12,7 +12,6 @@
     row-gap: 1em;
 
     .controls {
-        background: var(--background-primary-disabled);
         border-radius: var(--input-border-radius);
         grid-area: controls;
         padding: 1em;
@@ -43,5 +42,10 @@
         grid-area: clear-button;
         margin: 0 auto;
         width: 50%;
+
+        &:hover {
+            background: var(--background-warning);
+            color: var(--text-color-warning);
+        }
     }
 }
