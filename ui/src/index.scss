@@ -138,13 +138,13 @@ body {
 @property --background-danger {
     syntax: "<color> | <image>";
     inherits: true;
-    initial-value: #ff3c00;
+    initial-value: #ff0000;
 }
 
 @property --background-danger-disabled {
     syntax: "<color> | <image>";
     inherits: true;
-    initial-value: #ff3c0078;
+    initial-value: #ff000078;
 }
 
 @property --text-color-danger {
@@ -168,13 +168,13 @@ body {
 @property --background-warning {
     syntax: "<color> | <image>";
     inherits: true;
-    initial-value: #f9e90a;
+    initial-value: #dd5454;
 }
 
 @property --background-warning-disabled {
     syntax: "<color> | <image>";
     inherits: true;
-    initial-value: #f9e90a78;
+    initial-value: #dd545478;
 }
 
 @property --text-color-warning {

@@ -77,7 +77,7 @@ export default function FilePlayer(props: { state: FilePlayerState }) {
             onClick={() => clearFile.mutate()}>
             Clear file
         </button>
-        <div className={`${classes.controls} primary`}>
+        <div className={`${classes.controls} secondary`}>
             <SeekBar />
             <PlayerControls state={props.state} />
         </div>
