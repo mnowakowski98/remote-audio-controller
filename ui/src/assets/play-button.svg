@@ -6,97 +6,14 @@
    height="256mm"
    viewBox="0 0 256 256"
    version="1.1"
-   id="svg1"
-   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
-   sodipodi:docname="play-button.svg"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   id="play-button"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
-  <sodipodi:namedview
-     id="namedview1"
-     pagecolor="#ffffff"
-     bordercolor="#000000"
-     borderopacity="0.25"
-     inkscape:showpageshadow="2"
-     inkscape:pageopacity="0.0"
-     inkscape:pagecheckerboard="0"
-     inkscape:deskcolor="#d1d1d1"
-     inkscape:document-units="mm"
-     showguides="true"
-     inkscape:zoom="0.55992251"
-     inkscape:cx="556.32698"
-     inkscape:cy="516.14285"
-     inkscape:window-width="1440"
-     inkscape:window-height="847"
-     inkscape:window-x="0"
-     inkscape:window-y="25"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="layer1">
-    <sodipodi:guide
-       position="0,255.99999"
-       orientation="0,967.55906"
-       id="guide1"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="255.99999,255.99999"
-       orientation="967.55906,0"
-       id="guide2"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="255.99999,0"
-       orientation="0,-967.55906"
-       id="guide3"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="0,0"
-       orientation="-967.55906,0"
-       id="guide4"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="128,128"
-       orientation="-1,0"
-       id="guide5"
-       inkscape:locked="false"
-       inkscape:label=""
-       inkscape:color="rgb(0,134,229)" />
-    <sodipodi:guide
-       position="195.99999,128"
-       orientation="0,1"
-       id="guide6"
-       inkscape:locked="false"
-       inkscape:label=""
-       inkscape:color="rgb(0,134,229)" />
-    <sodipodi:guide
-       position="63.999998,191.99999"
-       orientation="0,1"
-       id="guide7"
-       inkscape:locked="false"
-       inkscape:label=""
-       inkscape:color="rgb(0,134,229)" />
-    <sodipodi:guide
-       position="63.999998,59.999998"
-       orientation="0,1"
-       id="guide8"
-       inkscape:locked="false"
-       inkscape:label=""
-       inkscape:color="rgb(0,134,229)" />
-  </sodipodi:namedview>
-  <defs
-     id="defs1" />
-  <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1">
-    <circle
-       style="fill:#00ff00;stroke-width:0.264583"
-       id="path6"
-       cx="128"
-       cy="127.99999"
-       r="127.99999" />
-    <path
-       style="fill:#f9f9f9;stroke-width:0.264583"
-       d="M 75.002706,63.616855 207.00267,127.61685 75.002706,195.61686 Z"
-       id="path9" />
+  <g id="play-button-icon">
+   <path
+       style="fill:#000000;fill-opacity:1"
+       d="M 75,50 215,128 75,206 Z"
+       id="play-button-triangle"
+   />
   </g>
 </svg>
