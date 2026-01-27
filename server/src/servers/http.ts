@@ -1,10 +1,6 @@
-import { IncomingMessage, RequestListener, ServerResponse } from 'node:http'
-import { createServer } from 'node:https'
+import { createServer, IncomingMessage, RequestListener, ServerResponse } from 'node:http'
 
-const httpServer = createServer({
-    key: '',
-    cert: '',
-})
+const httpServer = createServer()
 
 export const addRequestListener = (listener: RequestListener<typeof IncomingMessage, typeof ServerResponse>) =>
     httpServer.on('request', listener)

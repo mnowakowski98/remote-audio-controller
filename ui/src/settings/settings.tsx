@@ -1,7 +1,6 @@
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 
-import type { Settings as SettingsType } from '../settingsContext'
-import SettingsContext from '../settingsContext'
+import type { Settings as SettingsType } from '../SettingsContext'
 
 interface SettingsProps {
     state: SettingsType
@@ -9,8 +8,7 @@ interface SettingsProps {
 }
 
 export default function Settings(props: SettingsProps) {
-    const settings = useContext(SettingsContext)
-    const [host, setHost] = useState(settings.hostUrl.toString())
+    const [host, setHost] = useState(props.state.hostUrl.toString())
 
     return <div>
         <label htmlFor='host'>Host</label>

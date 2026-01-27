@@ -8,6 +8,7 @@ import FilePlayerContext from './filePlayer/filePlayerContext'
 import SoundFilesContext from './soundFiles/soundFilesContext'
 
 import classes from './App.module.scss'
+import SettingsComponent from './settings/settings'
 
 export default function App() {
   const settingsStorage = useLocalStorage<Settings>('settings')
@@ -27,6 +28,12 @@ export default function App() {
         <Routes>
           <Route path='fileplayer' element={<FilePlayerContext />} />
           <Route path='soundfiles' element={<SoundFilesContext />} />
+          <Route path='settings' element={
+            <SettingsComponent
+              state={appSettings}
+              onUpdate={(settings) => settingsStorage.setValue(settings)}
+            />
+          }/>
         </Routes>
       </div>
     </div>
