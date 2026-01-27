@@ -28,7 +28,7 @@ export default function FilesTable(props: FilesTableProps) {
                 <table>
                     <thead>
                         <tr>
-                            <th>Filename</th>
+                            <th>File name</th>
                             <th>Title</th>
                             <th>Artist</th>
                             <th>Album</th>
