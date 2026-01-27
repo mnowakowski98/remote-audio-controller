@@ -60,7 +60,7 @@ router.post('/', upload.single('file'), async (req, res) => {
         ? join(tmpdir(), 'remote-audio-player-currentfile')
         : currentFilePath)
     await writeFile(currentFile, req.file.buffer)
-    await store.dispatch(setFileInfo({ path: currentFile, name: fileName, metadata }))
+    await store.dispatch(setFileInfo({ path: currentFile, name: fileName }, metadata))
     if (wasPlaying) store.dispatch(start())
 
     res.sendStatus(200)
@@ -78,7 +78,7 @@ router.post('/:id', async (req, res) => {
     const wasPlaying = selectPlayingState(state) == 'playing'
     const metadata = await selectFileMetadata(state, file)
     const path = selectFilePath(state, file)
-    await store.dispatch(setFileInfo({ path, name: file.name, metadata }))
+    await store.dispatch(setFileInfo({ path, name: file.name }, metadata))
     if (wasPlaying) await store.dispatch(start())
 
     res.sendStatus(200)

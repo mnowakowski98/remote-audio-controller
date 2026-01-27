@@ -62,23 +62,6 @@ export const createApp = (store: AppStore, options: {
     // app.get('/', (_req, res) => res.send('remote-audio-controller-server'))
     // TODO: Send frontend (maybe check for public directory/server configuration, frontend could also be hosted independently or through a proxy)
 
-    let privateKey: KeyObject | null = null
-    const loadPrivateKey = async () => {
-        const keyFileData = await readFile(join(cwd(), './keys/server.internal.pem'))
-        privateKey = createPrivateKey(keyFileData)
-    }
-    loadPrivateKey()
-
-    app.post('/server-validate', express.text(), async (req, res) => {
-        const key = privateKey!.toCryptoKey(algorithm, false, ['encrypt', 'decrypt'])
-        const buffer = await subtle.decrypt(algorithm, key, req.body)
-        const body = Buffer.from(buffer)
-        console.log(body)
-        const matches = Buffer.compare(body, Buffer.from('remote-audio-controller'))
-        const message = await subtle.encrypt(algorithm, key, Buffer.from('remote-audio-controller'))
-        res.send(message)
-    })
-
     app.post('/reload/:service', (req, res) => {
         const service = req.params.service
         const callbacks = options.controlCallbacks.reload
