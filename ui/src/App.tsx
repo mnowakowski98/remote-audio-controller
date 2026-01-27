@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router'
+import { NavLink, Route, Routes } from 'react-router'
 import { Toaster } from 'react-hot-toast'
 
 import useLocalStorage from './hooks/useLocalStorage'
@@ -15,12 +15,12 @@ export default function App() {
   if (settingsStorage.value == null) settingsStorage.setValue(defaultSettings)
   const appSettings = settingsStorage.value ?? defaultSettings
 
-  return <SettingsContext value={appSettings}>
+  return <SettingsContext value={{ hostUrl: new URL('./api/', appSettings.hostUrl) }}>
     <div className={classes.app}>
       <nav className={classes.navbar}>
-        <a href="/fileplayer">File player</a>
-        <a href="/soundfiles">Sound files</a>
-        <a href="/settings">Settings</a>
+        <NavLink to='/fileplayer'>File player</NavLink>
+        <NavLink to='/soundfiles'>Sound files</NavLink>
+        <NavLink to='/settings'>Settings</NavLink>
       </nav>
 
       <div className={classes.page}>

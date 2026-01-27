@@ -33,7 +33,7 @@ export default function FilePlayer(props: { state: FilePlayerState }) {
         mutationFn: async () => await fetch(settings.hostUrl, { method: 'DELETE' }),
     })
 
-    const queryUrl = new URL('/soundfiles/', settings.hostUrl)
+    const queryUrl = new URL('../soundfiles/', settings.hostUrl)
     const soundFiles = useSyncedState<SoundFile[]>(soundFileKey, { queryUrl })
 
     if (soundFiles.isLoading == true) return 'Loading'

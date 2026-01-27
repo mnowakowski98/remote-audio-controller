@@ -34,7 +34,7 @@ export default function SeekBar() {
         }
     })
 
-    const timeout = useRef<number>(null)
+    const timeout = useRef<NodeJS.Timeout>(null)
     useEffect(() => {
         const timeSinceLastSync = () => performance.now() - lastSyncMessageTime
         timeout.current = setInterval(() => {

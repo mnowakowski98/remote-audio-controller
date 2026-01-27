@@ -4,7 +4,7 @@ import { WebSocketServer } from 'ws'
 const syncServer = new WebSocketServer({ noServer: true })
 
 export const connectionListener = (req: IncomingMessage, head: Buffer) => {
-    const isSyncRequest = req.url == '/sync' && req.method == 'GET'
+    const isSyncRequest = req.url == '/api/sync' && req.method == 'GET'
     if (isSyncRequest) syncServer.handleUpgrade(req, req.socket, head, () => undefined)
     return isSyncRequest
 }

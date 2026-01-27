@@ -4,22 +4,13 @@ import cors from 'cors'
 import { AppStore } from '../store'
 import { selectConfig } from '../slices/configSlice'
 
-import {
-    createCipheriv,
-    createDecipheriv,
-    createPrivateKey,
-    KeyObject,
-    randomFill,
-    subtle
-} from 'node:crypto'
 import { join } from 'node:path'
-import { readFile } from 'node:fs/promises'
 import { cwd } from 'node:process'
 
 import filePlayer from '../routes/filePlayer'
 import soundFiles from '../routes/soundFiles'
 import config from '../routes/config'
-import { algorithm } from '../models/validate'
+import { existsSync } from 'node:fs'
 
 
 let app: Express | null = null
@@ -55,12 +46,9 @@ export const createApp = (store: AppStore, options: {
     }
     app.locals.context = context
 
-    app.use('/fileplayer', filePlayer)
-    app.use('/soundfiles', soundFiles)
-    app.use('/config', config)
-
-    // app.get('/', (_req, res) => res.send('remote-audio-controller-server'))
-    // TODO: Send frontend (maybe check for public directory/server configuration, frontend could also be hosted independently or through a proxy)
+    app.use('/api/fileplayer', filePlayer)
+    app.use('/api/soundfiles', soundFiles)
+    app.use('/api/config', config)
 
     app.post('/reload/:service', (req, res) => {
         const service = req.params.service
@@ -83,6 +71,13 @@ export const createApp = (store: AppStore, options: {
         toCall[1]()
         res.sendStatus(200)
     })
+
+    const publicDirectory = join(cwd(), './public')
+    const hasPublicDirectory = existsSync(publicDirectory)
+    if (hasPublicDirectory == true) {
+        app.use(express.static(publicDirectory))
+        app.get(/\/*\//, (_, res) => res.sendFile(join(publicDirectory, './index.html')))
+    }
 
     return app
 }
