@@ -3,7 +3,7 @@ import { Toaster } from 'react-hot-toast'
 
 import useLocalStorage from './hooks/useLocalStorage'
 
-import SettingsContext, { defaultSettings, type Settings } from './SettingsContext'
+import SettingsContext, { defaultSettings, type Settings } from './settingsContext'
 import FilePlayerContext from './filePlayer/filePlayerContext'
 import SoundFilesContext from './soundFiles/soundFilesContext'
 

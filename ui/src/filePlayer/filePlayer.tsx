@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react'
 
-import SettingsContext from '../SettingsContext'
-import settingsContext from '../SettingsContext'
+import SettingsContext from '../settingsContext'
+import settingsContext from '../settingsContext'
 
 import FileInfo from './fileInfo'
 import PlayerControls from './playerControls'

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import type { Settings as SettingsType } from '../SettingsContext'
+import type { Settings as SettingsType } from '../settingsContext'
 
 interface SettingsProps {
     state: SettingsType

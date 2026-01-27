@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 
-import settingsContext from '../SettingsContext'
+import settingsContext from '../settingsContext'
 import useSyncedState from '../hooks/useSyncedState'
 
 import classes from './seekBar.module.scss'
