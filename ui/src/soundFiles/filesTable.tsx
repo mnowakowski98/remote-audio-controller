@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import { useMutation } from '@tanstack/react-query'
 
 import { type SoundFile } from '../models/soundFiles'
-import settingsContext from '../settingsContext'
+import settingsContext from '../SettingsContext'
 
 import classes from './filesTable.module.scss'
 import { getDurationString } from '../hooks/getDurationString'
@@ -28,7 +28,7 @@ export default function FilesTable(props: FilesTableProps) {
                 <table>
                     <thead>
                         <tr>
-                            <th>Filename</th>
+                            <th>File name</th>
                             <th>Title</th>
                             <th>Artist</th>
                             <th>Album</th>
@@ -38,7 +38,7 @@ export default function FilesTable(props: FilesTableProps) {
                     <tbody>
                         {props.state.map((file) =>
                             <tr key={file.id}
-                                className={props.selectedFileId == file.id ? 'highlight' : undefined}
+                                className={props.selectedFileId == file.id ? 'secondary' : undefined}
                                 onClick={() => props.onSelect?.(file.id)}
                             >
                                 <td>{file.name}</td>

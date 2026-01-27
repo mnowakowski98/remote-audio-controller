@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react'
 
-import SettingsContext from '../settingsContext'
-import settingsContext from '../settingsContext'
+import SettingsContext from '../SettingsContext'
+import settingsContext from '../SettingsContext'
 
 import FileInfo from './fileInfo'
 import PlayerControls from './playerControls'
@@ -25,8 +25,8 @@ export default function FilePlayer(props: { state: FilePlayerState }) {
         mutationFn: async (id: string) => {
             const response = await fetch(new URL(`./${id}`, settings.hostUrl), { method: 'POST' })
             if (response.status == 404) throw await response.text()
-            return response.json()
-        }
+        },
+        onSuccess: () => setSelectedFileId(null),
     })
 
     const clearFile = useMutation({
@@ -77,10 +77,8 @@ export default function FilePlayer(props: { state: FilePlayerState }) {
             onClick={() => clearFile.mutate()}>
             Clear file
         </button>
-
-        <div className={classes.controls}>
+        <div className={`${classes.controls} primary`}>
             <SeekBar />
-            <hr />
             <PlayerControls state={props.state} />
         </div>
     </div>
