@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { useMutation } from '@tanstack/react-query'
 
-import SettingsContext from '../settingsContext'
+import SettingsContext from '../SettingsContext'
 
 import classes from './playerControls.module.scss'
 import type { FilePlayerState } from '../models/filePlayer'
@@ -9,9 +9,7 @@ import type { FilePlayerState } from '../models/filePlayer'
 import playButton from '../assets/play-button.svg'
 import pauseButton from '../assets/pause-button.svg'
 import stopButton from '../assets/stop-button.svg'
-
-import loopOff from '../assets/loop-off.svg'
-import loopSingle from '../assets/loop-single.svg'
+import loopButton from '../assets/loop-button.svg'
 
 export default function PlayerControls(props: { state: FilePlayerState }) {
     const baseUrl = useContext(SettingsContext).hostUrl
@@ -25,35 +23,42 @@ export default function PlayerControls(props: { state: FilePlayerState }) {
         mutationFn: async (loop: boolean) =>
             await fetch(new URL('./status/loop', baseUrl), { method: 'PUT', body: loop ? 'true' : 'false' })
     })
-
-    const loopSrc = props.state.loop == true ? loopSingle : loopOff
-
     return <div className={classes.playerControls}>
-        <img
-            className={classes.playbackButtonImg}
-            src={loopSrc}
+        <button
+            className={`${classes.playerButton} secondary`}
+            type='button'
             onClick={() => setLoopState.mutate(!props.state.loop)}
-        />
+        >
+            <img src={loopButton} />
+        </button>
+        
 
         {props.state.playingState != 'unloaded' && <>
-            {props.state.playingState != 'playing' && 
-                <img
-                    className={classes.playbackButtonImg}
-                    src={playButton}
+            {props.state.playingState != 'playing' &&
+                <button
+                    className={`${classes.playerButton} ${classes.playPauseButton} affirm`}
+                    type='button'
                     onClick={() => setPlayingState.mutate('start')}
-                />}
+                >
+                    <img src={playButton} />
+                </button>}
             {props.state.playingState != 'paused' && props.state.playingState != 'stopped' &&
-                <img
-                    className={classes.playbackButtonImg}
-                    src={pauseButton}
+                <button
+                    className={`${classes.playerButton} ${classes.playPauseButton} secondary`}
+                    type='button'
                     onClick={() => setPlayingState.mutate('pause')}
-                />
+                >
+                    <img src={pauseButton} />
+                </button>
             }
-            {props.state.playingState != 'stopped' && <img
-                className={classes.playbackButtonImg}
-                src={stopButton}
-                onClick={() => setPlayingState.mutate('stop')}
-            />}
+            {props.state.playingState != 'stopped' &&
+                <button
+                    className={`${classes.playerButton} ${classes.stopButton} warning`}
+                    type='button'
+                    onClick={() => setPlayingState.mutate('stop')}
+                >
+                    <img src={stopButton} />
+                </button>}
         </>}
     </div>
 }

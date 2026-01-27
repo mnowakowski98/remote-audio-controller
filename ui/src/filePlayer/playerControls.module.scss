@@ -5,8 +5,22 @@
     justify-content: center;
     width: 100%;
 
-    .playbackButtonImg {
-        height: 3em;
-        width: 3em;
+    .playerButton {
+        position: relative;
+        text-align: center;
+
+        img {
+            height: 2em;
+            width: 2em;
+        }
     }
+
+    .playPauseButton:hover {
+        background: var(--background-highlight);
+    }
+
+    .stopButton:hover {
+        background: var(--background-danger);
+    }
+
 }

@@ -2,7 +2,7 @@
     text-align: left;
     
     .inputs {
-        border: 2px solid var(--background-color-secondary);
+        border: 2px solid var(--background-secondary);
         border-left: none;
         border-right: none;
         border-radius: var(--input-border-radius);
@@ -15,7 +15,7 @@
         }
 
         .browseButton > button {
-            border: 2px solid var(--background-color-secondary);
+            border: 2px solid var(--background-secondary);
         }
 
         .fileName {
@@ -23,7 +23,7 @@
         }
 
         .uploadButton {
-            border: 2px solid var(--background-color-secondary);
+            border: 2px solid var(--background-secondary);
         }
 
         > * {
