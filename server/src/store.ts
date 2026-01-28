@@ -2,7 +2,6 @@ import type { Action, Middleware, ThunkAction } from '@reduxjs/toolkit'
 import { configureStore } from '@reduxjs/toolkit'
 
 import { configReducer } from './slices/configSlice'
-import { httpReducer } from './slices/httpSlice'
 import { filePlayerReducer } from './slices/filePlayer'
 import { sendSyncData } from './servers/stateSync'
 
@@ -32,7 +31,6 @@ const dataSync: Middleware = ({ getState }) => {
 export const store = configureStore({
     reducer: {
         config: configReducer,
-        http: httpReducer,
         filePlayer: filePlayerReducer,
         soundFiles: soundFilesReducer
     },

@@ -4,7 +4,6 @@ import { connectionListener } from './servers/stateSync'
 import { store } from './store'
 import { loadConfigFile, selectFilePlayerConfig } from './slices/configSlice'
 import { createApp } from './servers/express'
-import { setPort } from './slices/httpSlice'
 import { loadFiles } from './slices/soundFiles'
 
 import { spawn as _spawn } from 'node:child_process'
@@ -37,8 +36,7 @@ const startServer = () => {
         }
     })
 
-    store.dispatch(setPort(state.config.httpServer.port))
-    startHttpServer(state.config.httpServer.port)
+    startHttpServer(store)
     addRequestListener(app)
     addUpgradeListener(connectionListener)
 }
