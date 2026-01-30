@@ -1,4 +1,4 @@
-import { NavLink, Route, Routes } from 'react-router'
+import { NavLink, Route, Routes, useLocation } from 'react-router'
 import { Toaster } from 'react-hot-toast'
 import { useQuery } from '@tanstack/react-query'
 
@@ -11,9 +11,14 @@ import SettingsComponent from './settings/settings'
 
 import classes from './App.module.scss'
 import { serverInfoKey, type ServerInfo } from './models/serverInfo'
+import useSemantic from './hooks/useSemantic'
 
 
 export default function App() {
+  const primary = useSemantic('primary')
+  const location = useLocation()
+  const isActivePath = (path: string) => location.pathname == path
+
   const settingsStorage = useLocalStorage<Settings>('settings')
   if (settingsStorage.value.current == null) settingsStorage.setValue(defaultSettings)
   const appSettings = settingsStorage.value
@@ -41,9 +46,27 @@ export default function App() {
   return <SettingsContext value={{ hostUrl: new URL('./api/', appSettings.current!.hostUrl) }}>
     <div className={classes.app}>
       <nav className={classes.navbar}>
-        <NavLink to='/fileplayer'>File player</NavLink>
-        <NavLink to='/soundfiles'>Sound files</NavLink>
-        <NavLink to='/settings'>Settings</NavLink>
+        <NavLink
+          style={isActivePath('/fileplayer') ? {
+            color: primary.backgroundColor,
+            textShadow: `${primary.text} 1px 0 10px`
+          } : undefined}
+          to='/fileplayer'
+        >File player</NavLink>
+        <NavLink
+          style={isActivePath('/soundfiles') ? {
+            color: primary.backgroundColor,
+            textShadow: `${primary.text} 1px 0 10px`
+          } : undefined}
+          to='/soundfiles'
+        >Sound files</NavLink>
+        <NavLink
+          style={isActivePath('/settings') ? {
+            color: primary.backgroundColor,
+            textShadow: `${primary.text} 1px 0 10px`
+          } : undefined}
+          to='/settings'
+        >Settings</NavLink>
       </nav>
 
       <div className={classes.page}>

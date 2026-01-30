@@ -5,6 +5,10 @@ body {
     margin: 0;
 }
 
+a.active {
+    color: var(--background-highlight);
+}
+
 @property --transition-duration-default {
     syntax: "<time>";
     inherits: true;
@@ -27,6 +31,12 @@ body {
     syntax: "<color> | <image>";
     inherits: true;
     initial-value: radial-gradient(#fa7d01, #e07d19);
+}
+
+@property --background-color-primary {
+    syntax: "<color> | <image>";
+    inherits: true;
+    initial-value: #fa7d01;
 }
 
 @property --background-primary-disabled {
