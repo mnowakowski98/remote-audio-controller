@@ -12,34 +12,33 @@ import SettingsComponent from './settings/settings'
 import classes from './App.module.scss'
 import { serverInfoKey, type ServerInfo } from './models/serverInfo'
 
+
 export default function App() {
   const settingsStorage = useLocalStorage<Settings>('settings')
-  if (settingsStorage.value == null) settingsStorage.setValue(defaultSettings)
-  const appSettings = settingsStorage.value ?? defaultSettings
+  if (settingsStorage.value.current == null) settingsStorage.setValue(defaultSettings)
+  const appSettings = settingsStorage.value
 
-  const validateServer = useQuery({
+  const validate = useQuery({
     queryKey: [serverInfoKey],
     queryFn: async () => {
-      const response = await fetch(new URL('/api/serverinfo', appSettings.hostUrl))
+      const response = await fetch(new URL('./api/serverinfo', appSettings.current!.hostUrl))
       const data = await response.json() as ServerInfo
-      const errMessage = 'Server is invalid'
-      if (data.appname != 'remote-audio-controller') throw errMessage
-      if (data.version != '0.0.0') throw errMessage
+      if (data.appname != 'remote-audio-controller') throw new Error()
+      if (data.version != '0.0.0') throw new Error()
       return true
-    }
+    },
+    retry: false
   })
 
-  const serverIsValid = validateServer.isPending == false && validateServer.error == null
   const settingsComponent = <SettingsComponent
-    state={appSettings}
+    state={appSettings.current!}
     onUpdate={(settings) => {
       settingsStorage.setValue(settings)
-      validateServer.refetch()
+      validate.refetch()
     }}
-    isSaving={validateServer.isPending}
   />
 
-  return <SettingsContext value={{ hostUrl: new URL('./api/', appSettings.hostUrl) }}>
+  return <SettingsContext value={{ hostUrl: new URL('./api/', appSettings.current!.hostUrl) }}>
     <div className={classes.app}>
       <nav className={classes.navbar}>
         <NavLink to='/fileplayer'>File player</NavLink>
@@ -49,12 +48,13 @@ export default function App() {
 
       <div className={classes.page}>
         <Toaster />
-        {serverIsValid == false && <div className={classes.invalidServer}>
-          <h3>{validateServer.isPending == true ? 'Checking server' : 'Server is invalid'}</h3>
+        {validate.isPending == true && <div className={classes.invalidServer}>Checking server</div>}
+        {validate.isSuccess == false && <div className={classes.invalidServer}>
+          <h3>Server is invalid</h3>
           <hr />
           {settingsComponent}
         </div>}
-        {serverIsValid == true && <Routes>
+        {validate.isSuccess == true && validate.isPending == false && <Routes>
           <Route path='fileplayer' element={<FilePlayerContext />} />
           <Route path='soundfiles' element={<SoundFilesContext />} />
           <Route path='settings' element={settingsComponent}/>

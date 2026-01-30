@@ -1,1 +1,0 @@
-export const algorithm = 'RSA-OAEP'

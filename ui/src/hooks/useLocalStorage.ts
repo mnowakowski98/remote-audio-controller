@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 export default function useLocalStorage<StorageType>(key: string) {
-    const [storageValue, setStorageValue] = useState<StorageType | null>(null)
+    const storageValue = useRef<StorageType | null>(null)
 
     useEffect(() => {
         const storageItem = localStorage.getItem(key)
-        setStorageValue(storageItem == null ? storageItem : JSON.parse(storageItem))
+        storageValue.current = storageItem == null ? storageItem : JSON.parse(storageItem)
     }, [key])
 
     return {
@@ -13,7 +13,7 @@ export default function useLocalStorage<StorageType>(key: string) {
         setValue: (value: StorageType | null) => {
             if (value == null) localStorage.removeItem(key)
             else localStorage.setItem(key, JSON.stringify(value))
-            setStorageValue(value)
+            storageValue.current = value
         }
     }
 }
