@@ -37,7 +37,7 @@ input[type="text"] {
     border-left: none;
     border-right: none;
     border-radius: var(--input-border-radius);
-    color: var(--text-color-secondary);
+    color: var(--page-text-color);
     display: flex;
     flex-direction: row;
     gap: 1em;
@@ -49,6 +49,7 @@ input[type="text"] {
         border-left: 2px solid var(--background-secondary);
         border-right: 2px solid var(--background-secondary);
         border-radius: var(--input-border-radius);
+        color: var(--text-color-secondary);
         padding: 1em;
     }
 

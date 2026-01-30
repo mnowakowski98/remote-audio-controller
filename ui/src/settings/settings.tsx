@@ -7,6 +7,7 @@ import classes from './settings.module.scss'
 interface SettingsProps {
     state: SettingsType
     onUpdate: (settings: SettingsType) => void
+    isSaving: boolean
 }
 
 export default function Settings(props: SettingsProps) {

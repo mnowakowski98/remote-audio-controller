@@ -11,7 +11,7 @@ import filePlayer from '../routes/filePlayer'
 import soundFiles from '../routes/soundFiles'
 import config from '../routes/config'
 import { existsSync } from 'node:fs'
-
+import { ServerInfo } from '../models/serverInfo'
 
 let app: Express | null = null
 
@@ -45,6 +45,14 @@ export const createApp = (store: AppStore, options: {
         serverControls: options.controlCallbacks
     }
     app.locals.context = context
+
+    app.get('/api/serverinfo', (req, res) => {
+        const serverInfo: ServerInfo = {
+            appname: 'remote-audio-controller',
+            version: '0.0.0'
+        }
+        res.send(serverInfo)
+    })
 
     app.use('/api/fileplayer', filePlayer)
     app.use('/api/soundfiles', soundFiles)
