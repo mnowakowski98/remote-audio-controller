@@ -11,9 +11,9 @@ export default function useLocalStorage<StorageType>(key: string) {
     return {
         value: storageValue,
         setValue: (value: StorageType | null) => {
-            setStorageValue(value)
             if (value == null) localStorage.removeItem(key)
             else localStorage.setItem(key, JSON.stringify(value))
+            setStorageValue(value)
         }
     }
 }

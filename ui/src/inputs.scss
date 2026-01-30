@@ -4,13 +4,63 @@
     initial-value: 20px;
 }
 
+// For some reason setting this to an em doesn't work
+// Update uses when it works again
+@property --input-padding {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 1em;
+}
+
 button {
     border: none;
     border-radius: var(--input-border-radius);
     padding: 1em;
 
     &:hover:not(:disabled) {
-        background: var(--background-affirm);
-        color: var(--text-color-affirm);
+        outline: solid 2px var(--background-highlight);
+    }
+}
+
+input[type="text"] {
+    background: none;
+    border: none;
+    padding: 1em;
+
+    &:focus-visible {
+        outline: none;
+    }
+}
+
+.inputGroup {
+    border: 2px solid var(--background-secondary);
+    border-left: none;
+    border-right: none;
+    border-radius: var(--input-border-radius);
+    color: var(--text-color-secondary);
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+
+    vertical-align: center;
+
+    label {
+        background: var(--background-secondary);
+        border-left: 2px solid var(--background-secondary);
+        border-right: 2px solid var(--background-secondary);
+        border-radius: var(--input-border-radius);
+        padding: 1em;
+    }
+
+    input {
+        color: var(--page-text-color);
+        flex-grow: 1;
+    }
+
+    input[type="text"] {
+        &:focus-visible {
+            outline: 2px solid var(--background-highlight);
+            border-radius: var(--input-border-radius);
+        }
     }
 }

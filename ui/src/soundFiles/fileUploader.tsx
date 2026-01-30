@@ -43,7 +43,7 @@ export default function FileUploader() {
     return <>
         <div className={classes.fileUploader}>
             <h3>Upload audio</h3>
-            <div className={classes.inputs}>
+            <div className='inputGroup'>
                 <input
                     ref={fileInput}
                     type='file'
@@ -51,12 +51,10 @@ export default function FileUploader() {
                     onChange={(event: ChangeEvent<HTMLInputElement>) =>
                         setAudioFile(event.target.files?.item(0))}
                 />
-                <div className={classes.browseButton}>
                     <button
-                        className='secondary'
+                        className={`${classes.browseButton} secondary`}
                         onClick={() => fileInput.current?.click()}
                     >Browse...</button>
-                </div>
                 <span className={classes.fileName}>{audioFile?.name ?? 'No file selected'}</span>
                 <button
                     className={`${classes.uploadButton} primary`}
