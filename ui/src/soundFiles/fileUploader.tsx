@@ -52,7 +52,7 @@ export default function FileUploader() {
                         setAudioFile(event.target.files?.item(0))}
                 />
                     <button
-                        className={`${classes.browseButton} secondary`}
+                        className={`${classes.browseButton} primary`}
                         onClick={() => fileInput.current?.click()}
                     >Browse...</button>
                 <span className={classes.fileName}>{audioFile?.name ?? 'No file selected'}</span>
