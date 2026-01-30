@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 
 remote-audio-controller-ui*.tgz
+keys/

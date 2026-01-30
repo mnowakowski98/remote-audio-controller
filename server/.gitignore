@@ -4,4 +4,5 @@ node_modules/
 remote-audio-controller-server*.tgz
 config.json
 
-**/sounds/
+sounds/
+keys/

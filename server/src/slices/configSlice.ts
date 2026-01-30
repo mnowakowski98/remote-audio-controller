@@ -2,14 +2,17 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppThunk } from '../store'
 
 import { existsSync } from 'node:fs'
-import { readFile, watch, writeFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { cwd } from 'node:process'
 
 const defaultConfig = Object.freeze({
     httpServer: {
         corsOrigin: undefined as string | undefined,
-        port: 80,
+        port: undefined as number | undefined,
+        certificatePath: undefined as string | undefined,
+        certificateKeyPath: undefined as string | undefined,
+        frontendPath: undefined as string | undefined
     },
     filePlayer: {
         currentFilePath: ':tmp:',

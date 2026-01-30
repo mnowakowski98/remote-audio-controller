@@ -1,33 +1,25 @@
 .fileUploader {
     text-align: left;
     
-    .inputs {
+    input {
+        display: none;
+    }
+
+    .browseButton {
         border: 2px solid var(--background-secondary);
-        border-left: none;
-        border-right: none;
-        border-radius: var(--input-border-radius);
-        display: flex;
-        flex-direction: row;
-        gap: 1em;
+    }
 
-        input {
-            display: none;
-        }
+    .fileName {
+        flex-grow: 1;
+        padding: 1em 0;
+    }
 
-        .browseButton > button {
-            border: 2px solid var(--background-secondary);
-        }
+    .uploadButton {
+        border: 2px solid var(--background-secondary);
 
-        .fileName {
-            flex-grow: 1;
-        }
-
-        .uploadButton {
-            border: 2px solid var(--background-secondary);
-        }
-
-        > * {
-            align-self: center;
+        &:hover:not(:disabled) {
+            background: var(--background-affirm);
+            color: var(--text-color-affirm);
         }
     }
 }

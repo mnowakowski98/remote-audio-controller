@@ -13,8 +13,9 @@ import { IAudioMetadata } from 'music-metadata'
 interface PlayingFile {
     path: string,
     name: string,
-    metadata: IAudioMetadata,
 }
+
+let playingFileMetadata: IAudioMetadata | null = null
 
 interface PlayerControls {
     loop: boolean
@@ -145,10 +146,10 @@ export const selectUIState = (_state: RootState): FilePlayerUIState => {
         playingFile: state.playingFile != null ? {
             id: 'playing',
             name: state.playingFile.name,
-            title: state.playingFile?.metadata.common.title ?? '(No title)',
-            artist: state.playingFile?.metadata.common.artist ?? '(No artist)',
-            album: state.playingFile?.metadata.common.album ?? '(No album)',
-            durationMs: (state.playingFile?.metadata.format.duration ?? 0) * 1000
+            title: playingFileMetadata?.common.title ?? '(No title)',
+            artist: playingFileMetadata?.common.artist ?? '(No artist)',
+            album: playingFileMetadata?.common.album ?? '(No album)',
+            durationMs: (playingFileMetadata?.format.duration ?? 0) * 1000
         } : null
     }
 }
@@ -196,7 +197,7 @@ export const seek = (seekToMs: number): AppThunk => {
     }
 }
 
-export const setFileInfo = (file: PlayingFile | null): AppThunk => {
+export const setFileInfo = (file: PlayingFile | null, metadata?: IAudioMetadata): AppThunk => {
     return async (dispatch, getState) => {
         if (file == null) {
             sendCommand('stop')
@@ -204,6 +205,7 @@ export const setFileInfo = (file: PlayingFile | null): AppThunk => {
             return
         }
 
+        playingFileMetadata = metadata ?? null
         const wasPlaying = selectPlayingState(getState()) == 'playing'
         await sendCommand(`loadpaused ${file.path}`)
         dispatch(slice.actions.setFileInfo(file))

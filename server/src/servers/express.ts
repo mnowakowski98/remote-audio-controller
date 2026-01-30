@@ -1,12 +1,17 @@
-import express, { Express, NextFunction, Request, Response } from 'express'
+import express, { Express, Request } from 'express'
 import cors from 'cors'
 
 import { AppStore } from '../store'
 import { selectConfig } from '../slices/configSlice'
 
+import { join } from 'node:path'
+import { cwd } from 'node:process'
+
 import filePlayer from '../routes/filePlayer'
 import soundFiles from '../routes/soundFiles'
 import config from '../routes/config'
+import { existsSync } from 'node:fs'
+import { ServerInfo } from '../models/serverInfo'
 
 let app: Express | null = null
 
@@ -27,7 +32,6 @@ export type LocalContext = {
 export const getContext = (req: Request): LocalContext => req.app.locals.context
 
 export const createApp = (store: AppStore, options: {
-    middleware?: ((req: Request, res: Response, next: NextFunction) => void)[],
     controlCallbacks: ServerControls
 }) => {
     app = express()
@@ -42,13 +46,17 @@ export const createApp = (store: AppStore, options: {
     }
     app.locals.context = context
 
-    if (options.middleware != undefined) app.use(options.middleware)
+    app.get('/api/serverinfo', (req, res) => {
+        const serverInfo: ServerInfo = {
+            appname: 'remote-audio-controller',
+            version: '0.0.0'
+        }
+        res.send(serverInfo)
+    })
 
-    app.use('/fileplayer', filePlayer)
-    app.use('/soundfiles', soundFiles)
-    app.use('/config', config)
-
-    app.get('/', (_req, res) => res.send('remote-audio-controller-server'))
+    app.use('/api/fileplayer', filePlayer)
+    app.use('/api/soundfiles', soundFiles)
+    app.use('/api/config', config)
 
     app.post('/reload/:service', (req, res) => {
         const service = req.params.service
@@ -71,6 +79,13 @@ export const createApp = (store: AppStore, options: {
         toCall[1]()
         res.sendStatus(200)
     })
+
+    const publicDirectory = join(cwd(), './public')
+    const hasPublicDirectory = existsSync(publicDirectory)
+    if (hasPublicDirectory == true) {
+        app.use(express.static(publicDirectory))
+        app.get(/\/*\//, (_, res) => res.sendFile(join(publicDirectory, './index.html')))
+    }
 
     return app
 }

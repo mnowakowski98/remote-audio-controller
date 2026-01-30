@@ -1,0 +1,14 @@
+.settings {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+
+    .saveButton {
+        width: 100%;
+
+        &:hover {
+            background: var(--background-affirm);
+            color: var(--text-color-affirm);
+        }
+    }
+}

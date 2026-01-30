@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react'
 
-import SettingsContext from '../SettingsContext'
-import settingsContext from '../SettingsContext'
+import SettingsContext from '../settingsContext'
+import settingsContext from '../settingsContext'
 
 import FileInfo from './fileInfo'
 import PlayerControls from './playerControls'
@@ -33,7 +33,7 @@ export default function FilePlayer(props: { state: FilePlayerState }) {
         mutationFn: async () => await fetch(settings.hostUrl, { method: 'DELETE' }),
     })
 
-    const queryUrl = new URL('/soundfiles/', settings.hostUrl)
+    const queryUrl = new URL('../soundfiles/', settings.hostUrl)
     const soundFiles = useSyncedState<SoundFile[]>(soundFileKey, { queryUrl })
 
     if (soundFiles.isLoading == true) return 'Loading'

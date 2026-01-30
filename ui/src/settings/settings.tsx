@@ -1,21 +1,27 @@
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 
-import type { Settings } from '../settingsContext'
-import SettingsContext from '../settingsContext'
+import type { Settings as SettingsType } from '../settingsContext'
+
+import classes from './settings.module.scss'
 
 interface SettingsProps {
-    onUpdate: (settings: Settings) => void
+    state: SettingsType
+    onUpdate: (settings: SettingsType) => void
 }
 
 export default function Settings(props: SettingsProps) {
-    const settings = useContext(SettingsContext)
-    const [hostUrl, setHostUrl] = useState(settings.hostUrl.toString())
+    const [host, setHost] = useState(props.state.hostUrl.toString())
 
-    const getSettings = (): Settings => ({
-        hostUrl: new URL(hostUrl)
-    })
-
-    return <div>
-        
+    return <div className={classes.settings}>
+        <div className='inputGroup'>
+            <label htmlFor='host'>Host</label>
+            <input id='host' type='text' value={host} onChange={(event) => setHost(event.target.value)} />
+        </div>
+        <button
+            className={`${classes.saveButton} primary`}
+            onClick={() => props.onUpdate({
+                hostUrl: new URL(host)
+            })}
+        >Save</button>
     </div>
 }
