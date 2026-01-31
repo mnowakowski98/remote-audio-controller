@@ -3,7 +3,7 @@ then rm -r dist/
 fi
 mkdir dist
 
-cp server/dist/* dist/
+cp -r server/dist/* dist/
 mkdir dist/public/
 cp -r ui/dist/ dist/public/
 cd dist
