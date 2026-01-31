@@ -4,7 +4,9 @@ import type { FilePlayerState } from '../models/filePlayer'
 import classes from './fileInfo.module.scss'
 
 export default function FileInfo(props: { state: FilePlayerState }) {
-    return <div className={classes.fileInfo}>
+    return <div className={classes.fileInfo} style={{
+        padding: props.state.playingFile == null ? '50% 0' : undefined
+    }}>
         {props.state.playingFile == null && <div className={classes.noFile}>No file loaded</div>}
         {props.state.playingFile != null && <div>
             <h3>Playing now</h3>
