@@ -9,6 +9,7 @@ import { normalize } from 'node:path'
 import { filePlayerKey, FilePlayerState as FilePlayerUIState, PlayingState } from '../models/filePlayer'
 import { IAudioMetadata } from 'music-metadata'
 import { getSoundFile } from './soundFiles'
+import assert from 'node:assert'
 
 //#region State Types
 interface PlayingFile {
@@ -23,10 +24,10 @@ interface PlayerControls {
 }
 
 interface SeekTimings {
-    audioStart: number | null,
-    initialPositionMs: number
-    lastPause: number,
-    timePaused: number
+    audioStart: number | null // Monotonic clock time when playingState last became 'playing' or seek occurred while playing
+    initialPositionMs: number // Seek position at start or set
+    lastPause: number // Monotonic clock time from last pause or when seek occurred while paused
+    timePaused: number // Monotonic clock time elapsed since lastPause
 }
 
 interface FilePlayerState {
@@ -58,8 +59,7 @@ const slice = createSlice({
         start: (state, action: PayloadAction<number | undefined>) => {
             if (state.audioPlaying == true && state.audioPaused == false) return
 
-            if (state.audioPaused == true) state.seekTimings.timePaused += performance.now() - state.seekTimings.lastPause
-            else state.seekTimings.audioStart = performance.now() - (action.payload ?? 0)
+            state.seekTimings.audioStart = performance.now() - (action.payload ?? 0)
 
             state.audioPlaying = true
             state.audioPaused = false
@@ -116,11 +116,13 @@ const slice = createSlice({
     },
     selectors: {
         selectPlayingState: (state): PlayingState => {
+            const isInvalidState = state.audioPlaying == false && state.audioPaused == true
+            assert(isInvalidState == false, 'Playing state is invalid (paused while not playing)')
+
             if (state.playingFile == null) return 'unloaded'
             if (state.audioPlaying == true && state.audioPaused == false) return 'playing'
-            else if (state.audioPlaying == true && state.audioPaused == true) return 'paused'
-            else if (state.audioPlaying == false && state.audioPaused == true) throw 'File player state corrupted'
-            else return 'stopped'
+            if (state.audioPlaying == true && state.audioPaused == true) return 'paused'
+            return 'stopped'
         },
         selectPlayingFile: (state) => state.playingFile,
         selectSeekTime: (state) =>

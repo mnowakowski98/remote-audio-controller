@@ -24,7 +24,6 @@ const initFilePlayer = () => {
 const initSoundFiles = () => store.dispatch(loadFiles())
 
 const startServer = () => {
-    const state = store.getState()
     const app = createApp(store, {
         controlCallbacks: {
             reload: {
