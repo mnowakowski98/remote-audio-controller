@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import { useMutation } from '@tanstack/react-query'
 
 import { type SoundFile } from '../models/soundFiles'
-import settingsContext from '../settingsContext'
+import settingsContext from '../settings/settingsContext'
 
 import classes from './filesTable.module.scss'
 import { getDurationString } from '../hooks/getDurationString'

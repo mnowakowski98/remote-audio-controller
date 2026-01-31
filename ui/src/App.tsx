@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import useLocalStorage from './hooks/useLocalStorage'
 
-import SettingsContext, { defaultSettings, type Settings } from './settingsContext'
+import SettingsContext, { defaultSettings, type Settings } from './settings/settingsContext'
 import FilePlayerContext from './filePlayer/filePlayerContext'
 import SoundFilesContext from './soundFiles/soundFilesContext'
 import SettingsComponent from './settings/settings'
@@ -49,21 +49,21 @@ export default function App() {
         <NavLink
           style={isActivePath('/fileplayer') ? {
             color: primary.backgroundColor,
-            textShadow: `${primary.text} 1px 0 10px`
+            textShadow: `${primary.text} 0 0 5px`
           } : undefined}
           to='/fileplayer'
         >File player</NavLink>
         <NavLink
           style={isActivePath('/soundfiles') ? {
             color: primary.backgroundColor,
-            textShadow: `${primary.text} 1px 0 10px`
+            textShadow: `${primary.text} 0 0 5px`
           } : undefined}
           to='/soundfiles'
         >Sound files</NavLink>
         <NavLink
           style={isActivePath('/settings') ? {
             color: primary.backgroundColor,
-            textShadow: `${primary.text} 1px 0 10px`
+            textShadow: `${primary.text} 0 0 5px`
           } : undefined}
           to='/settings'
         >Settings</NavLink>

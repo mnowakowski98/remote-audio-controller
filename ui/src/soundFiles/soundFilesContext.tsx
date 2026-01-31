@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 
-import SettingsContext from '../settingsContext'
+import SettingsContext from '../settings/settingsContext'
 import useSyncedState from '../hooks/useSyncedState'
 
 import SoundFiles from './soundFiles'

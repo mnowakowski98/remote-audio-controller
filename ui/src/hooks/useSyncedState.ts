@@ -2,7 +2,7 @@ import { useContext, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import useWebSocket from 'react-use-websocket'
 
-import settingsContext from '../settingsContext'
+import settingsContext from '../settings/settingsContext'
 
 import type StateUpdate from '../models/stateUpdate'
 

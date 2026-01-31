@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { useMutation } from '@tanstack/react-query'
 
-import SettingsContext from '../settingsContext'
+import SettingsContext from '../settings/settingsContext'
 
 import classes from './playerControls.module.scss'
 import type { FilePlayerState } from '../models/filePlayer'

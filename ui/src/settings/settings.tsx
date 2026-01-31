@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import type { Settings as SettingsType } from '../settingsContext'
+import type { Settings as SettingsType } from './settingsContext'
 
 import classes from './settings.module.scss'
 
