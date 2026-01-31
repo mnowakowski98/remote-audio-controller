@@ -7,5 +7,5 @@ export interface SoundFile {
     artist: string,
     album: string,
     durationMs: number,
-    thumbnail?: string
+    cover: string | undefined
 }
