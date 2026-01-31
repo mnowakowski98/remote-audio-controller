@@ -2,11 +2,9 @@ combined-archive: ui/dist/* server/dist/*
 	./make-combined-archive.sh
 
 ui-archive: ui/dist/*
-	cd ui && npm run build
 	cd ui/dist/ && tar -cvf remote-audio-controller-ui * && gzip -S .tgz remote-audio-controller-ui
 
-server-archive: server/dist/server.js
-	cd server && npm run build
+server-archive: server/dist/*
 	cd server/dist/ && tar -cvf remote-audio-controller-server * && gzip -S .tgz remote-audio-controller-server
 
 server-sea: server/src/*
