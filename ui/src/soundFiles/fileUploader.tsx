@@ -2,7 +2,7 @@ import { type ChangeEvent, useContext, useRef, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 
-import settingsContext from '../settingsContext'
+import settingsContext from '../settings/settingsContext'
 import useSemantic from '../hooks/useSemantic'
 
 import classes from './fileUploader.module.scss'
@@ -52,7 +52,7 @@ export default function FileUploader() {
                         setAudioFile(event.target.files?.item(0))}
                 />
                     <button
-                        className={`${classes.browseButton} secondary`}
+                        className={`${classes.browseButton} primary`}
                         onClick={() => fileInput.current?.click()}
                     >Browse...</button>
                 <span className={classes.fileName}>{audioFile?.name ?? 'No file selected'}</span>

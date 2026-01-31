@@ -9,6 +9,7 @@ import { SoundFile, soundFileKey } from '../models/soundFiles'
 import { selectSoundFilesConfig } from './configSlice'
 import { IAudioMetadata, parseBuffer, parseFile } from 'music-metadata'
 import { randomUUID } from 'node:crypto'
+import { uint8ArrayToBase64 } from 'uint8array-extras'
 
 const slice = createSlice({
     name: soundFileKey,
@@ -68,14 +69,22 @@ export const {
 
 export const selectUIState = (state: RootState) => state.soundFiles.soundFiles
 
-export const getSoundFile = (name: string, metadata: IAudioMetadata) => ({
-    id: randomUUID(),
-    name,
-    title: metadata.common.title ?? '(No title)',
-    artist: metadata.common.artist ?? '(No artist)',
-    album: metadata.common.album ?? '(No album)',
-    durationMs: (metadata.format.duration ?? 0) * 1000
-})
+export const getSoundFile = (name: string, metadata: IAudioMetadata) => {
+    const picture = metadata.common.picture?.[0];
+    const pictureData = picture != undefined
+        ? `data:${picture.format};base64,${uint8ArrayToBase64(picture.data)}`
+        : undefined
+
+    return {
+        id: randomUUID(),
+        name,
+        title: metadata.common.title ?? '(No title)',
+        artist: metadata.common.artist ?? '(No artist)',
+        album: metadata.common.album ?? '(No album)',
+        durationMs: (metadata.format.duration ?? 0) * 1000,
+        cover: pictureData
+    }
+}
 
 export const loadFiles = (): AppThunk => {
     return async (dispatch, getState) => {

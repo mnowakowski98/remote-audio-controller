@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 
 import FilePlayer from './filePlayer';
-import SettingsContext from '../settingsContext';
+import SettingsContext from '../settings/settingsContext';
 import useSyncedState from '../hooks/useSyncedState';
 import { filePlayerKey, type FilePlayerState } from '../models/filePlayer';
 

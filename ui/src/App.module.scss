@@ -22,12 +22,8 @@
             }
 
             &:hover {
-                color: var(--background-highlight)
+                color: var(--background-highlight);
             }
-        }
-
-        a.active {
-            color: var(--text-color-affirm)
         }
     }
 

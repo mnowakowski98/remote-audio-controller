@@ -8,6 +8,7 @@ import { normalize } from 'node:path'
 
 import { filePlayerKey, FilePlayerState as FilePlayerUIState, PlayingState } from '../models/filePlayer'
 import { IAudioMetadata } from 'music-metadata'
+import { getSoundFile } from './soundFiles'
 
 //#region State Types
 interface PlayingFile {
@@ -143,14 +144,7 @@ export const selectUIState = (_state: RootState): FilePlayerUIState => {
         playingState: selectPlayingState(_state),
         loop: state.controls.loop,
         seekPosition: selectSeekTime(_state),
-        playingFile: state.playingFile != null ? {
-            id: 'playing',
-            name: state.playingFile.name,
-            title: playingFileMetadata?.common.title ?? '(No title)',
-            artist: playingFileMetadata?.common.artist ?? '(No artist)',
-            album: playingFileMetadata?.common.album ?? '(No album)',
-            durationMs: (playingFileMetadata?.format.duration ?? 0) * 1000
-        } : null
+        playingFile: state.playingFile != null ? getSoundFile(state.playingFile.name, playingFileMetadata!): null
     }
 }
 

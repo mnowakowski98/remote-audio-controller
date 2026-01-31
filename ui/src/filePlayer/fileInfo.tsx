@@ -4,12 +4,14 @@ import type { FilePlayerState } from '../models/filePlayer'
 import classes from './fileInfo.module.scss'
 
 export default function FileInfo(props: { state: FilePlayerState }) {
-    return <div className={classes.fileInfo}>
+    return <div className={classes.fileInfo} style={{
+        padding: props.state.playingFile == null ? '50% 0' : undefined
+    }}>
         {props.state.playingFile == null && <div className={classes.noFile}>No file loaded</div>}
         {props.state.playingFile != null && <div>
             <h3>Playing now</h3>
-            {props.state.playingFile.thumbnail != null && <>
-                <img className={classes.albumArt} src={props.state.playingFile.thumbnail.toString()} />
+            {props.state.playingFile.cover != null && <>
+                <img className={classes.albumArt} src={props.state.playingFile.cover.toString()} />
                 <hr />
             </>}
             <div className={classes.common}>

@@ -9,6 +9,7 @@
 
     input {
         accent-color: var(--background-secondary);
+        transition: all var(--transition-duration-default);
         width: 100%;
 
         &:hover:not(:disabled) {
