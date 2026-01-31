@@ -123,6 +123,12 @@ a.active {
     initial-value: #008000;
 }
 
+@property --background-color-affirm {
+    syntax: "<color> | <image>";
+    inherits: true;
+    initial-value: #008000;
+}
+
 @property --background-affirm-disabled {
     syntax: "<color> | <image>";
     inherits: true;

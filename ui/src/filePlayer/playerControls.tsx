@@ -10,9 +10,11 @@ import playButton from '../assets/play-button.svg'
 import pauseButton from '../assets/pause-button.svg'
 import stopButton from '../assets/stop-button.svg'
 import loopButton from '../assets/loop-button.svg'
+import useSemantic from '../hooks/useSemantic'
 
 export default function PlayerControls(props: { state: FilePlayerState }) {
     const baseUrl = useContext(SettingsContext).hostUrl
+    const affirm = useSemantic('affirm')
 
     const setPlayingState = useMutation({
         mutationFn: async (command: 'start' | 'pause' | 'stop') =>
@@ -23,8 +25,12 @@ export default function PlayerControls(props: { state: FilePlayerState }) {
         mutationFn: async (loop: boolean) =>
             await fetch(new URL('./status/loop', baseUrl), { method: 'PUT', body: loop ? 'true' : 'false' })
     })
+
     return <div className={classes.playerControls}>
         <button
+            style={props.state.loop == true ? {
+                backgroundColor:  affirm.backgroundColor
+            } : undefined}
             className={`${classes.playerButton} secondary`}
             type='button'
             onClick={() => setLoopState.mutate(!props.state.loop)}
