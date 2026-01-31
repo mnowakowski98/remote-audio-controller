@@ -6,8 +6,8 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "npx nodemon -e ts src/index.ts",
-    "build": "npx webpack -c webpack.config.js",
-    "build-exec": "./build.sh",
+    "build": "./build.sh",
+    "build-sea": "./build-sea.sh",
     "start": "node dist/server.js"
   },
   "author": "Matt Nowakowski",

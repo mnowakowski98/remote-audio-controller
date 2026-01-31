@@ -9,7 +9,7 @@
     "lib": ["ESNext"],
 
     // Other Outputs
-    "sourceMap": true,
+    "sourceMap": false,
     "declaration": false,
     "declarationMap": false,
 
