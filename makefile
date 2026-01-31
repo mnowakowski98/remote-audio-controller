@@ -10,11 +10,17 @@ server-archive: server/dist/*
 server-sea: server/src/*
 	cd server && npm run build-sea
 
-ui/dist/*: ui/src/* server/dist/*
+ui/dist/*: ui/node_modules/ ui/src/* server/dist/*
 	cd ui && npm run build
 
-server/dist/*: server/src/*
+server/dist/*: server/node_modules/ server/src/*
 	cd server && npm run build
+
+ui/node_modules/:
+	cd ui && npm install
+
+server/node_modules/:
+	cd server && npm install
 	
 clean:
 	rm -r -f dist/
