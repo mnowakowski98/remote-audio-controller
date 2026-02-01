@@ -21,6 +21,7 @@ let playingFileMetadata: IAudioMetadata | null = null
 
 interface PlayerControls {
     loop: boolean
+    volume: number
 }
 
 // All times are in ms
@@ -49,7 +50,8 @@ const slice = createSlice({
             lastSeekPosition: 0,
         },
         controls: {
-            loop: false
+            loop: false,
+            volume: 100
         }
     } as FilePlayerState,
     reducers: {
@@ -75,11 +77,21 @@ const slice = createSlice({
             state.seekTimings.audioStartTime = 0
             state.seekTimings.lastSeekPosition = 0
         },
+        setLoop: (state, action: PayloadAction<boolean | null>) => {
+            const currentLoop = state.controls.loop
+            if (action.payload == undefined) state.controls.loop = !currentLoop
+            else state.controls.loop = action.payload
+        },
+        loop: (state) => {
+            state.seekTimings.audioStartTime = performance.now()
+            state.seekTimings.lastSeekPosition = 0
+        },
         seek: (state, action: PayloadAction<number>) => {
             state.seekTimings.lastSeekPosition = action.payload
             if (state.audioPlaying == true && state.audioPaused == false)
                 state.seekTimings.audioStartTime = performance.now()
         },
+        setVolume: (state, action: PayloadAction<number>) => { state.controls.volume = action.payload },
         setFileInfo: (state, action: PayloadAction<PlayingFile | null>) => {
             const wasPlaying = state.audioPlaying == true && state.audioPaused == false
             state.playingFile = action.payload
@@ -94,15 +106,6 @@ const slice = createSlice({
 
             if (wasPlaying == true) state.seekTimings.audioStartTime = performance.now()
         },
-        setLoop: (state, action: PayloadAction<boolean | null>) => {
-            const currentLoop = state.controls.loop
-            if (action.payload == undefined) state.controls.loop = !currentLoop
-            else state.controls.loop = action.payload
-        },
-        loop: (state) => {
-            state.seekTimings.audioStartTime = performance.now()
-            state.seekTimings.lastSeekPosition = 0
-        }
     },
     selectors: {
         selectPlayingState: (state): PlayingState => {
@@ -137,6 +140,7 @@ export const selectUIState = (_state: RootState): FilePlayerUIState => {
     return {
         playingState: selectPlayingState(_state),
         loop: state.controls.loop,
+        volume: state.controls.volume,
         seekPosition: selectSeekTime(_state),
         playingFile: state.playingFile != null ? getSoundFile(state.playingFile.name, playingFileMetadata!): null
     }
@@ -182,6 +186,13 @@ export const seek = (seekToMs: number): AppThunk => {
     return async (dispatch) => {
         await sendCommand(`jump ${seekToMs / 1000}s`)
         dispatch(slice.actions.seek(seekToMs))
+    }
+}
+
+export const setVolume = (volume: number): AppThunk => {
+    return async (dispatch) => {
+        await sendCommand(`volume ${volume}`)
+        dispatch(slice.actions.setVolume(volume))
     }
 }
 
@@ -268,6 +279,8 @@ export const startMpg123 = (execPath: string, pipe: string): AppThunk => {
                                 break
                         }
                     })
+
+                    sendCommand(`volume ${getState().filePlayer.controls.volume}`)
                 })
             })
         }

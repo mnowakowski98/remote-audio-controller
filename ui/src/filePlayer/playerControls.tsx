@@ -23,32 +23,41 @@ export default function PlayerControls(props: { state: FilePlayerState }) {
 
     const setLoopState = useMutation({
         mutationFn: async (loop: boolean) =>
-            await fetch(new URL('./status/loop', baseUrl), { method: 'PUT', body: loop ? 'true' : 'false' })
+            fetch(new URL('./status/loop', baseUrl), { method: 'PUT', body: loop ? 'true' : 'false' })
     })
+
+    const setVolume = useMutation({
+        mutationFn: async (volume: number) =>
+            fetch(new URL('./status/volume', baseUrl), { method: 'PUT', body: volume.toString() })
+    })
+
+    const { playingState } = props.state
 
     return <div className={classes.playerControls}>
         <button
             style={props.state.loop == true ? {
-                backgroundColor:  affirm.backgroundColor
+                backgroundColor: affirm.backgroundColor
             } : undefined}
-            className={`${classes.playerButton} secondary`}
+            className={`${classes.playerButton} ${classes.loop} secondary`}
             type='button'
             onClick={() => setLoopState.mutate(!props.state.loop)}
         >
             <img src={loopButton} />
         </button>
-        
 
-        {props.state.playingState != 'unloaded' && <>
-            {props.state.playingState != 'playing' &&
+        <div className={classes.center}>
+            {playingState != 'playing' &&
                 <button
-                    className={`${classes.playerButton} ${classes.playPauseButton} affirm`}
+                    className={`${classes.playerButton} affirm`}
+                    disabled={props.state.playingState == 'unloaded'}
                     type='button'
                     onClick={() => setPlayingState.mutate('start')}
                 >
                     <img src={playButton} />
-                </button>}
-            {props.state.playingState != 'paused' && props.state.playingState != 'stopped' &&
+                </button>
+            }
+
+            {playingState != 'unloaded' && playingState != 'paused' && playingState != 'stopped' &&
                 <button
                     className={`${classes.playerButton} ${classes.playPauseButton} secondary`}
                     type='button'
@@ -57,14 +66,23 @@ export default function PlayerControls(props: { state: FilePlayerState }) {
                     <img src={pauseButton} />
                 </button>
             }
-            {props.state.playingState != 'stopped' &&
+
+            {playingState != 'unloaded' && playingState != 'stopped' &&
                 <button
                     className={`${classes.playerButton} ${classes.stopButton} warning`}
                     type='button'
                     onClick={() => setPlayingState.mutate('stop')}
                 >
                     <img src={stopButton} />
-                </button>}
-        </>}
+                </button>
+            }
+        </div>
+
+        <div className={classes.volume}>
+            <input type='range' min='0' max='100' value={props.state.volume} onChange={
+                (event) => setVolume.mutate(event.target.valueAsNumber)
+            } />
+            <span>{props.state.volume}</span>
+        </div>
     </div>
 }

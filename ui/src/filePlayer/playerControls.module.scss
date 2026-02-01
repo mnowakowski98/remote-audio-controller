@@ -1,13 +1,12 @@
 .playerControls {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 1em;
-    justify-content: center;
     width: 100%;
 
     .playerButton {
-        position: relative;
         text-align: center;
+        width: fit-content;
 
         img {
             height: 2em;
@@ -15,8 +14,29 @@
         }
     }
 
+    .loop {
+        margin-left: auto;
+    }
+
+    .center {
+        display: flex;
+        gap: 1em;
+        justify-content: center;
+    }
+
     .stopButton:hover {
         background: var(--background-danger);
     }
 
+    .volume {
+        align-items: center;
+        display: flex;
+        gap: .5em;
+
+        span {
+            border: 2px solid var(--background-secondary);
+            border-radius: var(--input-border-radius);
+            padding: .25em;
+        }
+    }
 }

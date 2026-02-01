@@ -16,11 +16,14 @@ import {
     stop,
     pause,
     selectPlayingFile,
-    seek
+    seek,
+    setVolume
 } from '../slices/filePlayer'
 import { selectFileById, selectFileMetadata, selectFilePath } from '../slices/soundFiles'
 import { selectFilePlayerConfig } from '../slices/configSlice'
+
 import { getContext } from '../servers/express'
+import parseNumber from '../middleware/parseNumber'
 
 const router = express.Router()
 const upload = multer()
@@ -128,22 +131,27 @@ router.put('/status/loop', express.text(), (req, res) => {
 })
 
 
-router.put('/status/seek', express.text(), async (req, res) => {
+router.put('/status/seek', parseNumber(), async (req, res) => {
     const store = getContext(req).store
     if (selectPlayingState(store.getState()) == 'unloaded') {
         res.status(400).send('No file loaded to seek')
         return
     }
 
-    let seekTo: number
-    try { seekTo = parseInt(req.body) }
-    catch {
-        res.status(400).send('Body must be a number')
+    await store.dispatch(seek(req.body))
+    res.sendStatus(200)
+})
+
+router.put('/status/volume', parseNumber(), async (req, res) => {
+    const store = getContext(req).store
+    const volume = req.body
+    if (volume < 0 || volume > 100) {
+        res.status(400).send('Must be >= 0 or <= 100')
         return
     }
-
-    await store.dispatch(seek(seekTo))
-    res.sendStatus(200)
+    
+    await store.dispatch(setVolume(volume))
+    res.send(200)
 })
 //#endregion
 
