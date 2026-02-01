@@ -48,7 +48,7 @@ export default function SeekBar() {
         })
 
         return () => clearInterval(timeout.current!)
-    }, [data?.playingState])
+    }, [data?.playingState, data?.seekPosition])
     if (isLoading == true) return 0
 
     return <div className={classes.seekBar}>
@@ -56,7 +56,7 @@ export default function SeekBar() {
             <span ref={seekTime}>00:00:00</span> /
             <span> {getDurationString(data?.playingFile?.durationMs ?? 0)}</span>
         </div>
-        <input type='range' onChange={(event) => {
+        <input type='range' disabled={data?.playingState == 'unloaded'} onChange={(event) => {
             seek.mutate(event.target.valueAsNumber)
         }} ref={seekRange} min={0} max={data?.playingFile?.durationMs ?? 0} />
     </div>
