@@ -9,6 +9,7 @@ import { normalize } from 'node:path'
 import { filePlayerKey, FilePlayerState as FilePlayerUIState, PlayingState } from '../models/filePlayer'
 import { IAudioMetadata } from 'music-metadata'
 import { getSoundFile } from './soundFiles'
+import assert from 'node:assert'
 
 //#region State Types
 interface PlayingFile {
@@ -22,11 +23,10 @@ interface PlayerControls {
     loop: boolean
 }
 
+// All times are in ms
 interface SeekTimings {
-    audioStart: number | null,
-    initialPositionMs: number
-    lastPause: number,
-    timePaused: number
+    audioStartTime: number
+    lastSeekPosition: number
 }
 
 interface FilePlayerState {
@@ -45,62 +45,54 @@ const slice = createSlice({
         audioPaused: false,
         playingFile: null,
         seekTimings: {
-            audioStart: null,
-            initialPositionMs: 0,
-            lastPause: 0,
-            timePaused: 0
+            audioStartTime: 0,
+            lastSeekPosition: 0,
         },
         controls: {
             loop: false
         }
     } as FilePlayerState,
     reducers: {
-        start: (state, action: PayloadAction<number | undefined>) => {
+        start: (state) => {
             if (state.audioPlaying == true && state.audioPaused == false) return
-
-            if (state.audioPaused == true) state.seekTimings.timePaused += performance.now() - state.seekTimings.lastPause
-            else state.seekTimings.audioStart = performance.now() - (action.payload ?? 0)
-
+            state.seekTimings.audioStartTime = performance.now()
             state.audioPlaying = true
             state.audioPaused = false
         },
         pause: (state) => {
             if (state.audioPlaying == false || state.audioPaused == true) return
             state.audioPaused = true
-            state.seekTimings.lastPause = performance.now()
+
+            const { lastSeekPosition, audioStartTime } = state.seekTimings
+            state.seekTimings.lastSeekPosition = lastSeekPosition + (performance.now() - audioStartTime)
+            state.seekTimings.audioStartTime = 0
         },
         stop: (state) => {
             if (state.audioPlaying == false && state.audioPaused == false) return
             state.audioPlaying = false
             state.audioPaused = false
 
-            state.seekTimings.audioStart = null
-            state.seekTimings.initialPositionMs = 0
-            state.seekTimings.lastPause = 0
-            state.seekTimings.timePaused = 0
+            state.seekTimings.audioStartTime = 0
+            state.seekTimings.lastSeekPosition = 0
         },
         seek: (state, action: PayloadAction<number>) => {
-            state.seekTimings.initialPositionMs = action.payload
-            state.seekTimings.timePaused = 0
-            state.seekTimings.audioStart = performance.now()
-            if (state.audioPaused == true) state.seekTimings.lastPause = performance.now()
-            if (state.audioPlaying == false) state.seekTimings.lastPause = 0
+            state.seekTimings.lastSeekPosition = action.payload
+            if (state.audioPlaying == true && state.audioPaused == false)
+                state.seekTimings.audioStartTime = performance.now()
         },
         setFileInfo: (state, action: PayloadAction<PlayingFile | null>) => {
             const wasPlaying = state.audioPlaying == true && state.audioPaused == false
             state.playingFile = action.payload
             state.audioPaused = false
-            state.seekTimings.audioStart = null
-            state.seekTimings.initialPositionMs = 0
-            state.seekTimings.lastPause = 0
-            state.seekTimings.timePaused = 0
+            state.seekTimings.audioStartTime = 0
+            state.seekTimings.lastSeekPosition = 0
 
             if (action.payload == null) {
                 state.audioPlaying = false
                 return
             }
 
-            if (wasPlaying == true) state.seekTimings.audioStart = performance.now()
+            if (wasPlaying == true) state.seekTimings.audioStartTime = performance.now()
         },
         setLoop: (state, action: PayloadAction<boolean | null>) => {
             const currentLoop = state.controls.loop
@@ -108,25 +100,27 @@ const slice = createSlice({
             else state.controls.loop = action.payload
         },
         loop: (state) => {
-            state.seekTimings.audioStart = performance.now()
-            state.seekTimings.initialPositionMs = 0
-            state.seekTimings.lastPause = 0
-            state.seekTimings.timePaused = 0
+            state.seekTimings.audioStartTime = performance.now()
+            state.seekTimings.lastSeekPosition = 0
         }
     },
     selectors: {
         selectPlayingState: (state): PlayingState => {
+            const isInvalidState = state.audioPlaying == false && state.audioPaused == true
+            assert(isInvalidState == false, 'Playing state is invalid (paused while not playing)')
+
             if (state.playingFile == null) return 'unloaded'
             if (state.audioPlaying == true && state.audioPaused == false) return 'playing'
-            else if (state.audioPlaying == true && state.audioPaused == true) return 'paused'
-            else if (state.audioPlaying == false && state.audioPaused == true) throw 'File player state corrupted'
-            else return 'stopped'
+            if (state.audioPlaying == true && state.audioPaused == true) return 'paused'
+            return 'stopped'
         },
         selectPlayingFile: (state) => state.playingFile,
-        selectSeekTime: (state) =>
-            state.seekTimings.audioStart != null ?
-                ((performance.now() - state.seekTimings.audioStart) - state.seekTimings.timePaused) + state.seekTimings.initialPositionMs
-                : 0
+        selectSeekTime: (state) => {
+            if (state.audioPlaying == true && state.audioPaused == false)
+                return (performance.now() - state.seekTimings.audioStartTime) + state.seekTimings.lastSeekPosition
+
+            return state.seekTimings.lastSeekPosition
+        }
     }
 })
 
