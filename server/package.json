@@ -1,14 +1,14 @@
 {
   "name": "remote-audio-controller-server",
-  "version": "0.3.0",
+  "version": "0.0.0",
   "description": "A server that plays audio on the server",
   "private": true,
-  "main": "dist/server.js",
+  "main": "index.js",
   "scripts": {
     "dev": "npx nodemon -e ts src/index.ts",
     "build": "./build.sh",
     "build-sea": "./build-sea.sh",
-    "start": "node dist/server.js"
+    "start": "node index.js"
   },
   "author": "Matt Nowakowski",
   "license": "ISC",

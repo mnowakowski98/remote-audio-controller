@@ -12,6 +12,7 @@ import SettingsComponent from './settings/settings'
 import classes from './App.module.scss'
 import { serverInfoKey, type ServerInfo } from './models/serverInfo'
 import useSemantic from './hooks/useSemantic'
+import Index from '.'
 
 
 export default function App() {
@@ -30,7 +31,7 @@ export default function App() {
       const data = await response.json() as ServerInfo
       if (data.appname != 'remote-audio-controller') throw new Error()
       if (data.version != '0.0.0') throw new Error()
-      return true
+      return data
     },
     retry: false
   })
@@ -78,6 +79,7 @@ export default function App() {
           {settingsComponent}
         </div>}
         {validate.isSuccess == true && validate.isPending == false && <Routes>
+          <Route index element={<Index state={validate.data} />} />
           <Route path='fileplayer' element={<FilePlayerContext />} />
           <Route path='soundfiles' element={<SoundFilesContext />} />
           <Route path='settings' element={settingsComponent}/>

@@ -1,13 +1,13 @@
-combined-archive: ui/dist/* server/dist/*
+dist/remote-audio-controller.tgz: ui/dist/* server/dist/*
 	./make-combined-archive.sh
 
-ui-archive: ui/dist/*
+ui/dist/remote-audio-controller-ui.tgz: ui/dist/*
 	cd ui/dist/ && tar -cvf remote-audio-controller-ui * && gzip -S .tgz remote-audio-controller-ui
 
-server-archive: server/dist/*
+server/dist/remote-audio-controller-server.tgz: server/dist/*
 	cd server/dist/ && tar -cvf remote-audio-controller-server * && gzip -S .tgz remote-audio-controller-server
 
-server-sea: server/src/*
+server/dist/remote-audio-controller-server-sea: server/src/*
 	cd server && npm run build-sea
 
 ui/dist/*: ui/node_modules/ ui/src/* server/dist/*

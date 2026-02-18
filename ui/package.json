@@ -1,10 +1,10 @@
 {
   "name": "remote-audio-controller-ui",
-  "version": "0.3.0",
+  "version": "0.0.0",
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "./build.sh",
     "package": "tar -cvf remote-audio-controller-ui package.json dist/* && gzip -S .tgz remote-audio-controller-ui",
     "lint": "eslint .",
