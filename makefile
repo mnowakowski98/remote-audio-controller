@@ -1,3 +1,5 @@
+# TODO: Convert shell build scripts to node scripts (allows building on Windows systems)
+
 dist/remote-audio-controller.tgz: ui/dist/* server/dist/*
 	./make-combined-archive.sh
 
@@ -10,19 +12,26 @@ server/dist/remote-audio-controller-server.tgz: server/dist/*
 server/dist/remote-audio-controller-server-sea: server/src/*
 	cd server && npm run build-sea
 
-ui/dist/*: ui/node_modules/ ui/src/* server/dist/*
+ui/dist/*: ui/node_modules/* ui/src/* server/dist/*
 	cd ui && npm run build
 
-server/dist/*: server/node_modules/ server/src/*
+server/dist/*: server/node_modules/* server/src/*
 	cd server && npm run build
 
-ui/node_modules/:
+ui/node_modules/*:
 	cd ui && npm install
 
-server/node_modules/:
+server/node_modules/*:
 	cd server && npm install
 	
 clean:
 	rm -r -f dist/
 	rm -r -f ui/dist/
 	rm -r -f server/dist/
+
+clean-node:
+	rm -r -f dist/
+	rm -r -f ui/dist/
+	rm -r -f server/dist/
+	rm -r -f ui/node_modules/
+	rm -r -f server/node_modules/
