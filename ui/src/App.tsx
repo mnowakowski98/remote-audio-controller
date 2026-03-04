@@ -38,7 +38,7 @@ export default function App() {
     }}
   />
 
-  const useActiveClass = (_: {isActive: boolean}) => _.isActive ? classes.active : undefined
+  const useActiveClass = (_: {isActive: boolean}) => _.isActive == true ? classes.active : undefined
 
   return <SettingsContext value={{ hostUrl: new URL('./api/', appSettings.current!.hostUrl) }}>
     <div className={classes.app}>

@@ -2,8 +2,23 @@
     color-scheme: light dark;
 }
 
+// TODO: Figure out why Canvas/CanvasText returns light color only
+@property --background-page {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: Canvas;
+}
+
+@property --text-color-page {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: CanvasText;
+}
+
+// TODO: Switch to using page variables
 body {
-    background: linear-gradient(Canvas, var(--background-highlight));
+    background: radial-gradient(var(--background-highlight), Canvas);
+    color: CanvasText;
     height: 100vh;
     margin: 0;
 }
@@ -46,6 +61,7 @@ a.active {
     }
 }
 
+// TODO: Figure out why ButtonFace/ButtonText returns light color only
 @property --background-secondary {
     syntax: "<color>";
     inherits: false;
@@ -58,6 +74,7 @@ a.active {
     initial-value: ButtonText;
 }
 
+// TODO: Switch to using secondary variables
 .secondary {
     background: ButtonFace;
     color: ButtonText;

@@ -16,8 +16,9 @@ a:visited {
     color: inherit;
 }
 
+// TODO: Switch to using secondary variables
 button {
-    border: none;
+    border: 2px solid ButtonFace;
     border-radius: var(--input-border-radius);
     padding: 1em;
 
@@ -36,8 +37,9 @@ input[type="text"] {
     }
 }
 
+// TODO: Switch to using secondary variables
 .inputGroup {
-    border: 2px solid var(--background-secondary);
+    border: 2px solid ButtonFace;
     border-left: none;
     border-right: none;
     border-radius: var(--input-border-radius);
@@ -48,11 +50,11 @@ input[type="text"] {
     vertical-align: center;
 
     label {
-        background: var(--background-secondary);
-        border-left: 2px solid var(--background-secondary);
-        border-right: 2px solid var(--background-secondary);
+        background: ButtonFace;
+        border-left: 2px solid ButtonFace;
+        border-right: 2px solid ButtonFace;
         border-radius: var(--input-border-radius);
-        color: var(--text-color-secondary);
+        color: ButtonText;
         padding: 1em;
     }
 
