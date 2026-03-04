@@ -9,6 +9,12 @@ a.active {
     color: var(--background-highlight);
 }
 
+@property --disabled-mix-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: GrayText;
+}
+
 @property --transition-duration-default {
     syntax: "<time>";
     inherits: true;
@@ -18,37 +24,25 @@ a.active {
 @property --page-background {
     syntax: "<color> | <image>";
     inherits: true;
-    initial-value: linear-gradient(#427998, #010610);
+    initial-value: linear-gradient(Canvas, Highlight);
 }
 
 @property --page-text-color {
     syntax: "<color>";
     inherits: true;
-    initial-value: white;
+    initial-value: CanvasText;
 }
 
 @property --background-primary {
-    syntax: "<color> | <image>";
+    syntax: "<color>";
     inherits: true;
-    initial-value: radial-gradient(#fa7d01, #e07d19);
-}
-
-@property --background-color-primary {
-    syntax: "<color> | <image>";
-    inherits: true;
-    initial-value: #dd7309;
-}
-
-@property --background-primary-disabled {
-    syntax: "<color> | <image>";
-    inherits: true;
-    initial-value: #fa7d01aa;
+    initial-value: AccentColor;
 }
 
 @property --text-color-primary {
     syntax: "<color>";
     inherits: true;
-    initial-value: black;
+    initial-value: AccentColorText;
 }
 
 .primary {
@@ -57,26 +51,20 @@ a.active {
     transition: all var(--transition-duration-default);
 
     &:disabled {
-        background: var(--background-primary-disabled);
+        background: color-mix(in hsl, var(--background-primary), var(--disabled-mix-color));
     }
 }
 
 @property --background-secondary {
-    syntax: "<color> | <image>";
+    syntax: "<color>";
     inherits: true;
-    initial-value: #139ed5;
-}
-
-@property --background-secondary-disabled {
-    syntax: "<color> | <image>";
-    inherits: true;
-    initial-value: #139ed578;
+    initial-value: ButtonFace;
 }
 
 @property --text-color-secondary {
     syntax: "<color>";
     inherits: true;
-    initial-value: black;
+    initial-value: ButtonText;
 }
 
 .secondary {
@@ -85,26 +73,20 @@ a.active {
     transition: all var(--transition-duration-default);
     
     &:disabled {
-        background: var(--background-secondary-disabled);
+        background: color-mix(in hsl, var(--background-secondary), var(--disabled-mix-color));
     }
 }
 
 @property --background-highlight {
-    syntax: "<color> | <image>";
+    syntax: "<color>";
     inherits: true;
-    initial-value: #84f009;
-}
-
-@property --background-highlight-disabled {
-    syntax: "<color> | <image>";
-    inherits: true;
-    initial-value: #84f00978;
+    initial-value: Highlight;
 }
 
 @property --text-color-highlight {
     syntax: "<color>";
     inherits: true;
-    initial-value: black;
+    initial-value: HighlightText;
 }
 
 .highlight {
@@ -113,26 +95,14 @@ a.active {
     transition: all var(--transition-duration-default);
     
     &:disabled {
-        background: var(--background-highlight-disabled);
+        background: color-mix(in hsl, var(--background-highlight), var(--disabled-mix-color));
     }
 }
 
 @property --background-affirm {
-    syntax: "<color> | <image>";
+    syntax: "<color>";
     inherits: true;
     initial-value: #008000;
-}
-
-@property --background-color-affirm {
-    syntax: "<color> | <image>";
-    inherits: true;
-    initial-value: #008000;
-}
-
-@property --background-affirm-disabled {
-    syntax: "<color> | <image>";
-    inherits: true;
-    initial-value: #00800078;
 }
 
 @property --text-color-affirm {
@@ -147,50 +117,14 @@ a.active {
     transition: all var(--transition-duration-default);
     
     &:disabled {
-        background: var(--background-affirm-disabled);
+        background: color-mix(in hsl, var(--background-affirm), var(--disabled-mix-color));
     }
 }
-
-@property --background-danger {
-    syntax: "<color> | <image>";
-    inherits: true;
-    initial-value: #ff0000;
-}
-
-@property --background-danger-disabled {
-    syntax: "<color> | <image>";
-    inherits: true;
-    initial-value: #ff000078;
-}
-
-@property --text-color-danger {
-    syntax: "<color>";
-    inherits: true;
-    initial-value: white;
-}
-
-.danger {
-    background: var(--background-danger);
-    color: var(--text-color-danger);
-    transition: all var(--transition-duration-default);
-    
-    &:disabled {
-        background: var(--background-danger-disabled);
-    }
-}
-
-
 
 @property --background-warning {
-    syntax: "<color> | <image>";
+    syntax: "<color>";
     inherits: true;
     initial-value: #dd5454;
-}
-
-@property --background-warning-disabled {
-    syntax: "<color> | <image>";
-    inherits: true;
-    initial-value: #dd545478;
 }
 
 @property --text-color-warning {
@@ -205,20 +139,36 @@ a.active {
     transition: all var(--transition-duration-default);
     
     &:disabled {
-        background: var(--background-warning-disabled);
+        background: color-mix(in hsl, var(--background-warning), var(--disabled-mix-color));
+    }
+}
+
+@property --background-danger {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #ff0000;
+}
+
+@property --text-color-danger {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: white;
+}
+
+.danger {
+    background: var(--background-danger);
+    color: var(--text-color-danger);
+    transition: all var(--transition-duration-default);
+    
+    &:disabled {
+        background: color-mix(in hsl, var(--background-danger), var(--disabled-mix-color));
     }
 }
 
 @property --background-error {
-    syntax: "<color> | <image>";
+    syntax: "<color>";
     inherits: true;
     initial-value: #c91717;
-}
-
-@property --background-error-disabled {
-    syntax: "<color> | <image>";
-    inherits: true;
-    initial-value: #c9171778;
 }
 
 @property --text-color-error {
@@ -228,11 +178,11 @@ a.active {
 }
 
 .error {
-    background: var(--background-error-warning);
-    color: var(--text-error-warning);
+    background: var(--background-error);
+    color: var(--text-error);
     transition: all var(--transition-duration-default);
     
     &:disabled {
-        background: var(--background-error-warning-disabled);
+        background: color-mix(in hsl, var(--background-error), var(--disabled-mix-color));
     }
 }
