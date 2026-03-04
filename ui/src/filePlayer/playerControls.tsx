@@ -48,7 +48,7 @@ export default function PlayerControls(props: { state: FilePlayerState }) {
         <div className={classes.center}>
             {playingState != 'playing' &&
                 <button
-                    className={`${classes.playerButton} affirm`}
+                    className={`${classes.playerButton} primary`}
                     disabled={props.state.playingState == 'unloaded'}
                     type='button'
                     onClick={() => setPlayingState.mutate('start')}
@@ -59,7 +59,7 @@ export default function PlayerControls(props: { state: FilePlayerState }) {
 
             {playingState != 'unloaded' && playingState != 'paused' && playingState != 'stopped' &&
                 <button
-                    className={`${classes.playerButton} ${classes.playPauseButton} primary`}
+                    className={`${classes.playerButton} primary`}
                     type='button'
                     onClick={() => setPlayingState.mutate('pause')}
                 >
@@ -69,7 +69,7 @@ export default function PlayerControls(props: { state: FilePlayerState }) {
 
             {playingState != 'unloaded' && playingState != 'stopped' &&
                 <button
-                    className={`${classes.playerButton} ${classes.stopButton} primary`}
+                    className={`${classes.playerButton} primary`}
                     type='button'
                     onClick={() => setPlayingState.mutate('stop')}
                 >
