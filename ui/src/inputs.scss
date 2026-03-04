@@ -12,6 +12,10 @@
     initial-value: 1em;
 }
 
+a:visited {
+    color: inherit;
+}
+
 button {
     border: none;
     border-radius: var(--input-border-radius);
@@ -37,7 +41,6 @@ input[type="text"] {
     border-left: none;
     border-right: none;
     border-radius: var(--input-border-radius);
-    color: var(--page-text-color);
     display: flex;
     flex-direction: row;
     gap: 1em;
@@ -54,7 +57,6 @@ input[type="text"] {
     }
 
     input {
-        color: var(--page-text-color);
         flex-grow: 1;
     }
 

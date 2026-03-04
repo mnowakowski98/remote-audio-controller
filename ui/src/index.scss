@@ -1,6 +1,9 @@
+:root {
+    color-scheme: light dark;
+}
+
 body {
-    background: var(--page-background);
-    color: var(--page-text-color);
+    background: linear-gradient(Canvas, var(--background-highlight));
     height: 100vh;
     margin: 0;
 }
@@ -11,37 +14,25 @@ a.active {
 
 @property --disabled-mix-color {
     syntax: "<color>";
-    inherits: true;
+    inherits: false;
     initial-value: GrayText;
 }
 
 @property --transition-duration-default {
     syntax: "<time>";
-    inherits: true;
+    inherits: false;
     initial-value: 300ms;
-}
-
-@property --page-background {
-    syntax: "<color> | <image>";
-    inherits: true;
-    initial-value: linear-gradient(Canvas, Highlight);
-}
-
-@property --page-text-color {
-    syntax: "<color>";
-    inherits: true;
-    initial-value: CanvasText;
 }
 
 @property --background-primary {
     syntax: "<color>";
-    inherits: true;
+    inherits: false;
     initial-value: AccentColor;
 }
 
 @property --text-color-primary {
     syntax: "<color>";
-    inherits: true;
+    inherits: false;
     initial-value: AccentColorText;
 }
 
@@ -57,7 +48,7 @@ a.active {
 
 @property --background-secondary {
     syntax: "<color>";
-    inherits: true;
+    inherits: false;
     initial-value: ButtonFace;
 }
 
@@ -68,8 +59,8 @@ a.active {
 }
 
 .secondary {
-    background: var(--background-secondary);
-    color: var(--text-color-secondary);
+    background: ButtonFace;
+    color: ButtonText;
     transition: all var(--transition-duration-default);
     
     &:disabled {
@@ -79,7 +70,7 @@ a.active {
 
 @property --background-highlight {
     syntax: "<color>";
-    inherits: true;
+    inherits: false;
     initial-value: Highlight;
 }
 
@@ -102,13 +93,13 @@ a.active {
 @property --background-affirm {
     syntax: "<color>";
     inherits: true;
-    initial-value: #008000;
+    initial-value: SelectedItem;
 }
 
 @property --text-color-affirm {
     syntax: "<color>";
     inherits: true;
-    initial-value: white;
+    initial-value: SelectedItemText;
 }
 
 .affirm {

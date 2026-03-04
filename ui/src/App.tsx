@@ -1,4 +1,4 @@
-import { NavLink, Route, Routes, useLocation } from 'react-router'
+import { NavLink, Route, Routes } from 'react-router'
 import { Toaster } from 'react-hot-toast'
 import { useQuery } from '@tanstack/react-query'
 
@@ -11,13 +11,8 @@ import SettingsComponent from './settings/settings'
 
 import classes from './App.module.scss'
 import { serverInfoKey, type ServerInfo } from './models/serverInfo'
-import useSemantic from './hooks/useSemantic'
-
 
 export default function App() {
-  const primary = useSemantic('primary')
-  const location = useLocation()
-  const isActivePath = (path: string) => location.pathname == path
 
   const settingsStorage = useLocalStorage<Settings>('settings')
   if (settingsStorage.value.current == null) settingsStorage.setValue(defaultSettings)
@@ -43,30 +38,14 @@ export default function App() {
     }}
   />
 
+  const useActiveClass = (_: {isActive: boolean}) => _.isActive ? classes.active : undefined
+
   return <SettingsContext value={{ hostUrl: new URL('./api/', appSettings.current!.hostUrl) }}>
     <div className={classes.app}>
-      <nav className={classes.navbar}>
-        <NavLink
-          style={isActivePath('/fileplayer') ? {
-            color: primary.backgroundColor,
-            textShadow: `${primary.text} 0 0 5px`
-          } : undefined}
-          to='/fileplayer'
-        >File player</NavLink>
-        <NavLink
-          style={isActivePath('/soundfiles') ? {
-            color: primary.backgroundColor,
-            textShadow: `${primary.text} 0 0 5px`
-          } : undefined}
-          to='/soundfiles'
-        >Sound files</NavLink>
-        <NavLink
-          style={isActivePath('/settings') ? {
-            color: primary.backgroundColor,
-            textShadow: `${primary.text} 0 0 5px`
-          } : undefined}
-          to='/settings'
-        >Settings</NavLink>
+      <nav className={`${classes.navbar} secondary`}>
+        <NavLink to='/fileplayer' className={useActiveClass}>File player</NavLink>
+        <NavLink to='/soundfiles' className={useActiveClass}>Sound files</NavLink>
+        <NavLink to='/settings' className={useActiveClass}>Settings</NavLink>
       </nav>
 
       <div className={classes.page}>
