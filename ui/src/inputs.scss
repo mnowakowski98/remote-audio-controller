@@ -27,16 +27,6 @@ button {
     }
 }
 
-input[type="text"] {
-    background: none;
-    border: none;
-    padding: 1em;
-
-    &:focus-visible {
-        outline: none;
-    }
-}
-
 // TODO: Switch to using secondary variables
 .inputGroup {
     border: 2px solid ButtonFace;
@@ -63,6 +53,10 @@ input[type="text"] {
     }
 
     input[type="text"] {
+        background: none;
+        border: none;
+        padding: 1em;
+
         &:focus-visible {
             outline: 2px solid var(--background-highlight);
             border-radius: var(--input-border-radius);
