@@ -31,14 +31,14 @@ export default function PlayerControls(props: { state: FilePlayerState }) {
             fetch(new URL('./status/volume', baseUrl), { method: 'PUT', body: volume.toString() })
     })
 
-    const { playingState } = props.state
+    const { playingState, loop } = props.state
 
     return <div className={classes.playerControls}>
         <button
             style={props.state.loop == true ? {
                 backgroundColor: affirm.backgroundColor
             } : undefined}
-            className={`${classes.playerButton} ${classes.loop} secondary`}
+            className={`${classes.playerButton} ${classes.loop} ${loop == true ? 'affirm' : 'primary'}`}
             type='button'
             onClick={() => setLoopState.mutate(!props.state.loop)}
         >
@@ -48,7 +48,7 @@ export default function PlayerControls(props: { state: FilePlayerState }) {
         <div className={classes.center}>
             {playingState != 'playing' &&
                 <button
-                    className={`${classes.playerButton} affirm`}
+                    className={`${classes.playerButton} primary`}
                     disabled={props.state.playingState == 'unloaded'}
                     type='button'
                     onClick={() => setPlayingState.mutate('start')}
@@ -59,7 +59,7 @@ export default function PlayerControls(props: { state: FilePlayerState }) {
 
             {playingState != 'unloaded' && playingState != 'paused' && playingState != 'stopped' &&
                 <button
-                    className={`${classes.playerButton} ${classes.playPauseButton} secondary`}
+                    className={`${classes.playerButton} primary`}
                     type='button'
                     onClick={() => setPlayingState.mutate('pause')}
                 >
@@ -69,7 +69,7 @@ export default function PlayerControls(props: { state: FilePlayerState }) {
 
             {playingState != 'unloaded' && playingState != 'stopped' &&
                 <button
-                    className={`${classes.playerButton} ${classes.stopButton} warning`}
+                    className={`${classes.playerButton} primary`}
                     type='button'
                     onClick={() => setPlayingState.mutate('stop')}
                 >

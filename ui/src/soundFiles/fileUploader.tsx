@@ -13,6 +13,7 @@ export default function FileUploader() {
     const fileInput = useRef<HTMLInputElement | null>(null)
     const [audioFile, setAudioFile] = useState<File | null>()
 
+    const affirmColors = useSemantic('affirm')
     const errorColors = useSemantic('error')
 
     const uploadFile = useMutation({
@@ -30,7 +31,12 @@ export default function FileUploader() {
         onSuccess: () => {
             setAudioFile(null)
             if (fileInput.current != null) fileInput.current.value = ''
-            toast.success('File uploaded successfully')
+            toast.success('File uploaded successfully', {
+                style: {
+                    background: affirmColors.background,
+                    color: affirmColors.text
+                }
+            })
         },
         onError: (error) => toast.error(error.message, {
             style: {
@@ -52,7 +58,7 @@ export default function FileUploader() {
                         setAudioFile(event.target.files?.item(0))}
                 />
                     <button
-                        className={`${classes.browseButton} primary`}
+                        className='primary'
                         onClick={() => fileInput.current?.click()}
                     >Browse...</button>
                 <span className={classes.fileName}>{audioFile?.name ?? 'No file selected'}</span>
