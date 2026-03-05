@@ -5,18 +5,12 @@
         display: none;
     }
 
-    .browseButton {
-        border: 2px solid var(--background-secondary);
-    }
-
     .fileName {
         flex-grow: 1;
         padding: 1em 0;
     }
 
     .uploadButton {
-        border: 2px solid var(--background-secondary);
-
         &:hover:not(:disabled) {
             background: var(--background-affirm);
             color: var(--text-color-affirm);

@@ -12,8 +12,13 @@
     initial-value: 1em;
 }
 
+a:visited {
+    color: inherit;
+}
+
+// TODO: Switch to using secondary variables
 button {
-    border: none;
+    border: 2px solid ButtonFace;
     border-radius: var(--input-border-radius);
     padding: 1em;
 
@@ -22,22 +27,12 @@ button {
     }
 }
 
-input[type="text"] {
-    background: none;
-    border: none;
-    padding: 1em;
-
-    &:focus-visible {
-        outline: none;
-    }
-}
-
+// TODO: Switch to using secondary variables
 .inputGroup {
-    border: 2px solid var(--background-secondary);
+    border: 2px solid ButtonFace;
     border-left: none;
     border-right: none;
     border-radius: var(--input-border-radius);
-    color: var(--page-text-color);
     display: flex;
     flex-direction: row;
     gap: 1em;
@@ -45,20 +40,23 @@ input[type="text"] {
     vertical-align: center;
 
     label {
-        background: var(--background-secondary);
-        border-left: 2px solid var(--background-secondary);
-        border-right: 2px solid var(--background-secondary);
+        background: ButtonFace;
+        border-left: 2px solid ButtonFace;
+        border-right: 2px solid ButtonFace;
         border-radius: var(--input-border-radius);
-        color: var(--text-color-secondary);
+        color: ButtonText;
         padding: 1em;
     }
 
     input {
-        color: var(--page-text-color);
         flex-grow: 1;
     }
 
     input[type="text"] {
+        background: none;
+        border: none;
+        padding: 1em;
+
         &:focus-visible {
             outline: 2px solid var(--background-highlight);
             border-radius: var(--input-border-radius);

@@ -2,7 +2,7 @@
     height: 100vh;
 
     .navbar {
-        background: var(--background-secondary);
+        align-items: center;
         display: flex;
         flex-direction: row;
         gap: 1em;
@@ -10,19 +10,14 @@
         padding: 1em;
 
         a {
-            color: var(--text-color-secondary);
             font-size: large;
             font-weight: bold;
-            margin: auto 0;
             text-decoration: none;
             transition: all var(--transition-duration-default);
 
-            &:visited:not(:hover) {
-                color: var(--text-color-secondary);
-            }
-
-            &:hover {
-                color: var(--background-highlight);
+            &.active {
+                color: var(--background-primary);
+                text-shadow: var(--text-color-primary) 0 0 5px;
             }
         }
     }
