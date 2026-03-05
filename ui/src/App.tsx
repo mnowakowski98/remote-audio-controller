@@ -13,7 +13,6 @@ import classes from './App.module.scss'
 import { serverInfoKey, type ServerInfo } from './models/serverInfo'
 
 export default function App() {
-
   const settingsStorage = useLocalStorage<Settings>('settings')
   if (settingsStorage.value.current == null) settingsStorage.setValue(defaultSettings)
   const appSettings = settingsStorage.value
