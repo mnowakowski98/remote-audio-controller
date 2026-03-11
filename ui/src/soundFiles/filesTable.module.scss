@@ -4,15 +4,17 @@
     table {
         width: 100%;
 
-        tr.selected {
-            background: var(--background-affirm);
-            color: var(--text-color-affirm);
-        }
-
-        tr:hover:not(.selected) {
-            background: var(--background-highlight);
-            color: var(--text-color-highlight);
-            transition: all var(--transition-duration-default);
+        tbody {
+            tr.selected {
+                background: var(--background-affirm);
+                color: var(--text-color-affirm);
+            }
+        
+            tr:hover:not(.selected) {
+                background: var(--background-highlight);
+                color: var(--text-color-highlight);
+                transition: all var(--transition-duration-default);
+            }
         }
 
         td {
