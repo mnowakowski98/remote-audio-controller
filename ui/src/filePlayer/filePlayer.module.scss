@@ -48,7 +48,7 @@
         margin: 0 auto;
         width: 50%;
 
-        &:hover {
+        &:hover:not(:disabled) {
             background: var(--background-warning);
             color: var(--text-color-warning);
         }

@@ -12,8 +12,13 @@
     initial-value: 1em;
 }
 
-a:visited {
-    color: inherit;
+// TODO: Switch to using secondary variables
+a {
+    color: ButtonText;
+    
+    &:visited {
+        color: inherit;
+    }
 }
 
 // TODO: Switch to using secondary variables
